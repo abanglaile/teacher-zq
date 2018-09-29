@@ -1,0 +1,72 @@
+
+.tab_content{
+	margin-top: 25px;
+	margin-bottom: 20px;
+	border: 1px solid #e9e9e9;
+	width: 600px;
+	padding-bottom: 10px;
+	margin : 0 auto ;
+}
+.p_tab_content{
+	font-size: 13px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 22px;
+	border-left: 2px solid;
+	padding-left: 4px;
+}
+.p_header{
+	text-align: center;
+	font-size: 14px;
+}
+.p_content{
+	text-align: center;
+	font-size: 20px;
+}
+.row_content{
+	margin-top: 20px;
+}
+.d_ladder{
+	margin-top: 25px;
+	margin-bottom: 20px;
+	border: 1px solid #e9e9e9;
+	width: 600px;
+	padding-bottom: 10px;
+	margin : 0 auto ;
+}
+.d_kp{
+	margin-top: 25px;
+	margin-bottom: 20px;
+	border: 1px solid #e9e9e9;
+	width: 600px;
+	padding-bottom: 10px;
+	margin : 0 auto ;
+}
+.p_ladder_title{
+	font-size: 13px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 22px;
+	border-left: 2px solid;
+	padding-left: 4px;
+}
+.p_d_kp{
+	font-size: 13px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 22px;
+	border-left: 2px solid;
+	padding-left: 4px;
+}
+.kp_dom{
+	margin-top: 22px;
+	margin-left: 22px;
+	margin-bottom: 20px;
+}
+.usedkp_table{
+	margin-left: 22px;
+	margin-right: 22px;
+}

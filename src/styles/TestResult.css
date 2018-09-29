@@ -1,0 +1,99 @@
+.custom-filter-dropdown {
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+}
+
+.custom-filter-dropdown input {
+  width: 130px;
+  margin-right: 8px;
+}
+
+.highlight {
+  color: #f50;
+}
+
+.kp_progress{
+	width: 800px;
+	margin-left:100px;
+	margin-right:100px;
+	margin-top: 10px;
+}
+.tab2_title{
+	text-align: center;
+}
+.step_frame{
+	margin:10px;
+}
+.step_index{
+	height: 1.8em;
+	float: left;
+	display: inline;
+}
+.step_answer{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.step_content{
+	height: 1.8em;
+	float: left;
+	display: inline;
+}
+.step_kpname{
+	height: 1.8em;
+	margin-left: 2.5em; 
+}
+/*.row_loc{
+	margin-top: 10px;
+}*/
+.choice_loc{
+	float: left;
+	display: inline;
+	margin-right: 5px;
+}
+.choice_content_loc{
+	float: left;
+	display: inline;
+}
+.exercise_frame{
+	padding: 25px;
+    margin: 25px;
+	border: 1px solid #e9e9e9;
+}
+.exercise_body_frame{
+	margin: 10px;
+}
+.kp_step{
+	background-color: #f5f5f5;
+}
+.step_annouce{
+	margin-top:5px;
+	margin-left: 10px; 
+	padding-top: 5px;
+}
+.pro_result{
+	margin-top: 18px;
+}
+/*.result_cir.result_progress{
+	padding-top: 10px;
+}*/
+.result_progress{
+	margin-top: 15px;
+}
+.row_rate{
+	margin : 15px 0 25px 0;
+}
+.row_rate_p{
+	margin: 5px 0 0 8px;
+	font-size:9px;
+}
+.row_rate_time{
+	font-size: 24px;
+	color: #0e77ca;
+	margin-left: 10px; 
+}
+.row_kp_count{
+	font-size:15px;
+	color: #0e77ca;
+}

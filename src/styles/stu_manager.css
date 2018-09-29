@@ -1,0 +1,17 @@
+.p_class{
+	margin-top: 20px;
+	font-size: 14px;
+	margin-bottom: 10px;
+}
+.p_button{
+	margin-top: 20px;
+	margin-bottom: 10px;
+	float: right;
+}
+
+.btn_delall{
+	float: right;
+}
+.rowinCollapse{
+	margin-bottom: 8px;
+}
