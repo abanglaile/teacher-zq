@@ -76,7 +76,7 @@ class StuTable extends React.Component {
     super(props);
       this.columns = [{
             title: '学生姓名',
-            dataIndex: 'student_name',
+            dataIndex: 'realname',
             width: '30%',
             render: (text, record,index) => {
               let urlstr = "/teacher-zq/stu_capacity/"+record.student_id;

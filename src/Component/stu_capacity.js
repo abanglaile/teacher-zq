@@ -74,7 +74,7 @@ export default connect(state => {
 	const student_data = state.studentData.toJS();
   const {student_info} = student_data;	
   return {
-	  student_name : student_info ? student_info.student_name : null,
+	  student_name : student_info ? student_info.realname : null,
 	  group_name : student_info ? student_info.group_name : null,
   }
 }, action)(StuCapacity);
