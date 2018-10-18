@@ -7,8 +7,8 @@ import Tex from './renderer.js';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
+import Zq_Header from './ZQ_Header.js';
 import config from '../utils/Config';
-import Zq_Header from '../containers/ZQ_Header';
 
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -21,7 +21,13 @@ var urlip = config.server_url;
 class OneExercise extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state={expand:false,display:'none'};
+		// this.state={expand:false,display:'none'};
+		this.state = {
+        	title_img_width: "auto",
+	        title_img_height: "3rem",
+			expand:false,
+			display:'none',
+	    };
 	}
 	handleShow(){
 		this.setState({expand:!this.state.expand});
@@ -32,58 +38,142 @@ class OneExercise extends React.Component {
 			this.setState({display:'none'});
 		}
 	}
+	titleImageLoaded(){
+		console.log(this.title_img.width, window.innerWidth);
+		if(this.title_img.width > window.innerWidth){
+			this.setState({title_img_width: "90%", title_img_height: "auto"})
+		}
+	}
 	handleAddtoBasket(){
-		this.props.onValueBack(this.props.exercise);
+		var exec = {
+			exercise : this.props.exercise,
+			exercise_sample : this.props.exercise_sample,
+		};
+		this.props.onValueBack(exec);
 	}
 	handleRemovefromBasket(){
-		this.props.onValueRemove(this.props.exercise);
+		this.props.onValueRemove(this.props.exercise.exercise_id);
 	}
 	render(){
-		const {expand,display} = this.state;
+		const {expand,display,title_img_width, title_img_height} = this.state;
 		// console.log("isinbasket:"+isinbasket);
 		if(this.props.exercise){
-			const {title ,type, answer, breakdown} = this.props.exercise;
+			// console.log("this.props.exercise: ",this.props.exercise);
+			// console.log("this.props.exercise_sample: ",this.props.exercise_sample);
+			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id} = this.props.exercise;
+			const exercise_sample = this.props.exercise_sample;
+			var sample;
 			const isinbasket = this.props.isinbasket;
+
+			var answerDom = [];
+        	if(exercise_sample){
+        		answer = exercise_sample.answer ? exercise_sample.answer : answer;
+        		sample = exercise_sample.sample;
+        		title_img_url = exercise_sample.title_img_url ? exercise_sample.title_img_url : title_img_url;
+        		title_audio_url = exercise_sample.title_audio_url ? exercise_sample.title_audio_url : title_audio_url;
+				
+			}
+        	switch(exercise_type){
+        		case 0:  
+        			answerDom = (  //填空题答案
+						<div className="step_answer">
+							<p className="step_index">答案：&nbsp;</p>
+							{answer.map((item, i) => {
+		        				return(
+		            				<div>
+										<Tex className="step_content" content={item.value} sample={sample}/>
+		            				</div>
+		            			);
+							})}
+						</div>
+        			);
+        			break;
+        		case 1:
+        			answerDom = (  //选择题选项和答案
+						answer.map((item, i) => {
+	        				return(
+	            				<Row className="row_answer" type="flex" justify="start" align="middle">
+	            					<Col span={1}>
+										<p><Checkbox checked={expand? item.correct:0} disabled ></Checkbox></p>
+									</Col>
+	            					<Col span={18}>
+										<Tex content={item.value} sample={sample}/>
+									</Col>
+	            				</Row>
+	            			);
+						})
+        			);
+        			break;
+        		case 2:
+					answerDom = (  //选择题 图片选项和答案
+						answer.map((item, i) => {
+	        				return(
+	            				<Row className="row_answer" type="flex" justify="start" align="middle">
+	            					<Col span={1}>
+										<p><Checkbox checked={expand? item.correct:0} disabled ></Checkbox></p>
+									</Col>
+	            					<Col span={18}>
+										<div style={{width:130,height:60}}>
+											<img className="answer_img" src={item.value}/>
+										</div>
+									</Col>
+	            				</Row>
+	            			);
+						})
+					);
+					break;
+			}
+			
 			var steps = [];
 			for(var j = 0; j < breakdown.length; j++) {
             	steps.push(
             	<div key={j} className="step_frame">
-            		<p className="step_index">（{(j+1).toString()}）&nbsp;</p><Tex className="step_content" content={breakdown[j].content}/>
-            		<div className="step_kpname"><a>{breakdown[j].kpname}</a></div>
+            		<Row type="flex" justify="start">
+    					<Col span={1}>
+    						<p>{(j+1).toString()}.</p>
+						</Col>
+						<Col span={23}>
+							<Tex content={breakdown[j].content} sample={sample}/>
+            				<div><a>{breakdown[j].kpname}</a></div>
+						</Col>
+					</Row>
             	</div>
             	);
         	}
-        	var choice = eval(answer);
-        	var answerDom = (
-				type ?
-					choice.map((item, i) => {
-        				return(
-            				<Row className="row_answer" type="flex" justify="start" align="middle">
-            					<Col span={1}>
-									<p><Checkbox checked={expand? item.correct:0} disabled ></Checkbox></p>
-								</Col>
-            					<Col span={18}>
-									<Tex content={item.value} />
-								</Col>
-            				</Row>
-            			);
-					})
-				: 
-				<div className="step_answer">
-					<p className="step_index">答案：&nbsp;</p>
-					{choice.map((item, i) => {
-        				return(
-            				<div>
-								<Tex className="step_content" content={item.value} />
-            				</div>
-            			);
-					})}
-				</div>
-			);
+        	
         	return(
 				<div className="exercise_frame">
+					<div className="exercise_id_div">
+						{exercise_id}
+					</div>
 					<div className="exercise_body_frame">
-						<Tex content={title} />
+						<Tex content={title} sample={sample}/>
+						<div>
+							{
+								title_img_url? 
+								<div style={{width:680,height:60}}>
+									<img src={title_img_url} height="100px"
+										ref={element => {this.title_img = element;}}
+										onLoad = {() => this.titleImageLoaded()} 
+										style={{width: title_img_width, height: title_img_height}}
+									/>
+								</div> 
+								:
+								null
+							}
+						</div>
+						<div>
+							{
+								title_audio_url? 
+								<div style={{width:680,height:60}}>
+									<audio src={title_audio_url} controls="controls">
+					                    Your browser does not support the audio element.
+					                </audio>
+								</div> 
+								:
+								null
+							}
+						</div>
 						{answerDom}
 					</div>
 					<div style={{display}} className="kp_step">
@@ -104,47 +194,123 @@ class OneExercise extends React.Component {
 	}
 }
 
+//预览状态下的题目显示，没有解题步骤，只有删除按钮
 class OneExerView extends React.Component {
 	constructor(props){
 		super(props);
+		this.state = {
+        	title_img_width: "auto",
+	        title_img_height: "3rem",
+	    };
+	}
+	titleImageLoaded(){
+		// console.log(this.title_img.width, window.innerWidth);
+		if(this.title_img.width > window.innerWidth){
+		  this.setState({title_img_width: "90%", title_img_height: "auto"})
+		}
 	}
 	handleDelete(){
-		this.props.onDelValue(this.props.exercise);
+		this.props.onDelValue(this.props.exercise.exercise_id);
 	}
 	render(){
+		const {title_img_width, title_img_height} = this.state;
 		if(this.props.exercise){
-			const {title ,type, answer, breakdown} = this.props.exercise;
-        	var choice = eval(answer);
-        	var answerDom = (
-				type ?
-					choice.map((item, i) => {
-        				return(
-            				<Row className="row_answer" type="flex" justify="start" align="middle">
-            					<Col span={1}>
-									<p><Checkbox checked={item.correct} disabled ></Checkbox></p>
-								</Col>
-            					<Col span={18}>
-									<Tex content={item.value} />
-								</Col>
-            				</Row>
-            			);
-					})
-				:
-				<div className="step_answer">
-					<p className="step_index">答案：&nbsp;</p>
-					{choice.map((item, i) => {
-        				return(
-            				<div>
-								<Tex className="step_content" content={item.value} />
-            				</div>
-            			);
-					})}
-				</div>
-			);
+			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id} = this.props.exercise;
+			const exercise_sample = this.props.exercise_sample;
+			var sample;
+
+        	var answerDom = [];
+        	if(exercise_sample){
+        		answer = exercise_sample.answer ? exercise_sample.answer : answer;
+        		sample = exercise_sample.sample;
+        		title_img_url = exercise_sample.title_img_url ? exercise_sample.title_img_url : title_img_url;
+        		title_audio_url = exercise_sample.title_audio_url ? exercise_sample.title_audio_url : title_audio_url;
+				
+        	}
+        	switch(exercise_type){
+        		case 0:  
+        			answerDom = (  //填空题答案
+						<div className="step_answer">
+							<p className="step_index">答案：&nbsp;</p>
+							{answer.map((item, i) => {
+		        				return(
+		            				<div>
+										<Tex className="step_content" content={item.value} sample={sample}/>
+		            				</div>
+		            			);
+							})}
+						</div>
+        			);
+        			break;
+        		case 1:
+        			answerDom = (  //选择题选项和答案
+						answer.map((item, i) => {
+	        				return(
+	            				<Row className="row_answer" type="flex" justify="start" align="middle">
+	            					<Col span={1}>
+										<p><Checkbox checked={item.correct} disabled ></Checkbox></p>
+									</Col>
+	            					<Col span={18}>
+										<Tex content={item.value} sample={sample} />
+									</Col>
+	            				</Row>
+	            			);
+						})
+        			);
+        			break;
+        		case 2:
+					answerDom = (  //选择题 图片选项和答案
+						answer.map((item, i) => {
+	        				return(
+	            				<Row className="row_answer" type="flex" justify="start" align="middle">
+	            					<Col span={1}>
+										<p><Checkbox checked={item.correct} disabled ></Checkbox></p>
+									</Col>
+	            					<Col span={18}>
+										<div style={{width:130,height:60}}>
+											<img className="answer_img" src={item.value}/>
+										</div>
+									</Col>
+	            				</Row>
+	            			);
+						})
+					);
+					break;
+        	}
+
 			return(
 				<div className="exercise_frame">
+					<div className="exercise_id_div">
+						{exercise_id}
+					</div>
 					<div className="exercise_body_frame">
-						<Tex content={title} />
+						<Tex content={title} sample={sample}/>
+						<div>
+							{
+							title_img_url? 
+							<div style={{width:680,height:60}}>
+								<img src={title_img_url} height="100px"
+								ref={element => {this.title_img = element;}}
+								onLoad = {() => this.titleImageLoaded()} 
+								style={{width: title_img_width, height: title_img_height}}
+								/>
+							</div>  
+							:
+							null
+							}
+						</div>
+						<div>
+							{
+								title_audio_url? 
+								<div style={{width:680,height:60}}>
+									<audio src={title_audio_url} controls="controls">
+										Your browser does not support the audio element.
+									</audio>
+								</div> 
+								:
+								null
+							}
+						</div>
 						{answerDom}
 					</div>
 					<div className="button_frame">
@@ -196,14 +362,17 @@ class KpExerciseView extends React.Component {
 
 	componentDidMount(){
       this.loadBookMenu();
+      this.loadDefaultSelMenu();
     }
 
 	loadBookMenu(){
+	  //course_id
+      this.props.fetchBookMenu(3);
+	}
 
-      var url = "/getBookChapter";
-      //this.setState({isLoading: true});
-      console.log(this.props.fetchPosts);
-      this.props.fetchBookMenu(url, {course_id:3});
+	loadDefaultSelMenu(){
+	  //chapter_id
+      this.props.fetchSelectMenu(655363);	
 	}
 
 	handlePreView(){
@@ -220,8 +389,8 @@ class KpExerciseView extends React.Component {
 		this.props.addToBasket(currentData);
 	}
 
-	handleRemoveBasket(currentData){
-		this.props.deleteFromBasket(currentData);
+	handleRemoveBasket(exercise_id){
+		this.props.deleteFromBasket(exercise_id);
 	}
 
 	handlePreOk(){
@@ -241,25 +410,28 @@ class KpExerciseView extends React.Component {
     }
 
     handleProOk(){
-    	var url = "/addNewTest";
     	const form = this.form;
     	const {basket_tests} = this.props;
 	    form.validateFields((err, values) => {
 	      if (err) {
 	        return;
 	      }
-	      // console.log("this.form.values:"+JSON.stringify(values));
 	      this.setState({
 		      provisible: false,
 		  });
 		  var test_exerid = [];
 		  console.log("basket_tests:"+JSON.stringify(this.props.basket_tests));
 		  for(var j = 0; j < basket_tests.length; j++) {
-		  	 test_exerid.push(basket_tests[j].exercise_id)
+		  	 test_exerid.push(basket_tests[j].exercise.exercise_id)
           }
 		  console.log("test_exerid:"+test_exerid);
-		  var postdata = {"test_name":values.testname,"teacher_id":1,"test_exercise":test_exerid};
-	      this.props.saveNewTest(url,postdata);
+		  console.log("test_name:",values.testname);
+		  var postdata = {
+			  "test_name":values.testname,
+			  "teacher_id":this.props.teacher_id,
+			  "test_exercise":test_exerid
+		  };
+	      this.props.saveNewTest(values.testname,this.props.teacher_id,test_exerid);
 	    });
 	}
 
@@ -283,9 +455,8 @@ class KpExerciseView extends React.Component {
     }
 
 	handleClick(e){
-		// console.log("e.key:"+e.key);
-		var url = "/getChapterKp";
-		this.props.fetchSelectMenu(url, {chapter_id:e.key});	
+		//chapter_id : e.key
+		this.props.fetchSelectMenu(e.key);	
 	}
 
 	saveFormRef(form){
@@ -331,7 +502,11 @@ class KpExerciseView extends React.Component {
 			for(var j = 0; j < basket_tests.length; j++) {
 	            exerViews.push(
 	            	<div key={j}>
-	            		<OneExerView exercise={basket_tests[j]} onDelValue={(currentData)=>this.handleRemoveBasket(currentData)}/>
+						<OneExerView 
+							// exercise={basket_tests[j]} 
+							exercise={basket_tests[j].exercise} 
+            				exercise_sample={basket_tests[j].exercise_sample}
+							onDelValue={(exercise_id)=>this.handleRemoveBasket(exercise_id)}/>
 	            	</div>
 	            );
 	        }
@@ -341,14 +516,19 @@ class KpExerciseView extends React.Component {
 			var isin = 0;
 			if(basket_tests){
 				for(var k = 0; k < basket_tests.length; k++){
-					if(exer_data[j].exercise_id === basket_tests[k].exercise_id){
+					if(exer_data[j].exercise.exercise_id === basket_tests[k].exercise.exercise_id){
 						isin = 1;
 					}
 				}
 			}
             exerDatas.push(
-            	<div key={exer_data[j].exercise_id}>
-            		<OneExercise exercise={exer_data[j]} isinbasket={isin} onValueBack={(currentData)=>this.handleToBasket(currentData)} onValueRemove={(currentData)=>this.handleRemoveBasket(currentData)}/>
+            	<div key={exer_data[j].exercise.exercise_id}>
+					<OneExercise 
+						exercise={exer_data[j].exercise} 
+            			exercise_sample={exer_data[j].exercise_sample}
+						isinbasket={isin} 
+						onValueBack={(currentData)=>this.handleToBasket(currentData)} 
+						onValueRemove={(exercise_id)=>this.handleRemoveBasket(exercise_id)}/>
             	</div>
             );
         }
@@ -361,8 +541,8 @@ class KpExerciseView extends React.Component {
 			      <Layout style={{ padding: '24px 0', background: '#fff'}}>
 			        <Sider width={300} style={{ background: '#fff' }}>
 			            <Menu onClick = { (e) => this.handleClick(e) } style = {{ width: 300 } }
-                            defaultSelectedKeys = {[this.state.current]}
-                            defaultOpenKeys = {['4'] } 
+                            defaultSelectedKeys = {['655363']}
+                            defaultOpenKeys={['20']}
                         	mode = "inline" 
                         >
                             {menuHtml}
@@ -423,9 +603,10 @@ class KpExerciseView extends React.Component {
 export default connect(state => {
   console.log(state);
   return {
-    menu_data: state.fetchBookMenuData.bookmenu_data,   //左侧可选科目栏数据
-    selmenu:state.fetchSelMenuData.selmenu_data,       //栏目下的具体知识点
-	basket_tests : state.basketDataMonitor.basket_data,
+	teacher_id:state.AuthData.get('userid'),
+    menu_data: state.bookMenuData.get('bookmenu_data').toJS(),   //左侧可选科目栏数据
+    selmenu:state.selMenuData.get('selmenu_data').toJS(),       //栏目下的具体知识点
+	basket_tests : state.basketDataMonitor.get('basket_data').toJS(),
   }
 }, action)(KpExerciseView);
 

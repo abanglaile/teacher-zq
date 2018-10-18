@@ -28,7 +28,7 @@ class ExerciseDetail extends React.Component{
 				for(var j = 0; j < test_data.length; j++) {
 					tests.push(
 						<div key={j}>
-							<OneExerciseView exercise={test_data[j]} />
+							<OneExerciseView exer_data={test_data[j]}/>
 						</div>
 					);
 				}
@@ -36,7 +36,7 @@ class ExerciseDetail extends React.Component{
 				for(var j = 0; j < test_data.length; j++) {
 					tests.push(
 						<div key={j}>
-							<OneExercise exercise={test_data[j]} />
+							<OneExercise exer_data={test_data[j]}/>
 						</div>
 					);
 				}
@@ -54,40 +54,41 @@ class ExerciseDetail extends React.Component{
 class OneExerciseView extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+        	title_img_width: "auto",
+	        title_img_height: "3rem",
+	    };
+	}
+	titleImageLoaded(){
+		console.log(this.title_img.width, window.innerWidth);
+		if(this.title_img.width > window.innerWidth){
+			this.setState({title_img_width: "90%", title_img_height: "auto"})
+		}
 	}
 	render(){
-		if(this.props.exercise){
-			const {title ,type, answer, breakdown,title_img_url,title_audio_url,correct_rate,kp_rate,stu_false} = this.props.exercise;
-			console.log(JSON.stringify(this.props.exercise));
-			var steps = [];
-			for(var j = 0; j < breakdown.length; j++) {
-				console.log('breakdown[j].content:'+breakdown[j].content);
-            	steps.push(
-            		<div key={j} className="step_frame">
-            			<Row type="flex" justify="start">
-	    					<Col span={1}>
-	    						<p>{(j+1).toString()}.</p>
-							</Col>
-							<Col span={23}>
-								<Tex content={breakdown[j].content}/>
-	            				<div><a>{breakdown[j].kpname}</a></div>
-							</Col>
-						</Row>
-            		</div>
-            	);
-        	}
-        	var choice = eval(answer);
+		const {title_img_width, title_img_height} = this.state;
+		if(this.props.exer_data){
+			var {exercise,exercise_sample} = this.props.exer_data;
+			const {correct_rate,kp_rate,stu_false} = this.props.exer_data;
+			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id} = exercise;
+			var sample;
 
+			if(exercise_sample){
+        		answer = exercise_sample.answer ? exercise_sample.answer : answer;
+        		sample = exercise_sample.sample;
+        		title_img_url = exercise_sample.title_img_url ? exercise_sample.title_img_url : title_img_url;
+        		title_audio_url = exercise_sample.title_audio_url ? exercise_sample.title_audio_url : title_audio_url;
+			}
 			var answerDom = [];
-        	switch(type){
+        	switch(exercise_type){
         		case 0:  
         			answerDom = (  //填空题答案
 						<div className="step_answer">
 							<p className="step_index">答案：&nbsp;</p>
-							{choice.map((item, i) => {
+							{answer.map((item, i) => {
 		        				return(
 		            				<div>
-										<Tex className="step_content" content={item.value} />
+										<Tex className="step_content" content={item.value} sample={sample}/>
 		            				</div>
 		            			);
 							})}
@@ -96,14 +97,14 @@ class OneExerciseView extends React.Component {
         			break;
         		case 1:
         			answerDom = (  //选择题选项和答案
-						choice.map((item, i) => {
+						answer.map((item, i) => {
 	        				return(
 	            				<Row className="row_answer" type="flex" justify="start" align="middle">
 	            					<Col span={1}>
 										<p><Checkbox checked={item.correct} disabled ></Checkbox></p>
 									</Col>
 	            					<Col span={18}>
-										<Tex content={item.value} />
+										<Tex content={item.value} sample={sample}/>
 									</Col>
 	            				</Row>
 	            			);
@@ -112,7 +113,7 @@ class OneExerciseView extends React.Component {
         			break;
         		case 2:
 					answerDom = (  //选择题 图片选项和答案
-						choice.map((item, i) => {
+						answer.map((item, i) => {
 	        				return(
 	            				<Row className="row_answer" type="flex" justify="start" align="middle">
 	            					<Col span={1}>
@@ -128,6 +129,24 @@ class OneExerciseView extends React.Component {
 						})
 					);
 					break;
+        	}
+
+			var steps = [];
+			for(var j = 0; j < breakdown.length; j++) {
+				console.log('breakdown[j].content:'+breakdown[j].content);
+            	steps.push(
+            		<div key={j} className="step_frame">
+            			<Row type="flex" justify="start">
+	    					<Col span={1}>
+	    						<p>{(j+1).toString()}.</p>
+							</Col>
+							<Col span={23}>
+								<Tex content={breakdown[j].content} sample={sample}/>
+	            				<div><a>{breakdown[j].kpname}</a></div>
+							</Col>
+						</Row>
+            		</div>
+            	);
         	}
 
 			var kprateDom = (
@@ -168,12 +187,16 @@ class OneExerciseView extends React.Component {
         	return(
 				<div className="exercise_frame">
 					<div className="exercise_body_frame">
-						<Tex content={title} />
+						<Tex content={title} sample={sample}/>
 						<div>
 							{
 								title_img_url? 
-								<div>
-									<img src={title_img_url} style={{height: "4rem", width: "auto"}}/>
+								<div style={{width:680,height:60}}>
+									<img src={title_img_url} height="100px"
+										ref={element => {this.title_img = element;}}
+										onLoad = {() => this.titleImageLoaded()} 
+										style={{width: title_img_width, height: title_img_height}}
+									/>
 								</div> 
 								:
 								null
@@ -182,7 +205,7 @@ class OneExerciseView extends React.Component {
 						<div>
 							{
 								title_audio_url? 
-								<div>
+								<div style={{width:680,height:60}}>
 									<audio src={title_audio_url} controls="controls">
 					                    Your browser does not support the audio element.
 					                </audio>
@@ -218,7 +241,12 @@ class OneExerciseView extends React.Component {
 class OneExercise extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state={expand:false,display:'none'};
+		this.state = {
+        	title_img_width: "auto",
+	        title_img_height: "3rem",
+			expand:false,
+			display:'none',
+	    };
 	}
 	handleShow(){
 		this.setState({expand:!this.state.expand});
@@ -229,39 +257,36 @@ class OneExercise extends React.Component {
 			this.setState({display:'none'});
 		}
 	}
+	titleImageLoaded(){
+		console.log(this.title_img.width, window.innerWidth);
+		if(this.title_img.width > window.innerWidth){
+			this.setState({title_img_width: "90%", title_img_height: "auto"})
+		}
+	}
 	render(){
-		const {expand,display} = this.state;
-		if(this.props.exercise){
-			const {title ,type, answer, breakdown,title_img_url,title_audio_url} = this.props.exercise;
-			const isinbasket = this.props.isinbasket;
-			var steps = [];
-			for(var j = 0; j < breakdown.length; j++) {
-            	steps.push(
-            	<div key={j} className="step_frame">
-            		<Row type="flex" justify="start">
-    					<Col span={1}>
-    						<p>{(j+1).toString()}.</p>
-						</Col>
-						<Col span={23}>
-							<Tex content={breakdown[j].content}/>
-            				<div><a>{breakdown[j].kpname}</a></div>
-						</Col>
-					</Row>
-            	</div>
-            	);
-        	}
-        	var choice = eval(answer);
+		const {expand,display,title_img_width, title_img_height} = this.state;
+		if(this.props.exer_data){
+			var {exercise,exercise_sample} = this.props.exer_data;
+			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id} = exercise;
+			var sample;
 
+			if(exercise_sample){
+        		answer = exercise_sample.answer ? exercise_sample.answer : answer;
+        		sample = exercise_sample.sample;
+        		title_img_url = exercise_sample.title_img_url ? exercise_sample.title_img_url : title_img_url;
+        		title_audio_url = exercise_sample.title_audio_url ? exercise_sample.title_audio_url : title_audio_url;
+			}
 			var answerDom = [];
-        	switch(type){
+
+			switch(exercise_type){
         		case 0:  
         			answerDom = (  //填空题答案
 						<div className="step_answer">
 							<p className="step_index">答案：&nbsp;</p>
-							{choice.map((item, i) => {
+							{answer.map((item, i) => {
 		        				return(
 		            				<div>
-										<Tex className="step_content" content={item.value} />
+										<Tex className="step_content" content={item.value} sample={sample}/>
 		            				</div>
 		            			);
 							})}
@@ -270,14 +295,14 @@ class OneExercise extends React.Component {
         			break;
         		case 1:
         			answerDom = (  //选择题选项和答案
-						choice.map((item, i) => {
+						answer.map((item, i) => {
 	        				return(
 	            				<Row className="row_answer" type="flex" justify="start" align="middle">
 	            					<Col span={1}>
 										<p><Checkbox checked={expand? item.correct:0} disabled ></Checkbox></p>
 									</Col>
 	            					<Col span={18}>
-										<Tex content={item.value} />
+										<Tex content={item.value} sample={sample}/>
 									</Col>
 	            				</Row>
 	            			);
@@ -286,7 +311,7 @@ class OneExercise extends React.Component {
         			break;
         		case 2:
 					answerDom = (  //选择题 图片选项和答案
-						choice.map((item, i) => {
+						answer.map((item, i) => {
 	        				return(
 	            				<Row className="row_answer" type="flex" justify="start" align="middle">
 	            					<Col span={1}>
@@ -302,17 +327,37 @@ class OneExercise extends React.Component {
 						})
 					);
 					break;
+			}
+			var steps = [];
+			for(var j = 0; j < breakdown.length; j++) {
+            	steps.push(
+            	<div key={j} className="step_frame">
+            		<Row type="flex" justify="start">
+    					<Col span={1}>
+    						<p>{(j+1).toString()}.</p>
+						</Col>
+						<Col span={23}>
+							<Tex content={breakdown[j].content} sample={sample}/>
+            				<div><a>{breakdown[j].kpname}</a></div>
+						</Col>
+					</Row>
+            	</div>
+            	);
         	}
 
         	return(
 				<div className="exercise_frame">
 					<div className="exercise_body_frame">
-						<Tex content={title} />
+						<Tex content={title} sample={sample}/>
 						<div>
 							{
 								title_img_url? 
 								<div style={{width:680,height:60}}>
-									<img src={title_img_url} style={{height: "4rem", width: "auto"}}/>
+									<img src={title_img_url} height="100px"
+										ref={element => {this.title_img = element;}}
+										onLoad = {() => this.titleImageLoaded()} 
+										style={{width: title_img_width, height: title_img_height}}
+									/>
 								</div> 
 								:
 								null
@@ -321,7 +366,7 @@ class OneExercise extends React.Component {
 						<div>
 							{
 								title_audio_url? 
-								<div>
+								<div style={{width:680,height:60}}>
 									<audio src={title_audio_url} controls="controls">
 					                    Your browser does not support the audio element.
 					                </audio>

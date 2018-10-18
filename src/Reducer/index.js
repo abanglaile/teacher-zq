@@ -133,7 +133,7 @@ export const basketDataMonitor = (state = defaultbasketData, action = {}) => {
             var index = 0;
             var basket = state.get('basket_data').toJS();
             for(var i=0;i<basket.length;i++){
-                if(basket[i].exercise_id === action.exerciseid){
+                if(basket[i].exercise.exercise_id === action.exercise_id){
                     index = i;
                 }
             }

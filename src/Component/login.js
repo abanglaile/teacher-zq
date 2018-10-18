@@ -1,9 +1,8 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Form, Icon, Input, Button, Checkbox,Tabs } from 'antd';
-import RegView from './RegView';
-import *as actionCreators from '../Action/';
+import RegView from './register';
+import *as action from '../Action/auth_action';
 import * as style from '../styles/Login.css';
 
 const FormItem = Form.Item;
@@ -13,7 +12,7 @@ class LoginForm extends React.Component {
 
   constructor(props) {
     super(props);
-    const redirectRoute = this.props.location.query.redirect || '/AuthJWT/t_center';
+    const redirectRoute = this.props.location.query.redirect || '/teacher-zq/root';
     this.state = {
       confirmDirty: false,
       username: '',
@@ -31,7 +30,7 @@ class LoginForm extends React.Component {
         console.log('values.password:'+values.password);
         console.log('this.state.redirectTo:'+this.state.redirectTo);
         this.setState({username:values.userName,password:values.password},()=>{
-          this.props.actions.loginUser(values.userName, values.password, this.state.redirectTo);
+          this.props.loginUser(values.userName, values.password, this.state.redirectTo);
         });
       }
     });
@@ -87,14 +86,10 @@ class LoginForm extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticating   : state.AuthData.get('isAuthenticating'),
-  statusText         : state.AuthData.get('statusText')
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  actions : bindActionCreators(actionCreators, dispatch)
-});
-
 const  LoginView = Form.create()(LoginForm);
-export default connect(mapStateToProps, mapDispatchToProps)(LoginView);
+export default connect(state => {
+  console.log(state);
+  return {
+    
+  }
+}, action)(LoginView);
