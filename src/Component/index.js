@@ -53,10 +53,12 @@ class App extends React.Component{
                             测试中心
                           </div>
                         </Menu.Item>
-                        <SubMenu key="sub4" title={<span><Icon type="tag-o" />教案</span>}>
-                          <Menu.Item key="6">基本乐理</Menu.Item>
-                          <Menu.Item key="7">试唱</Menu.Item>
-                        </SubMenu>
+                        <Menu.Item key="sub4">
+                          <div onClick={() => this.props.router.push("/teacher-zq/root/lesson-manager")}
+                          >
+                            课堂管理
+                          </div>
+                        </Menu.Item>
                       </Menu>
                     </Sider>
                     <Content style={{ padding: '0 24px', minHeight: 350 }}>

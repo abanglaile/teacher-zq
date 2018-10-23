@@ -31,6 +31,22 @@ const defaultClassGroupData = Immutable.fromJS({//教师管理的所有班级
         isFetching: false,
     });
 
+const defaultLessonData = Immutable.fromJS({//课程管理
+        school_teacher: [],
+        teacher_lesson: [],
+        lesson: {
+            lesson_teacher: [],
+        },
+        lesson_edit: {lesson_content:[]},
+        isFetching: false,
+    });
+
+const defaultPersonalData = Immutable.fromJS({//教师个人数据
+        teacher_option: [],
+        course_option: [],
+        label_option: [],
+    });
+
 const defaultSelMenuData = Immutable.fromJS({//某班级下面的所有学生信息
         selmenu_data: [],
         isFetching: false,
@@ -164,5 +180,41 @@ export const studentData = (state = defaultStudentData , action = {}) => {
 			return state.set('kp_data', Immutable.fromJS(action.json));
         default:
             return state;
+    }
+}
+
+export const lessonData = (state = defaultLessonData , action = {}) => {
+    switch(action.type){
+        case 'GET_TEACHER_LESSON':
+            return state.set('teacher_lesson', Immutable.fromJS(action.teacher_lesson));
+        case 'GET_ONE_LESSON':
+            return state.set('lesson', Immutable.fromJS(action.lesson));
+        case 'ADD_LESSON':
+            return state.set('feedback_success', true);
+        case 'UPDATE_LESSON_TEACHER':
+            return state.setIn(['lesson','lesson_teacher'], Immutable.fromJS(action.lesson_teacher));
+        case 'UPDATE_LESSON_GROUP':
+            return state.set('lesson', action.lesson);
+        case 'UPDATE_LESSON_COURSE':
+            return state.setIn(['lesson','course_id'], Immutable.fromJS(action.course_id));
+        case 'UPDATE_LESSON_LABEL':
+            return state.setIn(['lesson','label_id'], Immutable.fromJS(action.label_id));
+        case 'UPDATE_LESSON_RANGE':
+            return state.setIn(['lesson','start_time'], Immutable.fromJS(action.start_time))
+                .setIn(['lesson','end_time'], Immutable.fromJS(action.end_time));
+        case 'EDIT_LESSON':
+            return state.setIn(['lesson_edit', action.key], action.value);
+        default:
+            return state;
+    }
+}
+export const personalData = (state = defaultPersonalData, action ={}) => {
+    switch(action.type){
+        case 'GET_TEACHER_OPTION':
+            return state.set('teacher_option', Immutable.fromJS(action.teacher_option))
+                .set('course_option', Immutable.fromJS(action.course_option))
+                .set('label_option', Immutable.fromJS(action.label_option));
+        default:
+            return state;  
     }
 }
