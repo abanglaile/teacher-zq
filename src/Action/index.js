@@ -204,10 +204,10 @@ export const addToBasket = (data) =>{
     }
 }
 
-export const deleteFromBasket = (exerciseid) =>{
+export const deleteFromBasket = (exercise_id) =>{
     return {
         type: 'DEL_BASKET_DATA',
-        exerciseid
+        exercise_id
     }
 }
 
@@ -301,15 +301,15 @@ export const getTestTable = (teacher_id) => {
 }
 
 // 保存新建测试信息，并上传后台
-export const saveNewTest = (postData) => {
+export const saveNewTest = (test_name,teacher_id,test_exercise) => {
     let url = target + "/addNewTest";
     return dispatch => {
-        return axios.post(url,{postData})
+        return axios.post(url,{test_name,teacher_id,test_exercise})
         .then(function (response) {
             dispatch(clearBasketData());
             dispatch({
                 type : 'ADD_NEW_TEST',
-                testname : postData.test_name,
+                testname : test_name,
                 testid : response.data.test_id
             });
             dispatch(push("/teacher-zq/root/testcenter"));
