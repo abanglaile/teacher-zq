@@ -40,3 +40,25 @@ export const loginUser = (username, password, redirect) => {
     }
     
 }
+
+export const regUser = (username, password, redirect) => {
+    let url = target + "/signup";
+    return dispatch => {
+        return axios.post(url,{username,password})
+        .then(function (response) {
+            console.log("response.data :",JSON.stringify(response.data));
+            if(response.data.signMsg == 'failed'){
+                alert("注册失败！");
+            }else if(response.data.signMsg == 'existed'){
+                alert("用户已存在");
+            }else{
+                alert("注册成功");
+                dispatch(push(redirect));
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+    
+}
