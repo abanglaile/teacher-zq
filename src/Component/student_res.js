@@ -5,6 +5,7 @@ import Styles from '../styles/TestResult.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 import config from '../utils/Config';
+import moment from 'moment';
 
 var urlip = config.server_url;
 
@@ -86,12 +87,12 @@ class StudentRes extends React.Component {
               );
             },
             filters: [{
-	        	text: '已完成',
-	       	 	value: '已完成',
-	      	}, {
-		        text: '未完成',
-		        value: '未完成',
-	      	}],
+							text: '已完成',
+							value: '已完成',
+						}, {
+							text: '未完成',
+							value: '未完成',
+						}],
             onFilter: (value, record) => record.completion.indexOf(value) === 0,
         }, {
             title: '正确率(%)',
@@ -103,7 +104,11 @@ class StudentRes extends React.Component {
             title: '完成时间',
             dataIndex: 'end_time',
             width: '15%',
-            key:'end_time',
+						key:'end_time',
+						render: (text, record) => {
+							if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
+							else return '';
+            },
             sorter: (a, b) => a.end_time - b.end_time,
         },{
             title: '作业耗时(分钟)',
@@ -118,6 +123,13 @@ class StudentRes extends React.Component {
 				<div>
 					<div className="row_rate">
 						<Row type="flex" justify="center" align="middle">
+							<Col span={5}>
+								<p style={{
+									fontSize: '60px',
+									color: '#0e77ca',
+									marginLeft: '10px',
+								}}>{test_res.completion_num}</p>
+							</Col>
 							<Col span={5}>
 								<Progress 
 									type="circle"
@@ -139,6 +151,7 @@ class StudentRes extends React.Component {
 							</Col>
 						</Row>
 						<Row type="flex" justify="center" align="middle">
+						  <Col span={5}><p className="row_rate_p">已提交（人）</p></Col>
 							<Col span={5}><p className="row_rate_p">作业提交率</p></Col>
 							<Col span={5}><p className="row_rate_p">平均正确率</p></Col>
 							<Col span={5}><p className="row_rate_p">平均耗时（分钟）</p></Col>
@@ -154,7 +167,8 @@ class StudentRes extends React.Component {
 }
 
 export default connect(state => {
-    const {test_res}  = state.fetchTestsData.toJS();
+		const {test_res}  = state.fetchTestsData.toJS();
+		console.log("test_res: ",JSON.stringify(test_res));
     return {
         test_res : test_res
     }

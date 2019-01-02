@@ -12,7 +12,7 @@ class RegForm extends React.Component {
 
   constructor(props) {
     super(props);
-    const redirectRoute = '/AuthJWT/t_center';
+    const redirectRoute = '/teacher-zq/root';
     this.state = {
       confirmDirty: false,
       usrname: '',
@@ -28,7 +28,7 @@ class RegForm extends React.Component {
         console.log('Received values of form: ', values);
         console.log('this.state.redirectTo:'+this.state.redirectTo);
         this.setState({usrname:values.usrname,password:values.password},()=>{
-          this.props.actions.regUser(values.usrname, values.password, this.state.redirectTo);
+          this.props.regUser(values.usrname, values.password, this.state.redirectTo);
         });
       }
     });

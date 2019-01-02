@@ -42,9 +42,9 @@ class Zq_Header extends React.Component{
       return( 
           <div style={{ margin: '0 70px' }}>
             <Row type="flex" align="bottom" justify="space-between">
-              <Col span={4}>
-                <Link to="/AuthJWT/t_center/testcenter">
-                  <img src="/AuthJWT/img/知秋.jpg" width="171" height="80" alt="logo"/>
+              <Col span={4}> 
+                <Link to="/teacher-zq/root">
+                  <img src="/teacher-zq/img/知秋.jpg" width="171" height="80" alt="logo"/>
                 </Link>
               </Col>
               <Col span={3}>
