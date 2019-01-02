@@ -749,6 +749,106 @@ export const addNewLesson = (lesson) => {
     }
 }
 
+export const addHomework = (homework) => {
+    let url = target + "/addHomework";
+    return dispatch => {
+        return axios.post(url, {homework})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_HOMEWORK',
+                homework: response.data, 
+            });
+            dispatch(editLesson('new_homework_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const addLessonContent = (lesson_content) => {
+    let url = target + "/addLessonContent";
+    return dispatch => {
+        return axios.post(url, {lesson_content})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_LESSON_CONTENT',
+                lesson_content: response.data, 
+            });
+            dispatch(editLesson('new_content_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const updateLessonContent = (lesson_content, i) => {
+    let url = target + "/updateLessonContent";
+    return dispatch => {
+        return axios.post(url, {lesson_content})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_LESSON_CONTENT',
+                lesson_content: response.data, 
+            });
+            dispatch(editLessonContent(i, false));
+        })
+        .catch(function (error) {
+            console.log(error);});
+    }
+}
+
+export const deleteLessonContent = (lesson_content, i) => {
+    let url = target + "/deleteLessonContent";
+    return dispatch => {
+        return axios.post(url, {lesson_content})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_LESSON_CONTENT',
+                lesson_content: response.data, 
+            });
+            dispatch(editLesson(i, false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const addTeacherComment = (label_id, label_type, teacher_comment) => {
+    let url = target + "/addTeacherComment";
+    return dispatch => {
+        return axios.post(url, {label_id, label_type, teacher_comment})
+        .then(function (response) {
+            console.log(response.data);
+            dispatch({
+                type : 'ADD_TEACHER_COMMENT',
+                teacher_comment: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const deleteTeacherComment = (comment_id, lesson_id) => {
+    let url = target + "/deleteTeacherComment";
+    return dispatch => {
+        return axios.post(url, {comment_id, lesson_id})
+        .then(function (response) {
+            dispatch({
+                type : 'DELETE_TEACHER_COMMENT',
+                teacher_comment: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const updateLessonGroup = (lesson_id, group_id) => {
     let url = target + "/updateLessonGroup";
     return dispatch => {
@@ -836,6 +936,22 @@ export const updateLessonRange = (lesson_id, start_time, end_time) => {
     }
 }
 
+export const searchKp = (input) => {
+    let url = target + "/searchKp";
+    return dispatch => {
+        return axios.get(url, {params: {input}})
+        .then(function (response) {
+            dispatch({
+                type : 'SEARCH_KP',
+                result: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const getOptionData = (teacher_id, school_id) => {
     let url = target + "/getOptionData";
     console.log(teacher_id);
@@ -847,6 +963,7 @@ export const getOptionData = (teacher_id, school_id) => {
                 teacher_option: response.data.teacher_option, 
                 course_option: response.data.course_option,
                 label_option: response.data.label_option,
+                test_option: response.data.test_option,
             });
         })
         .catch(function (error) {
@@ -857,8 +974,24 @@ export const getOptionData = (teacher_id, school_id) => {
 
 export function editLesson(key, value) {
   return {
-    type: 'EDIT_LESSON',
+    type: 'LESSON_EDITABLE',
     key,
+    value,
+  }
+}
+
+export function editLessonContent(index, value) {
+  return {
+    type: 'LESSON_CONTENT_EDITABLE',
+    index,
+    value,
+  }
+}
+
+export function editLessonHomework(index, value) {
+  return {
+    type: 'LESSON_HOMEWORK_EDITABLE',
+    index,
     value,
   }
 }

@@ -36,8 +36,10 @@ const defaultLessonData = Immutable.fromJS({//课程管理
         teacher_lesson: [],
         lesson: {
             lesson_teacher: [],
+            homework: [],
+            lesson_content: [{content: "abc"}]
         },
-        lesson_edit: {lesson_content:[]},
+        lesson_edit: {content_edit: [], homework_edit: [], sub_view: 0},
         isFetching: false,
     });
 
@@ -45,6 +47,8 @@ const defaultPersonalData = Immutable.fromJS({//教师个人数据
         teacher_option: [],
         course_option: [],
         label_option: [],
+        test_option: [],
+        search_result: [],
     });
 
 const defaultSelMenuData = Immutable.fromJS({//某班级下面的所有学生信息
@@ -191,6 +195,12 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.set('lesson', Immutable.fromJS(action.lesson));
         case 'ADD_LESSON':
             return state.set('feedback_success', true);
+        case 'EDIT_LESSON_CONTENT':
+            return state.setIn(['lesson', 'lesson_content'], Immutable.fromJS(action.lesson_content));
+        case 'ADD_TEACHER_COMMENT':
+            return state.setIn(['lesson', 'teacher_comment'], Immutable.fromJS(action.teacher_comment));
+        case 'DELETE_TEACHER_COMMENT':
+            return state.setIn(['lesson', 'teacher_comment'], Immutable.fromJS(action.teacher_comment))
         case 'UPDATE_LESSON_TEACHER':
             return state.setIn(['lesson','lesson_teacher'], Immutable.fromJS(action.lesson_teacher));
         case 'UPDATE_LESSON_GROUP':
@@ -202,8 +212,12 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'UPDATE_LESSON_RANGE':
             return state.setIn(['lesson','start_time'], Immutable.fromJS(action.start_time))
                 .setIn(['lesson','end_time'], Immutable.fromJS(action.end_time));
-        case 'EDIT_LESSON':
+        case 'LESSON_EDITABLE':
             return state.setIn(['lesson_edit', action.key], action.value);
+        case 'LESSON_CONTENT_EDITABLE':
+            return state.setIn(['lesson_edit', 'content_edit', action.index], action.value);
+        case 'LESSON_HOMEWORK_EDITABLE':
+            return state.setIn(['lesson_edit', 'homework_edit', action.index], action.value);
         default:
             return state;
     }
@@ -213,7 +227,10 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
         case 'GET_TEACHER_OPTION':
             return state.set('teacher_option', Immutable.fromJS(action.teacher_option))
                 .set('course_option', Immutable.fromJS(action.course_option))
-                .set('label_option', Immutable.fromJS(action.label_option));
+                .set('label_option', Immutable.fromJS(action.label_option))
+                .set('test_option', Immutable.fromJS(action.test_option));
+        case 'SEARCH_KP':
+            return state.set('search_result', Immutable.fromJS(action.result));
         default:
             return state;  
     }
