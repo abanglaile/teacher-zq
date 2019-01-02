@@ -4,6 +4,7 @@ import App from '../Component/index.js'
 import LoginView from '../Component/login.js'
 import TestCenter from '../Component/TestCenter.js'
 import StuManager from '../Component/StuManager.js'
+import LessonManager from '../Component/LessonManager.js'
 import StuCapacity from '../Component/stu_capacity.js'
 import KpExerciseView from '../Component/exercise_select.js'
 import TestResult from '../Component/TestResult.js'
@@ -30,6 +31,7 @@ export default (
         <IndexRoute component={TestCenter} />
         <Route path="testcenter" component={TestCenter}/>
         <Route path="stu_manager" component={StuManager}/>
+        <Route path="lesson-manager" component={LessonManager}/>
       </Route>
 
       <Route path="stu_capacity/:id" component={StuCapacity}/>
