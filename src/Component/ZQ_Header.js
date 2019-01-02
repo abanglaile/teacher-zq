@@ -41,10 +41,11 @@ class Zq_Header extends React.Component{
 
       return( 
           <div style={{ margin: '0 70px' }}>
-            <Row type="flex" align="bottom" justify="space-between">
+            <Row type="flex" align="top" justify="space-between">
               <Col span={4}> 
                 <Link to="/teacher-zq/root">
-                  <img src="/teacher-zq/img/知秋.jpg" width="171" height="80" alt="logo"/>
+                  {/* <img src="../../img/知秋3.jpg" height="80" alt="logo"/> */}
+                  <img src="/teacher-zq/img/知秋3.jpg" height="80" alt="logo"/>
                 </Link>
               </Col>
               <Col span={3}>

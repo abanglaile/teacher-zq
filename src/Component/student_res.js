@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {  Icon, Row, Col,Table,Button,Input,Dropdown,Progress} from 'antd';
+import {  Icon, Row, Col,Table,Button,Input,Dropdown,Progress,Switch} from 'antd';
 import Styles from '../styles/TestResult.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -13,67 +13,88 @@ var urlip = config.server_url;
 class StudentRes extends React.Component {
 	constructor(props) {
         super(props);
-        this.state={filterDropdownVisible: false, searchText: '', filtered: false};
+        this.state={filterDropdownVisible: false, searchText: '', filtered: false, checked : false};
     }
 
 	componentDidMount(){
         const {testid} = this.props;
-        console.log('StudentRes testid',testid);
+        // console.log('StudentRes testid',testid);
         if(testid){
             this.props.getTestResultInfo(testid);
         }
 	}
 
-    onInputChange(e){
-    	this.setState({ searchText: e.target.value });
-  	}
+	handleSearch = (selectedKeys, confirm) => () => {
+    confirm();
+    this.setState({ searchText: selectedKeys[0] });
+  }
 
-    onSearch(){
-	    const { searchText } = this.state;
-	    const reg = new RegExp(searchText, 'gi');
-	    this.setState({
-	      filterDropdownVisible: false,
-	      filtered: !!searchText,
-	      test_data: test_data.map((record) => {
-	        const match = record.studentname.match(reg);
-	        if (!match) {
-	          return null;
-	        }
-	        return {
-	          ...record,
-	          studentname: (
-	            <span>
-	              {record.studentname.split(reg).map((text, i) => (
-	                i > 0 ? [<span className="highlight">{match[0]}</span>, text] : text
-	              ))}
-	            </span>
-	          ),
-	        };
-	      }).filter(record => !!record),
-	    });
-	}
+  handleReset = clearFilters => () => {
+    clearFilters();
+    this.setState({ searchText: '' });
+  }
+
+  onSwitchChange(checked){
+	console.log("checked: ",checked);
+	const {testid} = this.props;
+	this.setState({checked : checked}, () => {
+		var timer = setInterval(()=>{
+			if(this.state.checked){
+				this.props.getTestResultInfo(testid);
+				console.log("+");
+			}else{
+				console.log("clearInterval");
+				clearInterval(timer);
+			}
+		},1000);
+	});
+
+  }
 
 	render(){
 		this.columns = [{
-            title: '学生姓名',
+            title: '姓名',
             dataIndex: 'studentname',
-            width: '20%',
+            width: '15%',
             key:'student_id',
-            filterDropdown: (
+            filterDropdown: ({
+							setSelectedKeys, selectedKeys, confirm, clearFilters,
+						}) => (
 		        <div className="custom-filter-dropdown">
 			          <Input
 			            ref={ele => this.searchInput = ele}
-			            placeholder="输入学生姓名"
-			            value={this.state.searchText}
-			            onChange={(e)=>this.onInputChange(e)}
-			            onPressEnter={()=>this.onSearch()}
+			            placeholder="输入姓名"
+			            value={selectedKeys[0]}
+			            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            			onPressEnter={this.handleSearch(selectedKeys, confirm)}
 			          />
-		          <Button type="primary" onClick={()=>this.onSearch()}>查找</Button>
+		          <Button type="primary" onClick={this.handleSearch(selectedKeys, confirm)}>Search</Button>
+          		<Button onClick={this.handleReset(clearFilters)}>Reset</Button>
 		        </div>
 	      	),
-	      	filterIcon: <Icon type="search" style={{ color: this.state.filtered ? '#108ee9' : '#aaa' }} />,
-	      	filterDropdownVisible: this.state.filterDropdownVisible,
-	      	onFilterDropdownVisibleChange: visible => this.setState({ filterDropdownVisible: visible }, () => this.searchInput.focus()),
+					filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
+					onFilter: (value, record) => {
+						var indexs = record.studentname.indexOf(value);
+						return (indexs >= 0 ? true : false);
+					},
+	      	onFilterDropdownVisibleChange: (visible) => {
+						if (visible) {
+							setTimeout(() => {
+								this.searchInput.focus();
+							});
+						}
+					},
+					render: (text) => {
+						const { searchText } = this.state;
+						return searchText ? (
+							<span>
+								{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
+									fragment.toLowerCase() === searchText.toLowerCase()
+										? <span key={i} className="highlight">{fragment}</span> : fragment // eslint-disable-line
+								))}
+							</span>
+						) : text;
+					},
 	    }, {
             title: '完成情况',
             dataIndex: 'completion',
@@ -93,7 +114,10 @@ class StudentRes extends React.Component {
 							text: '未完成',
 							value: '未完成',
 						}],
-            onFilter: (value, record) => record.completion.indexOf(value) === 0,
+            onFilter: (value, record) => {
+							var res = record.completion? '已完成' : '未完成';
+							return (res === value);
+						},
         }, {
             title: '正确率(%)',
             dataIndex: 'score',
@@ -121,6 +145,9 @@ class StudentRes extends React.Component {
 		if(test_res){
 			return(
 				<div>
+					<div>
+						<Switch size="small" onChange={(e)=>this.onSwitchChange(e)} />
+					</div>
 					<div className="row_rate">
 						<Row type="flex" justify="center" align="middle">
 							<Col span={5}>
@@ -128,6 +155,7 @@ class StudentRes extends React.Component {
 									fontSize: '60px',
 									color: '#0e77ca',
 									marginLeft: '10px',
+									marginBottom:'0',
 								}}>{test_res.completion_num}</p>
 							</Col>
 							<Col span={5}>
@@ -147,11 +175,11 @@ class StudentRes extends React.Component {
 								/>
 							</Col>
 							<Col span={5}>
-								<p className="row_rate_time">{test_res.timeconsuming_per}</p>
+								<p className="row_rate_time" style={{marginBottom:'0',}}>{test_res.timeconsuming_per? test_res.timeconsuming_per : ' '}</p>
 							</Col>
 						</Row>
 						<Row type="flex" justify="center" align="middle">
-						  <Col span={5}><p className="row_rate_p">已提交（人）</p></Col>
+						  	<Col span={5}><p className="row_rate_p">已提交（人）</p></Col>
 							<Col span={5}><p className="row_rate_p">作业提交率</p></Col>
 							<Col span={5}><p className="row_rate_p">平均正确率</p></Col>
 							<Col span={5}><p className="row_rate_p">平均耗时（分钟）</p></Col>
@@ -168,7 +196,7 @@ class StudentRes extends React.Component {
 
 export default connect(state => {
 		const {test_res}  = state.fetchTestsData.toJS();
-		console.log("test_res: ",JSON.stringify(test_res));
+		// console.log("test_res: ",JSON.stringify(test_res));
     return {
         test_res : test_res
     }

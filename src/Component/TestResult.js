@@ -18,12 +18,12 @@ const TabPane = Tabs.TabPane;
 class TestResult extends React.Component {
 	constructor(props){
 		super(props);
-		console.log("testid 0",this.props.params.id);
+		// console.log("testid 0",this.props.params.id);
 		this.state = { 
 			activeKey : '1', 
 			testid : this.props.params.id,
 		};
-		console.log("testid 1",this.state.testid);
+		// console.log("testid 1",this.state.testid);
 	}
 
 	componentDidMount(){
@@ -90,7 +90,7 @@ class TestResult extends React.Component {
 
 export default connect(state => {
   const tests_data = state.fetchTestsData.toJS();
-  console.log("tests_data",tests_data);
+//   console.log("tests_data",tests_data);
   const {test_info} = tests_data;	
   return {
 	  teststate : test_info ? test_info.teststate : 0,
