@@ -21,6 +21,7 @@ const { TextArea } = Input;
 const { toString, toContentState } = Mention;
 
 const IconText = ({ type, text }) => (
+  <span>
     <Icon type={type} style={{ marginRight: 8 }} />
     {text}
   </span>
