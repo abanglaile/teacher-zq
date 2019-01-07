@@ -47,6 +47,7 @@ class LessonManager extends React.Component{
       this.props.getClassGroup(10001);
       this.props.getOptionData(10001, 1);
       this.props.getOneLesson('test');
+      this.props.getTeacherLesson(10001);//teacher_id 为10001 暂时
     }
 
     editTeacher(e){
@@ -973,25 +974,70 @@ class LessonManager extends React.Component{
         </div>
       )
     }
+
+    renderCourseAvatar(course_label){
+      <Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>
+      let ava_color = '';
+      let ava_background = '';
+      let text = '';
+      switch (course_label){
+        case '1':
+          ava_color = '#f56a00';
+          ava_background = '#fde3cf';
+          text = '数';
+          break;
+        case '2':
+          ava_color = '#f56a00';
+          ava_background = '#fde3cf';
+          text = '物';
+          break;
+        case '3':
+          ava_color = '#f56a00';
+          ava_background = '#fde3cf';
+          text = '英';
+          break;
+        default:
+          break;
+      }
+      return (
+        <Avatar style={{ color: ava_color, backgroundColor: ava_background }}>{text}</Avatar>
+      );
+    }
     
     render(){
-        const {visible, treeData,tree_value} = this.state;
-        const {tests,isFetching} = this.props;
+      const {visible, treeData,tree_value} = this.state;
+      const {tests,teacher_lesson,isFetching} = this.props;
 
-        const data = [
-        {
-          title: '王悦思一对一英语',
-        },
-        {
-          title: '王悦思一对一英语',
-        },
-        {
-          title: 'Ant Design Title 3',
-        },
-        {
-          title: 'Ant Design Title 4',
-        },
-      ];
+      console.log("teacher_lesson : ", JSON.stringify(teacher_lesson));
+     
+      var listData = [];
+      if(teacher_lesson){
+        listData = teacher_lesson.map((item, i) => {
+          return(
+             {
+              // href: 'http://ant.design',
+              title: item.group_name,
+              // avatar: (<Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>),
+              avatar: this.renderCourseAvatar(item.course_label),
+              description: moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("YYYY-MM-DD HH:mm"),
+              content:(
+                <div style={{marginLeft:'48px'}}>
+                  <Tag style={{marginRight: 10}} color="blue">{item.room_name}</Tag>
+                  <Tag style={{marginRight: 10}} color="green">{item.label_name}</Tag>  
+                </div>
+              ),
+             }
+          );
+        })
+      }
+      
+      const IconText = ({ type, text }) => (
+        <span>
+          <Icon type={type} style={{ marginRight: 8 }} />
+          {text}
+        </span>
+      );
+      
       return(
         <div>
             <Spin spinning={isFetching} />
@@ -1005,7 +1051,7 @@ class LessonManager extends React.Component{
             </div>
             {this.renderLessonModal()}
             {this.renderNewModal()}
-            <List
+            {/* <List
               itemLayout="horizontal"
               dataSource={data}
               renderItem={item => (
@@ -1019,6 +1065,35 @@ class LessonManager extends React.Component{
                   <Tag color="green">导学</Tag> 
                 </List.Item>
               )}
+            /> */}
+            <List
+              // itemLayout="vertical"
+              size="large"
+              pagination={{
+                onChange: (page) => {
+                  console.log(page);
+                },
+                pageSize: 3,
+              }}
+              dataSource={listData}
+              renderItem={item => (
+                <List.Item
+                  key={item.title}
+                  actions={[<IconText type="star-o" text="156" />, <IconText type="like-o" text="156" />, <IconText type="message" text="2" />]}
+                  // extra={
+                  //   <div>
+                  //     <Tag color="green">导学</Tag> 
+                  //   </div>
+                  // }
+                >
+                  <List.Item.Meta
+                    avatar={item.avatar}
+                    title={<a onClick={e => this.setState({view_modal: true})}>{item.title}</a>}
+                    description={item.description}
+                  />
+                  {item.content}
+                </List.Item>
+              )}
             />
          </div>   
       );
@@ -1029,7 +1104,7 @@ export default connect(state => {
   const lesson_data = state.lessonData.toJS();
   const group_data = state.classGroupData.toJS();
   const personal_data = state.personalData.toJS();
-  const {lesson, lesson_edit} = lesson_data;
+  const {lesson, lesson_edit, teacher_lesson} = lesson_data;
   const {classgroup_data} = group_data;
   const {teacher_option, course_option, label_option, test_option, search_result } = personal_data;
 
@@ -1038,6 +1113,7 @@ export default connect(state => {
     teacher_id:state.AuthData.get('userid'),
     lesson: lesson,
     lesson_edit: lesson_edit,
+    teacher_lesson : teacher_lesson,
     teacher_group: classgroup_data,
     teacher_option: teacher_option,
     course_option: course_option,
