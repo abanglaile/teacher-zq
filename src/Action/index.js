@@ -816,10 +816,10 @@ export const deleteLessonContent = (lesson_content, i) => {
     }
 }
 
-export const addTeacherComment = (label_id, label_type, teacher_comment) => {
+export const addTeacherComment = (label_id, label_type, select_student,teacher_comment) => {
     let url = target + "/addTeacherComment";
     return dispatch => {
-        return axios.post(url, {label_id, label_type, teacher_comment})
+        return axios.post(url, {label_id, label_type, select_student, teacher_comment})
         .then(function (response) {
             console.log(response.data);
             dispatch({
@@ -856,7 +856,7 @@ export const updateLessonGroup = (lesson_id, group_id) => {
         .then(function (response) {
             dispatch({
                 type: 'UPDATE_LESSON_GROUP',
-                lesson: response.data,
+                lesson_basic: response.data,
             });
             dispatch(editLesson('group_edit', false));
         })
@@ -866,17 +866,33 @@ export const updateLessonGroup = (lesson_id, group_id) => {
     }
 }
 
-export const updateLessonTeacher = (lesson_id, lesson_teacher) => {
+export const updateLessonTeacher = (lesson_id, teacher_id) => {
     let url = target + "/updateLessonTeacher";
-    console.log(lesson_teacher);
     return dispatch => {
-        return axios.post(url, {lesson_id, lesson_teacher})
+        return axios.post(url, {lesson_id, teacher_id})
         .then(function (response) {
             dispatch({
                 type: 'UPDATE_LESSON_TEACHER',
-                lesson_teacher: response.data,
+                lesson_basic: response.data,
             });
             dispatch(editLesson('teacher_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const updateLessonAssistant = (lesson_id, assistant_id) => {
+    let url = target + "/updateLessonAssistant";
+    return dispatch => {
+        return axios.post(url, {lesson_id, assistant_id})
+        .then(function (response) {
+            dispatch({
+                type: 'UPDATE_LESSON_ASSISTANT',
+                lesson_basic: response.data,
+            });
+            dispatch(editLesson('assistant_edit', false));
         })
         .catch(function (error) {
             console.log(error);
@@ -891,7 +907,7 @@ export const updateLessonCourse = (lesson_id, course_id) => {
         .then(function (response) {
             dispatch({
                 type : 'UPDATE_LESSON_TEACHER',
-                course_id
+                lesson_basic: response.data,
             });
             dispatch(editLesson('label_edit', false));
         })
@@ -908,7 +924,7 @@ export const updateLessonLabel = (lesson_id, label_id) => {
         .then(function (response) {
             dispatch({
                 type : 'UPDATE_LESSON_LABEL',
-                label_id
+                lesson_basic: response.data,
             });
             dispatch(editLesson('label_edit', false));
         })

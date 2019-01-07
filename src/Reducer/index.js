@@ -36,6 +36,7 @@ const defaultLessonData = Immutable.fromJS({//课程管理
         teacher_lesson: [],
         lesson: {
             lesson_teacher: [],
+            lesson_student: [],
             homework: [],
             lesson_content: [{content: "abc"}]
         },
@@ -202,13 +203,20 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'DELETE_TEACHER_COMMENT':
             return state.setIn(['lesson', 'teacher_comment'], Immutable.fromJS(action.teacher_comment))
         case 'UPDATE_LESSON_TEACHER':
-            return state.setIn(['lesson','lesson_teacher'], Immutable.fromJS(action.lesson_teacher));
+            return state.setIn(['lesson','teacher_id'], action.lesson_basic.teacher_id)
+                .setIn(['lesson','teacher_name'], action.lesson_basic.teacher_name);
+        case 'UPDATE_LESSON_ASSISTANT':
+            return state.setIn(['lesson','assistant_id'], action.lesson_basic.assistant_id)
+                .setIn(['lesson','assistant_name'], action.lesson_basic.assistant_name);
         case 'UPDATE_LESSON_GROUP':
-            return state.set('lesson', action.lesson);
+            return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
+                .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);
         case 'UPDATE_LESSON_COURSE':
-            return state.setIn(['lesson','course_id'], Immutable.fromJS(action.course_id));
+            return state.setIn(['lesson','course_id'], action.lesson_basic.course_id)
+                .setIn(['lesson','course_name'], action.lesson_basic.course_name);
         case 'UPDATE_LESSON_LABEL':
-            return state.setIn(['lesson','label_id'], Immutable.fromJS(action.label_id));
+            return state.setIn(['lesson','label_id'], action.lesson_basic.label_id)
+                .setIn(['lesson','label_name'], action.lesson_basic.label_name);
         case 'UPDATE_LESSON_RANGE':
             return state.setIn(['lesson','start_time'], Immutable.fromJS(action.start_time))
                 .setIn(['lesson','end_time'], Immutable.fromJS(action.end_time));

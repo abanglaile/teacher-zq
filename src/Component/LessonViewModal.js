@@ -4,7 +4,7 @@ import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, Radio, DatePic
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
-import LessonViewModal from './LessonViewModal.js';
+import config from '../utils/Config';
 
 import moment from 'moment';
 import debounce from 'lodash/debounce';
@@ -21,13 +21,12 @@ const { TextArea } = Input;
 const { toString, toContentState } = Mention;
 
 const IconText = ({ type, text }) => (
-  <span>
     <Icon type={type} style={{ marginRight: 8 }} />
     {text}
   </span>
 );
 
-class LessonManager extends React.Component{
+class LessonViewModal extends React.Component{
     constructor(props) {
         super(props);
         this.state={
@@ -38,13 +37,23 @@ class LessonManager extends React.Component{
           new_view: false,
           select_teacher: [[], []],
           select_student: [],
+          select_assistant: [],
           visible:false,
           teacher_id : 1,
         };
         this.searchKpLabel = debounce(this.searchKpLabel, 500);
     }
 
-     
+    componentDidMount(){
+      this.props.getClassGroup(10001);
+      this.props.getOptionData(10001, 1);
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if (nextProps.visible !== this.state.visible) {
+        this.setState({ visible: nextProps.visible });
+      }
+    }
 
     editTeacher(e){
       const {lesson_teacher} = this.props.lesson;
@@ -123,13 +132,6 @@ class LessonManager extends React.Component{
       this.setState({content_type: type, content: "", kp_tags: [], resource: null});
       this.props.editLesson('new_content_edit', true);
     }
-
-    viewSubContent(index){
-      this.setState({index: index});
-      this.props.editLesson('sub_view', 5);
-    }
-
-    
 
     renderContentItem(item, index){
       const {lesson_edit, test_option, search_result} = this.props;
@@ -350,8 +352,6 @@ class LessonManager extends React.Component{
           break;
       }
 
-      console.log(this.state.kp_tags);
-
       return (
        new_content_edit ?
         <Item>
@@ -558,64 +558,18 @@ class LessonManager extends React.Component{
     }
     
 
-    // renderEditContent(){
-    //   const {lesson, lesson_edit} = this.props;
-    //   let {lesson_content} = lesson;
-    //   const {content_edit} = lesson_edit;
-    //   const {index} = this.state;
-    //   let edit_view = [];
-    //   let item_title = ["自定义", "讲解知识点", "讲解课件", "课堂小测"];
-    //   switch(lesson_content[index].content_type){
-    //     case 1:
-    //       //讲解知识点
-    //       break;
-    //     case 2:
-    //       break;
-    //     case 3:
-    //       break;
-    //     case 0:
-    //       //自定义
-    //       edit_view = content_edit[index] ?
-    //         <div>
-    //           content_edit[index] ? 
-    //           <TextArea placeholder="Basic usage" autosize={{ minRows: 3 }} value={this.state.content[index]}/>
-    //           <div>
-    //             <a onClick={e => this.props.updateLessonContent({
-    //               lesson_id: lesson.lesson_id,
-    //               index: index,
-    //               content: this.state.content[index],
-    //               resource: this.state.resource,
-    //               content_type: this.state.content_type,
-    //             })} style={{marginLeft: 10}}>保存</a> 
-    //           </div>
-    //         </div>
-    //         :
-    //         <div style={{cursor: 'pointer'}} 
-    //         onClick={e => {
-    //           this.props.editLessonContent(index, true);
-    //           this.setState({content: lesson_content});
-    //         }}>{lesson_content[index].content}</div>
-    //       break;
-    //   }
-    //   return (
-    //     <div>
-    //       <Button onClick={e => this.setState({new_view: false})} type="primary">
-    //         <Icon type="left" />返回
-    //       </Button>
-    //       {edit_view}
-    //     </div>
-
-    //   )
-    // }
+    
 
     renderLessonBasic(){
-      const {teacher_group, course_option, label_option, lesson, lesson_edit} = this.props;
-
-      const {lesson_teacher} = lesson;
-      const {select_teacher} = this.state;
+      const {teacher_group, course_option, label_option, teacher_option, lesson, lesson_edit} = this.props;
+      const {teacher_edit, assistant_edit} = lesson_edit;
+      const {teacher_name, assistant_name} = lesson;
+      const {select_teacher, select_assistant} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
       const courseOption = course_option.map((item) => <Option value={item.course_id}>{item.course_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
+      const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
+      
 
       return(
         <div>
@@ -685,7 +639,7 @@ class LessonManager extends React.Component{
                     this.props.editLesson('label_edit', true);
                     this.setState({course_label: lesson.course_label, label_id: lesson.label_id});
                   }}>
-                <Tag style={{marginRight: 10}} color="green">{lesson.course_label}</Tag>
+                <Tag style={{marginRight: 10}} color="green">{lesson.course_label_name}</Tag>
                 <Tag style={{marginRight: 10}} color="green">{lesson.label_name}</Tag>  
               </div>
             }
@@ -735,7 +689,27 @@ class LessonManager extends React.Component{
             </div>
           </Col>
           <Col className="gutter-row" span={16}>
-            {this.renderTeacherView(0)}
+            {teacher_edit ?
+              <div>
+                <Select
+                  placeholder={"选择任课老师"}
+                  value={select_teacher}
+                  onChange={(value) => this.setState({select_teacher: value})}
+                  style={{ width: '12rem' }}
+                >
+                  {teacherOption}
+                </Select>
+                <a onClick={e => this.props.updateLessonTeacher(lesson.lesson_id, select_teacher)} style={{marginLeft: 10}}>确定</a>
+                <a onClick={e => this.props.editLesson('teacher_edit', false)} style={{marginLeft: 10}}>取消</a>
+              </div>
+              :
+              <div style={{cursor: 'pointer', }} onClick={e => {
+                    this.props.editLesson('teacher_edit', true);
+                    this.setState({select_teacher: lesson.teacher_id});
+                  }}>
+                {teacher_name}
+              </div>
+            }
           </Col>
         </Row>
         <Row style={{marginTop: 20}} gutter={2}>
@@ -745,7 +719,27 @@ class LessonManager extends React.Component{
             </div>
           </Col>
           <Col className="gutter-row" span={16}>
-            {this.renderTeacherView(1)}
+            {assistant_edit ?
+              <div>
+                <Select
+                  placeholder={"选择助教老师"}
+                  value={select_assistant}
+                  onChange={(value) => this.setState({select_assistant: value})}
+                  style={{ width: '12rem' }}
+                >
+                  {teacherOption}
+                </Select>
+                <a onClick={e => this.props.updateLessonAssistant(lesson.lesson_id, select_assistant)} style={{marginLeft: 10}}>确定</a>
+                <a onClick={e => this.props.editLesson('assistant_edit', false)} style={{marginLeft: 10}}>取消</a>
+              </div>
+              :
+              <div style={{cursor: 'pointer', }} onClick={e => {
+                    this.props.editLesson('assistant_edit', true);
+                    this.setState({select_assistant: lesson.assistant_id});
+                  }}>
+                {assistant_name ? assistant_name : "NA"}
+              </div>
+            }
           </Col>
         </Row>
 
@@ -753,46 +747,16 @@ class LessonManager extends React.Component{
       )
     }
 
-    renderLessonModal(){
+    render(){
       const {sub_view} = this.props.lesson_edit;
-      let modal_view = "";
-      // let suggestions = lesson_student.map(item => {
-      //   <Nav
-      //   value={item.name}
-      //   data={suggestion}
-      //   disabled={suggestion.disabled}
-      //   >
-      //     <Avatar
-      //       src={suggestion.icon}
-      //       size="small"
-      //       style={{ width: 14, height: 14, marginRight: 8, top: -1, position: 'relative' }}
-      //     />
-      //     {suggestion.name} - {suggestion.type}
-      //   </Nav>
-      // });
-
-      switch(sub_view){
-        case 4:
-          modal_view = this.renderNewContent();
-          break;
-        case 5:
-          modal_view = this.renderEditContent();
-          break;
-        default:
-          break;
-      }
       return(
-      <Modal title={null} onCancel={e => this.setState({view_modal: false})}
-        visible={this.state.view_modal} width={650} >
-        {sub_view <=3 ?
+      <Modal title={null} onCancel={e => this.setState({visible: false})}
+        visible={this.state.visible} width={700} >
           <Tabs defaultActiveKey="1" >
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
             <TabPane tab="课堂点评" key="3">{this.renderTeacherComment()}</TabPane>
-          </Tabs>
-          :
-          modal_view
-        }  
+          </Tabs> 
       </Modal>
       )
     }
@@ -811,80 +775,6 @@ class LessonManager extends React.Component{
       this.setState({select_teacher: select_teacher});
     }
 
-    renderNewModal(){
-      const {teacher_group} = this.props;
-      const {role_select, select_teacher} = this.state;
-      const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
-      // const teacher_option = school_teacher.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
-      return (
-        <Modal title="新建课堂" onOk={this.createModal}
-          onCancel={e => this.setState({visible: false})}
-          visible={this.state.visible} width={500} style={{height:400}} okText="确定">
-          <div>
-            <Select
-              showSearch
-              style={{ width: 200 }}
-              placeholder="选择学生分组"
-              optionFilterProp="children"
-              onChange={(value) => this.setState({group_id: value})}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {group_option}
-            </Select> 
-            
-          </div>
-          <div style={{marginTop: 15}}>
-            <Select
-              showSearch
-              style={{ width: 200 }}
-              placeholder="选择科目"
-              optionFilterProp="children"
-              onChange={(value) => this.setState({course_id: value})}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="tom">Tom</Option>
-            </Select>
-            <Select
-              showSearch
-              style={{ marginLeft: 20, width: 200 }}
-              placeholder="选择课程标签"
-              optionFilterProp="children"
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="tom">Tom</Option>
-            </Select>
-          </div>
-          <div style={{marginTop: 15}}>
-            <Radio.Group value={this.state.role_select} onChange={(e) => this.setState({ role_select: e.target.value })}>
-              <Radio.Button value="0">任课老师</Radio.Button>
-              <Radio.Button value="1">助教</Radio.Button>
-            </Radio.Group>
-            <div style={{marginTop: 10}}>
-              <Select
-                mode="multiple"
-                placeholder={this.state.role_select == "1" ? "选择助教" : "选择任课老师"}
-                value={select_teacher[role_select]}
-                onChange={(value) => this.selectTeacher(value)}
-                style={{ width: '100%' }}
-              >
-                {}
-              </Select>
-            </div>
-          </div>
-          <div style={{marginTop: 15}}>
-            <RangePicker
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              placeholder={['开始时间', '结束时间']}
-            />
-          </div>
-        </Modal>
-      )
-    }
 
     searchKpLabel(input){
       this.props.searchKp(input);
@@ -985,58 +875,7 @@ class LessonManager extends React.Component{
       )
     }
     
-    render(){
-        const {visible, treeData,tree_value} = this.state;
-        const {tests,isFetching} = this.props;
-
-        const data = [
-        {
-          title: '王悦思一对一英语',
-        },
-        {
-          title: '王悦思一对一英语',
-        },
-        {
-          title: 'Ant Design Title 3',
-        },
-        {
-          title: 'Ant Design Title 4',
-        },
-      ];
-      return(
-        <div>
-            <Spin spinning={isFetching} />
-            <div style={{marginBottom:"10px"}}>
-              <Button 
-                type="primary"  
-                onClick={() => this.setState({visible: true})}
-              >
-                <Icon type="plus" />新建课堂
-              </Button>
-            </div>
-            <LessonViewModal visible={this.state.view_modal} />
-            {this.renderNewModal()}
-            <List
-              itemLayout="horizontal"
-              dataSource={data}
-              renderItem={item => (
-                <List.Item actions={[<a onClick = {e => {
-                  this.setState({view_modal: true});
-                  this.props.getOneLesson('test');
-                }}>edit</a>, <a>more</a>]}>
-                  <List.Item.Meta
-                    avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                    title={<div><a href="https://ant.design">{item.title}</a></div>}
-                    description={<div>2018-10-01 9:00 - 2018-10-01 11:00</div>}
-                  />
-                  <Tag color="green">数学</Tag>
-                  <Tag color="green">导学</Tag> 
-                </List.Item>
-              )}
-            />
-         </div>   
-      );
-    }
+    
 }
 
 export default connect(state => {
@@ -1059,4 +898,4 @@ export default connect(state => {
     test_option: test_option,
     search_result: search_result,
   }
-}, action)(LessonManager);
+}, action)(LessonViewModal);
