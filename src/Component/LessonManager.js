@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, Radio, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, List, Tag, Dropdown, Mention} from 'antd';
+import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, List, Tag, Dropdown, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
 import LessonViewModal from './LessonViewModal.js';
 
 import moment from 'moment';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 import debounce from 'lodash/debounce';
 
 const { SubMenu } = Menu;
@@ -32,12 +33,13 @@ class LessonManager extends React.Component{
         super(props);
         this.state={
           kp_tags: [],
-
-
           sub_view: false,
           new_view: false,
-          select_teacher: [[], []],
+          select_teacher: [],
+          select_assistant: [],
           select_student: [],
+          range_time: [],
+          room_id : [],
           visible:false,
           teacher_id : 1,
         };
@@ -620,7 +622,7 @@ class LessonManager extends React.Component{
       const {lesson_teacher} = lesson;
       const {select_teacher} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
-      const courseOption = course_option.map((item) => <Option value={item.course_id}>{item.course_name}</Option>)
+      const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
 
       return(
@@ -817,15 +819,43 @@ class LessonManager extends React.Component{
       this.setState({select_teacher: select_teacher});
     }
 
+    createNewLesson(){
+      const {group_id, room_id, course_label, label_id, select_teacher, select_assistant, range_time} = this.state;
+      // console.log("group_id :",group_id);
+      // console.log("course_label :",course_label);
+      // console.log("label_id :",label_id);
+      // console.log("select_teacher :",select_teacher);
+      // console.log("select_assistant :",select_assistant);
+      console.log("range_time :",JSON.stringify(range_time));
+      var new_lesson = {
+        stu_group_id : group_id,
+        room_id : room_id,
+        course_label : course_label,
+        label_id : label_id,
+        teacher_id : select_teacher,
+        assistant_id : select_assistant,
+        start_time : range_time[0],
+        end_time : range_time[1],
+      };
+      this.setState({visible: false});
+      this.props.addNewLesson(new_lesson);
+    }
+
     renderNewModal(){
-      const {teacher_group} = this.props;
-      const {role_select, select_teacher} = this.state;
+      const {teacher_group, course_option, label_option, teacher_option, room_option} = this.props;
+      const {select_teacher, select_assistant} = this.state;
+      // console.log("label_option:",label_option);
+      // console.log("room_option:",room_option);
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
+      const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
+      const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
+      const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
+      const roomOption = room_option.map((item) => <Option value={item.room_id}>{item.room_name}</Option>)
       // const teacher_option = school_teacher.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       return (
-        <Modal title="新建课堂" onOk={this.createModal}
+        <Modal title="新建课堂" onOk={(e) => this.createNewLesson()}
           onCancel={e => this.setState({visible: false})}
-          visible={this.state.visible} width={500} style={{height:400}} okText="确定">
+          visible={this.state.visible} width={500} style={{height:400} }>
           <div>
             <Select
               showSearch
@@ -838,54 +868,69 @@ class LessonManager extends React.Component{
               {group_option}
             </Select> 
             
+            <Select
+              showSearch
+              style={{ marginLeft: 20, width: 200 }}
+              placeholder="选择课室"
+              optionFilterProp="children"
+              onChange={(value) => this.setState({room_id: value})}
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            >
+              {roomOption}
+            </Select> 
           </div>
           <div style={{marginTop: 15}}>
             <Select
               showSearch
               style={{ width: 200 }}
-              placeholder="选择科目"
+              placeholder="选择学科"
               optionFilterProp="children"
-              onChange={(value) => this.setState({course_id: value})}
+              onChange={(value) => this.setState({course_label: value})}
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="tom">Tom</Option>
+              {courseOption}
             </Select>
+
             <Select
               showSearch
               style={{ marginLeft: 20, width: 200 }}
               placeholder="选择课程标签"
               optionFilterProp="children"
+              onChange={(value) => this.setState({label_id: value})}
+              value={this.state.label_id}
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="tom">Tom</Option>
+              {labelOption}
             </Select>
           </div>
+
           <div style={{marginTop: 15}}>
-            <Radio.Group value={this.state.role_select} onChange={(e) => this.setState({ role_select: e.target.value })}>
-              <Radio.Button value="0">任课老师</Radio.Button>
-              <Radio.Button value="1">助教</Radio.Button>
-            </Radio.Group>
-            <div style={{marginTop: 10}}>
-              <Select
-                mode="multiple"
-                placeholder={this.state.role_select == "1" ? "选择助教" : "选择任课老师"}
-                value={select_teacher[role_select]}
-                onChange={(value) => this.selectTeacher(value)}
-                style={{ width: '100%' }}
-              >
-                {}
-              </Select>
-            </div>
+            <Select
+              placeholder={"选择任课老师"}
+              value={select_teacher}
+              onChange={(value) => this.setState({select_teacher: value})}
+              style={{ width: '200' }}
+            >
+              {teacherOption}
+            </Select>
+
+            <Select
+              placeholder="选择助教老师"
+              style={{ marginLeft: 20, width: 200 }}
+              onChange={(value) => this.setState({select_assistant: value})}
+              value={select_assistant}
+            >
+              {teacherOption}
+            </Select>
           </div>
+
           <div style={{marginTop: 15}}>
             <RangePicker
+              locale={locale}
               showTime={{ format: 'HH:mm' }}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
+              onChange={(value,dateString) => this.setState({range_time: dateString})}
             />
           </div>
         </Modal>
@@ -1024,7 +1069,7 @@ class LessonManager extends React.Component{
       const {visible, treeData,tree_value} = this.state;
       const {tests,teacher_lesson,isFetching} = this.props;
 
-      console.log("teacher_lesson : ", JSON.stringify(teacher_lesson));
+      // console.log("teacher_lesson : ", JSON.stringify(teacher_lesson));
      
       var listData = [];
       if(teacher_lesson){
@@ -1125,7 +1170,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson, lesson_edit, teacher_lesson} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, course_option, label_option, test_option, search_result } = personal_data;
+  const {teacher_option, course_option, label_option, test_option, room_option, search_result } = personal_data;
 
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
@@ -1138,6 +1183,7 @@ export default connect(state => {
     course_option: course_option,
     label_option: label_option,
     test_option: test_option,
+    room_option: room_option,
     search_result: search_result,
   }
 }, action)(LessonManager);

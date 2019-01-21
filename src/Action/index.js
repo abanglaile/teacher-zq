@@ -741,6 +741,7 @@ export const addNewLesson = (lesson) => {
         .then(function (response) {
             dispatch({
                 type : 'ADD_NEW_LESSON',
+                lesson_id : response.data,
             });
         })
         .catch(function (error) {
@@ -980,6 +981,7 @@ export const getOptionData = (teacher_id, school_id) => {
                 course_option: response.data.course_option,
                 label_option: response.data.label_option,
                 test_option: response.data.test_option,
+                room_option: response.data.room_option,
             });
         })
         .catch(function (error) {
