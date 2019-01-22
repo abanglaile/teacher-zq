@@ -49,82 +49,7 @@ class LessonManager extends React.Component{
     componentDidMount(){
       this.props.getClassGroup(10001);
       this.props.getOptionData(10001, 1);
-      this.props.getOneLesson('test');
       this.props.getTeacherLesson(10001);//teacher_id 为10001 暂时
-    }
-
-
-    editTeacher(e){
-      const {lesson_teacher} = this.props.lesson;
-      this.props.editLesson('teacher_edit', true);
-      let select_teacher = [[],[]];
-      for(var i = 0; i < lesson_teacher.length; i++){
-        select_teacher[lesson_teacher[i].role].push(lesson_teacher[i].teacher_id.toString());
-      }
-      this.setState({select_teacher: select_teacher});
-    }
-
-    renderTeacherView(role){
-      const {teacher_option, lesson, lesson_edit} = this.props;
-      const {lesson_teacher} = lesson;
-      const {select_teacher} = this.state;
-      const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
-      if(lesson_edit.teacher_edit){
-        return(
-          <div>
-            <Select
-              mode="multiple"
-              placeholder={role ? "选择助教" : "选择任课老师"}
-              value={select_teacher[role]}
-              onChange={(value) => this.selectTeacher(value, role)}
-              style={{ width: '100%' }}
-            >
-              {teacherOption}
-            </Select>
-            {
-              role ?
-              <span>
-                <a onClick={e => this.updateLessonTeacher(lesson.lesson_id, select_teacher)} style={{marginLeft: 10}}>确定</a>
-                <a onClick={e => this.props.editLesson('teacher_edit', false)} style={{marginLeft: 10}}>取消</a>
-              </span>
-              : null
-            }
-          </div>
-        )
-      }else{
-        let main_teacher = [], vice_teacher = [];
-        for(var i = 0; i < lesson_teacher.length; i++){
-          if(lesson_teacher[i].role == "0"){
-            main_teacher.push(<span>{lesson_teacher[i].realname}</span>)
-          }else{
-            vice_teacher.push(<span>{lesson_teacher[i].realname}</span>)
-          }
-        }
-
-        if(main_teacher.length == 0){
-          main_teacher.push(<span>NA</span>);
-        }
-        else if(vice_teacher.length == 0){
-          vice_teacher.push(<span>NA</span>);
-        }
-        return(
-          <div style={{cursor: 'pointer', }} onClick={e => this.editTeacher(e)}>
-            <div>{ role ? vice_teacher : main_teacher}</div>
-          </div>
-        )  
-      }
-      
-    }
-
-    updateLessonTeacher(lesson_id, select_teacher){
-      let lesson_teacher = [];
-      for(var i = 0; i < select_teacher[0].length; i++){
-        lesson_teacher.push({lesson_id: lesson_id, teacher_id: parseInt(select_teacher[0][i]), role: "0"});
-      }
-      for(var i = 0; i < select_teacher[1].length; i++){
-        lesson_teacher.push({lesson_id: lesson_id, teacher_id: parseInt(select_teacher[1][i]), role: "1"});
-      }
-      this.props.updateLessonTeacher(lesson_id, lesson_teacher);
     }
 
     switchNewContent(type){
@@ -764,20 +689,6 @@ class LessonManager extends React.Component{
     renderLessonModal(){
       const {sub_view} = this.props.lesson_edit;
       let modal_view = "";
-      // let suggestions = lesson_student.map(item => {
-      //   <Nav
-      //   value={item.name}
-      //   data={suggestion}
-      //   disabled={suggestion.disabled}
-      //   >
-      //     <Avatar
-      //       src={suggestion.icon}
-      //       size="small"
-      //       style={{ width: 14, height: 14, marginRight: 8, top: -1, position: 'relative' }}
-      //     />
-      //     {suggestion.name} - {suggestion.type}
-      //   </Nav>
-      // });
 
       switch(sub_view){
         case 4:
@@ -1071,33 +982,33 @@ class LessonManager extends React.Component{
 
       // console.log("teacher_lesson : ", JSON.stringify(teacher_lesson));
      
-      var listData = [];
-      if(teacher_lesson){
-        listData = teacher_lesson.map((item, i) => {
-          return(
-             {
-              // href: 'http://ant.design',
-              title: item.group_name,
-              // avatar: (<Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>),
-              avatar: this.renderCourseAvatar(item.course_label),
-              description: moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("YYYY-MM-DD HH:mm"),
-              content:(
-                <div style={{marginLeft:'48px'}}>
-                  <Tag style={{marginRight: 10}} color="blue">{item.room_name}</Tag>
-                  <Tag style={{marginRight: 10}} color="green">{item.label_name}</Tag>  
-                </div>
-              ),
-             }
-          );
-        })
-      }
+      // var listData = [];
+      // if(teacher_lesson){
+      //   listData = teacher_lesson.map((item, i) => {
+      //     return(
+      //        {
+      //         // href: 'http://ant.design',
+      //         title: item.group_name,
+      //         // avatar: (<Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>),
+      //         avatar: this.renderCourseAvatar(item.course_label),
+      //         description: moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("YYYY-MM-DD HH:mm"),
+      //         content:(
+      //           <div style={{marginLeft:'48px'}}>
+      //             <Tag style={{marginRight: 10}} color="blue">{item.room_name}</Tag>
+      //             <Tag style={{marginRight: 10}} color="green">{item.label_name}</Tag>  
+      //           </div>
+      //         ),
+      //        }
+      //     );
+      //   })
+      // }
       
-      const IconText = ({ type, text }) => (
-        <span>
-          <Icon type={type} style={{ marginRight: 8 }} />
-          {text}
-        </span>
-      );
+      // const IconText = ({ type, text }) => (
+      //   <span>
+      //     <Icon type={type} style={{ marginRight: 8 }} />
+      //     {text}
+      //   </span>
+      // );
       
       return(
         <div>
@@ -1110,26 +1021,48 @@ class LessonManager extends React.Component{
                 <Icon type="plus" />新建课堂
               </Button>
             </div>
-            <LessonViewModal visible={this.state.view_modal} />
+            <div>
+              <Select
+                showSearch
+                style={{ width: 200 }}
+                placeholder="选择学生分组"
+                optionFilterProp="children"
+                onChange={(value) => this.setState({group_id: value})}
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                {group_option}
+              </Select> 
+              <RangePicker
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
+                placeholder={['开始时间', '结束时间']}
+              />
+              <Select
+                showSearch
+                style={{ width: 200 }}
+                placeholder="选择科目"
+                optionFilterProp="children"
+                onChange={(value) => this.setState({course_id: value})}
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                <Option value="jack">Jack</Option>
+                <Option value="lucy">Lucy</Option>
+                <Option value="tom">Tom</Option>
+              </Select>
+              <Select
+                showSearch
+                style={{ marginLeft: 20, width: 200 }}
+                placeholder="选择课程标签"
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                <Option value="jack">Jack</Option>
+                <Option value="lucy">Lucy</Option>
+                <Option value="tom">Tom</Option>
+              </Select>
+            </div>
+            <LessonViewModal visible={this.state.view_modal} onCancel={e => this.setState({view_modal: false})}/>
             {this.renderNewModal()}
-            {/* <List
-              itemLayout="horizontal"
-              dataSource={data}
-              renderItem={item => (
-                <List.Item actions={[<a onClick = {e => {
-                  this.setState({view_modal: true});
-                  this.props.getOneLesson('test');
-                }}>edit</a>, <a>more</a>]}>
-                  <List.Item.Meta
-                    avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                    title={<div><a href="https://ant.design">{item.title}</a></div>}
-                    description={<div>2018-10-01 9:00 - 2018-10-01 11:00</div>}
-                  />
-                  <Tag color="green">数学</Tag>
-                  <Tag color="green">导学</Tag> 
-                </List.Item>
-              )}
-            /> */}
             <List
               // itemLayout="vertical"
               size="large"
@@ -1139,23 +1072,24 @@ class LessonManager extends React.Component{
                 },
                 pageSize: 3,
               }}
-              dataSource={listData}
+              dataSource={teacher_lesson}
               renderItem={item => (
                 <List.Item
                   key={item.title}
                   actions={[<IconText type="star-o" text="156" />, <IconText type="like-o" text="156" />, <IconText type="message" text="2" />]}
-                  // extra={
-                  //   <div>
-                  //     <Tag color="green">导学</Tag> 
-                  //   </div>
-                  // }
                 >
                   <List.Item.Meta
-                    avatar={item.avatar}
-                    title={<a onClick={e => this.setState({view_modal: true})}>{item.title}</a>}
-                    description={item.description}
+                    avatar={this.renderCourseAvatar(item.course_label)}
+                    title={<a onClick={e => {
+                      this.props.getOneLesson(item.lesson_id);
+                      this.setState({view_modal: true});
+                    }}>{item.group_name}</a>}
+                    description={moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("YYYY-MM-DD HH:mm")}
                   />
-                  {item.content}
+                  <div style={{marginLeft:'48px'}}>
+                    <Tag style={{marginRight: 10}} color="blue">{item.room_name}</Tag>
+                    <Tag style={{marginRight: 10}} color="green">{item.label_name}</Tag>  
+                  </div>
                 </List.Item>
               )}
             />
