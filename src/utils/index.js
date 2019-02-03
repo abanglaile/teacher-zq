@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import { UserAuthWrapper } from 'redux-auth-wrapper'
 import { routerActions,push } from 'react-router-redux';
+import config from './Config'
+
+let redirect_uri = config.redirect_uri;
 
 export function createConstants(...constants) {
     return constants.reduce((acc, constant) => {
@@ -36,10 +39,26 @@ export function parseJSON(response) {
 }
 
 export const requireAuthentication = UserAuthWrapper({
-  authSelector: state => state.AuthData,
+  authSelector: state => {
+    // alert("state:"+JSON.stringify(state));
+    return (state.AuthData);
+  },
+
   predicate: AuthData => AuthData.get('isAuthenticated'),
-  failureRedirectPath: '/AuthJWT/login',
-  // redirectAction: push,
-  redirectAction: routerActions.replace,
+
+  failureRedirectPath: (state, ownProps) => {
+    console.log("ownProps:",ownProps);
+    console.log("ownProps.location.query.redirect :",ownProps.location.query.redirect);
+    var url = ownProps.location.pathname + ownProps.location.search;
+    return url;
+
+  },
+//   redirectAction: routerActions.push,
+  redirectAction: (newLoc) => {  
+    console.log("newLoc:"+JSON.stringify(newLoc)); 
+    console.log("newLoc.query.redirect:",newLoc.query.redirect);
+    window.location.href = "http://www.zhiqiu.pro/zhiqiu-login/pc_login?redirect=" + newLoc.query.redirect;
+  },
+//   redirectAction: routerActions.replace,
   wrapperDisplayName: 'UserIsJWTAuthenticated'
 })

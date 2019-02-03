@@ -3,7 +3,7 @@ import jwtDecode from 'jwt-decode';
 
 const defaulatAuthData = Immutable.fromJS({
         token: null,
-        userName: null,
+        username: null,
         userid: 1,
         isAuthenticated: false,
         isAuthenticating: false,
@@ -18,15 +18,14 @@ export const AuthData = (state = defaulatAuthData, action = {}) => {
         case 'REG_USER_REQUEST':
             return state.set('isAuthenticating', true);
         case 'LOGIN_USER_SUCCESS':
-            var sucState = {
-                isAuthenticating: false,
-                isAuthenticated: true,
-                token: action.payload.token,
-                userName: jwtDecode(action.payload.token).username,
-                userid: jwtDecode(action.payload.token).userid,
-                statusText: 'You have been successfully logged in.'
-            };
-            return Immutable.fromJS(sucState);
+            console.log("action.token:",action.token);
+            var obj = JSON.parse(action.token);
+            console.log("action username:",obj.identifier);
+            console.log("action userid:",obj.userid);
+            return state.set('isAuthenticating', false)
+                    .set('isAuthenticated',true)
+                    .set('username',obj.identifier)
+                    .set('userid',obj.userid);
         case 'REG_USER_SUCCESS':
             var sucRegState = {
                 isAuthenticating: false,

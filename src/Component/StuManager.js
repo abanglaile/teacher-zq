@@ -283,7 +283,7 @@ export default connect(state => {
     groups: class_data.classgroup_data, 
     stus : class_data.groupstu_data,
     isFetching: class_data.isFetching, 
-    userName: state.AuthData.get('userName'),
+    username: state.AuthData.get('username'),
     teacher_id: state.AuthData.get('userid'),
   }
 }, action)(StuManager,StuTable);

@@ -13,7 +13,7 @@ class Zq_Header extends React.Component{
     componentDidMount () {
         // this.fetchData();
         console.log("statusText:"+this.props.statusText);
-        console.log("userName:"+this.props.userName);
+        console.log("username:"+this.props.username);
     }
 
     // fetchData () {
@@ -30,7 +30,7 @@ class Zq_Header extends React.Component{
 
 
     render(){
-      const usr = this.props.userName;
+      const usr = this.props.username;
       // const {dispatch} = this.props;
       const menu = (
         <Menu onClick={(e)=>this.handleMenuClick(e)}>
@@ -64,7 +64,7 @@ class Zq_Header extends React.Component{
 }
 
 const mapStateToProps = (state) => ({
-    userName: state.AuthData.get('userName')
+    username: state.AuthData.get('username')
 });
 
 const mapDispatchToProps = (dispatch) => ({

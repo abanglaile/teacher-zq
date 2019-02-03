@@ -26,11 +26,11 @@ class LoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        console.log('values.userName:'+values.userName);
+        console.log('values.username:'+values.username);
         console.log('values.password:'+values.password);
         console.log('this.state.redirectTo:'+this.state.redirectTo);
-        this.setState({username:values.userName,password:values.password},()=>{
-          this.props.loginUser(values.userName, values.password, this.state.redirectTo);
+        this.setState({username:values.username,password:values.password},()=>{
+          this.props.loginUser(values.username, values.password, this.state.redirectTo);
         });
       }
     });
@@ -46,7 +46,7 @@ class LoginForm extends React.Component {
           <TabPane tab="登录" key="1">
             <Form onSubmit={(e)=>this.handleSubmitLogin(e)} className="login-form">
               <FormItem>
-                {getFieldDecorator('userName', {
+                {getFieldDecorator('username', {
                   rules: [{ required: true, message: 'Please input your username!' }],
                 })(
                   <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Username" />

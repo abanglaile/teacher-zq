@@ -15,7 +15,7 @@ class App extends React.Component{
     componentDidMount () {
         // this.fetchData();
         console.log("statusText:"+this.props.statusText);
-        console.log("userName:"+this.props.userName);
+        console.log("username:"+this.props.username);
     }
 
     handleclick(e){
@@ -78,6 +78,6 @@ class App extends React.Component{
 export default connect(state => {
   return {
     statusText: state.AuthData.get('statusText'),
-    userName: state.AuthData.get('userName')
+    username: state.AuthData.get('username')
   }
 }, action)(App);
