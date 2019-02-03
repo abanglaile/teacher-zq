@@ -694,14 +694,10 @@ export const getKpWithScore = (chapter_id, student_id) => {
     }
 }
 /*---------------------------------------课程管理----------------------------------*/
-export const getTeacherLesson = (teacher_id) => {
+export const getTeacherLesson = (filter_option) => {
     let url = target + "/getTeacherLesson";
     return dispatch => {
-        return axios.get(url, {
-            params:{
-                teacher_id,
-            }
-        })
+        return axios.post(url, {filter_option})
         .then(function (response) {
             dispatch({
                 type : 'GET_TEACHER_LESSON',
