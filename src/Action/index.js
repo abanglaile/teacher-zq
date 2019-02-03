@@ -716,6 +716,7 @@ export const getTeacherLesson = (teacher_id) => {
 
 export const getOneLesson = (lesson_id) => {
     let url = target + "/getOneLesson";
+    console.log(lesson_id);
     return dispatch => {
         return axios.get(url, {
             params:{

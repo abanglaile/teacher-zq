@@ -45,11 +45,6 @@ class LessonViewModal extends React.Component{
         this.searchKpLabel = debounce(this.searchKpLabel, 500);
     }
 
-    componentDidMount(){
-      this.props.getClassGroup(10001);
-      this.props.getOptionData(10001, 1);
-    }
-
     componentWillReceiveProps(nextProps) {
       if (nextProps.visible !== this.state.visible) {
         this.setState({ visible: nextProps.visible });
@@ -388,11 +383,21 @@ class LessonViewModal extends React.Component{
       const homework_list = homework.map((item, i) => this.renderHomeworkItem(item, i));
       return(
         <div>
-          <List header={<div>内容</div>}>
+          <List header={
+            <div>
+              <Icon type="book" styletheme="twoTone"/>
+              <span style={{fontWeight: 'bold', marginLeft: "0.5rem"}}>课堂内容</span>
+            </div>
+          }>
             {content_list}
             {this.renderNewContent()}
           </List>
-          <List header={<div>作业</div>}>
+          <List header={
+            <div>
+              <Icon type="edit" styletheme="twoTone"/>
+              <span style={{fontWeight: 'bold', marginLeft: "0.5rem"}}>作业内容</span>
+            </div>
+          }>
             {homework_list}
             {this.renderNewHomework()}
           </List>
@@ -559,7 +564,34 @@ class LessonViewModal extends React.Component{
     }
     
 
-    
+    renderCourseAvatar(course_label){
+      <Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>
+      let ava_color = '';
+      let ava_background = '';
+      let text = '';
+      switch (course_label){
+        case '1':
+          ava_color = '#f56a00';
+          ava_background = '#fde3cf';
+          text = '数';
+          break;
+        case '2':
+          ava_color = '#f56a00';
+          ava_background = '#fde3cf';
+          text = '物';
+          break;
+        case '3':
+          ava_color = '#f56a00';
+          ava_background = '#fde3cf';
+          text = '英';
+          break;
+        default:
+          break;
+      }
+      return (
+        <Avatar style={{ color: ava_color, backgroundColor: ava_background, marginRight: "0.8rem" }}>{text}</Avatar>
+      );
+    }
 
     renderLessonBasic(){
       const {teacher_group, course_option, label_option, teacher_option, lesson, lesson_edit} = this.props;
@@ -567,7 +599,7 @@ class LessonViewModal extends React.Component{
       const {teacher_name, assistant_name} = lesson;
       const {select_teacher, select_assistant} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
-      const courseOption = course_option.map((item) => <Option value={item.course_id}>{item.course_name}</Option>)
+      const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
       const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       
@@ -592,13 +624,17 @@ class LessonViewModal extends React.Component{
           <a onClick={e => this.props.editLesson('group_edit', false)} style={{marginLeft: 10}}>取消</a> 
         </div>
         :
-        <div style={{fontWeight: 'bold', fontSize: '1.5rem', cursor: 'pointer',}} 
+        <div>
+        
+        <div style={{fontWeight: 'bold', fontSize: '1.3rem', cursor: 'pointer',}} 
             onClick={e => {
               this.props.editLesson('group_edit', true);
               this.setState({group_id: lesson.stu_group_id});
             }}>
+          {this.renderCourseAvatar(lesson.course_label)}
           {lesson.group_name}
           
+        </div>
         </div>
         }
         <Row style={{marginTop: 20}} gutter={2}>
@@ -609,17 +645,6 @@ class LessonViewModal extends React.Component{
             {
               lesson_edit.label_edit ?
               <div>
-                <Select
-                  disabled
-                  style={{ marginRight: 10, width: 120 }}
-                  placeholder="选择学科"
-                  optionFilterProp="children"
-                  onChange={(value) => this.setState({course_label: value})}
-                  value={this.state.course_label}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {courseOption}
-                </Select>
                 <Select
                   showSearch
                   style={{ width: 120 }}
@@ -640,7 +665,6 @@ class LessonViewModal extends React.Component{
                     this.props.editLesson('label_edit', true);
                     this.setState({course_label: lesson.course_label, label_id: lesson.label_id});
                   }}>
-                <Tag style={{marginRight: 10}} color="green">{lesson.course_label_name}</Tag>
                 <Tag style={{marginRight: 10}} color="green">{lesson.label_name}</Tag>  
               </div>
             }
@@ -751,7 +775,7 @@ class LessonViewModal extends React.Component{
     render(){
       const {sub_view} = this.props.lesson_edit;
       return(
-      <Modal title={null} onCancel={e => this.setState({visible: false})}
+      <Modal title={null} onCancel={this.props.onCancel}
         visible={this.state.visible} width={700} >
           <Tabs defaultActiveKey="1" >
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
