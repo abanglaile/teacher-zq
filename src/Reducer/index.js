@@ -197,7 +197,6 @@ export const studentData = (state = defaultStudentData , action = {}) => {
     }
 }
 
-<<<<<<< Updated upstream
 export const lessonData = (state = defaultLessonData , action = {}) => {
     switch(action.type){
         case 'GET_TEACHER_LESSON':
@@ -253,7 +252,7 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
         default:
             return state;  
     }
-=======
+}
 
 export const stuEvaluationData = (state = detuEvaluationData, action = {}) => {
     switch(action.type){
@@ -264,5 +263,4 @@ export const stuEvaluationData = (state = detuEvaluationData, action = {}) => {
         default:
             return state;
     }
->>>>>>> Stashed changes
 }

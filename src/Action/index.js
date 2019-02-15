@@ -595,7 +595,28 @@ export const getKpWithScore = (chapter_id, student_id) => {
         });
     }
 }
-<<<<<<< Updated upstream
+
+export const getstuEvaluationData= (student_id,test_id) => {
+    let path = '/getMyTestStepAnalysis'
+    let url = target + path;
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+                student_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_EVAL_SUCESS',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 /*---------------------------------------课程管理----------------------------------*/
 export const getTeacherLesson = (filter_option) => {
     let url = target + "/getTeacherLesson";
@@ -828,7 +849,12 @@ export const updateLessonLabel = (lesson_id, label_id) => {
                 lesson_basic: response.data,
             });
             dispatch(editLesson('label_edit', false));
-=======
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 export const getMyTestData = (student_id, test_id) => {
     let url = target + "/getMyTestData";
@@ -863,7 +889,6 @@ export const getMyTestData = (student_id, test_id) => {
                 type: 'GET_MY_TEST_DATA',
                 json: data
             })
->>>>>>> Stashed changes
         })
         .catch(function (error) {
             console.log(error);
@@ -871,7 +896,6 @@ export const getMyTestData = (student_id, test_id) => {
     }
 }
 
-<<<<<<< Updated upstream
 export const updateLessonRange = (lesson_id, start_time, end_time) => {
     let url = target + "/updateLessonRange";
     return dispatch => {
@@ -919,34 +943,12 @@ export const getOptionData = (teacher_id, school_id) => {
                 label_option: response.data.label_option,
                 test_option: response.data.test_option,
                 room_option: response.data.room_option,
-=======
-const getstuEvaluationDataStart = () => {
-    return {
-      type: 'GET_STU_EVAL_START',
-    }
-  }
-export const getstuEvaluationData= (student_id,test_id) => {
-    let path = '/getMyTestStepAnalysis'
-    let url = target + path;
-    return dispatch => {
-        return axios.get(url,{
-            params:{
-                test_id,
-                student_id,
-            }
-        })
-        .then(function (response) {
-            dispatch({
-                type : 'GET_STU_EVAL_SUCESS',
-                json: response.data,
->>>>>>> Stashed changes
             });
         })
         .catch(function (error) {
             console.log(error);
         });
     }
-<<<<<<< Updated upstream
 }
 
 export function editLesson(key, value) {
@@ -972,6 +974,3 @@ export function editLessonHomework(index, value) {
     value,
   }
 }
-=======
-}
->>>>>>> Stashed changes

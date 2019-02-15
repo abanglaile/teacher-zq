@@ -72,7 +72,6 @@ class StudentRes extends React.Component {
           		<Button onClick={this.handleReset(clearFilters)}>Reset</Button>
 		        </div>
 	      	),
-<<<<<<< Updated upstream
 					filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
 					onFilter: (value, record) => {
 						var indexs = record.studentname.indexOf(value);
@@ -95,16 +94,6 @@ class StudentRes extends React.Component {
 								))}
 							</span>
 						) : text;
-=======
-	      	filterIcon: <Icon type="search" style={{ color: this.state.filtered ? '#108ee9' : '#aaa' }} />,
-	      	filterDropdownVisible: this.state.filterDropdownVisible,
-					onFilterDropdownVisibleChange: visible => this.setState({ filterDropdownVisible: visible }, () => this.searchInput.focus()),
-					render: (text,record) => {
-						const {testid} = this.props;						
-						return (
-							record.completion ? <a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>{text}</a> : <span>{text}</span> 
-						);
->>>>>>> Stashed changes
 					},
 	    }, {
             title: '完成情况',
