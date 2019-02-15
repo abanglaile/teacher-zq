@@ -1,6 +1,7 @@
 import { checkHttpStatus, parseJSON } from '../utils';
 import { push } from 'react-router-redux'
 import config from '../utils/Config';
+import moment from 'moment';
 import axios from 'axios';
 
 let target = config.server_url;
@@ -594,15 +595,12 @@ export const getKpWithScore = (chapter_id, student_id) => {
         });
     }
 }
+<<<<<<< Updated upstream
 /*---------------------------------------课程管理----------------------------------*/
-export const getTeacherLesson = (teacher_id) => {
+export const getTeacherLesson = (filter_option) => {
     let url = target + "/getTeacherLesson";
     return dispatch => {
-        return axios.get(url, {
-            params:{
-                teacher_id,
-            }
-        })
+        return axios.post(url, {filter_option})
         .then(function (response) {
             dispatch({
                 type : 'GET_TEACHER_LESSON',
@@ -830,6 +828,42 @@ export const updateLessonLabel = (lesson_id, label_id) => {
                 lesson_basic: response.data,
             });
             dispatch(editLesson('label_edit', false));
+=======
+
+export const getMyTestData = (student_id, test_id) => {
+    let url = target + "/getMyTestData";
+    return (dispatch) => {
+        return axios.get(url,{
+                params:{
+                   test_id,
+                   student_id,
+                }
+        })
+        .then(function (response) {
+
+            // console.log(response);
+            
+            let test_data = response.data.test_log;
+            let start_time=moment(test_data.start_time);
+            let finish_time=moment(test_data.finish_time);
+            let pre_elapsed_time = moment(finish_time-start_time).subtract(8,'hours')
+            let elapsed_time = pre_elapsed_time >= 60*60 ? moment(pre_elapsed_time).format('HH时m分ss秒'):moment(pre_elapsed_time).format('m分ss秒');
+            let end_time = moment(test_data.finish_time).format("YYYY-M-D H:mm:ss");
+            // console.log(elapsed_time);
+            
+            let per_data = "{" + 
+                    '"test_name":' + '"' + test_data.test_name + '"' + "," + 
+                    '"elapsed_time":' + '"' + elapsed_time + '"' + "," +
+                    '"correct_rate":' + test_data.test_state + "," +
+                    '"finish_time":' + '"' + end_time + '"' +
+                    "}"
+            
+            let data=JSON.parse(per_data);
+            dispatch({
+                type: 'GET_MY_TEST_DATA',
+                json: data
+            })
+>>>>>>> Stashed changes
         })
         .catch(function (error) {
             console.log(error);
@@ -837,6 +871,7 @@ export const updateLessonLabel = (lesson_id, label_id) => {
     }
 }
 
+<<<<<<< Updated upstream
 export const updateLessonRange = (lesson_id, start_time, end_time) => {
     let url = target + "/updateLessonRange";
     return dispatch => {
@@ -884,12 +919,34 @@ export const getOptionData = (teacher_id, school_id) => {
                 label_option: response.data.label_option,
                 test_option: response.data.test_option,
                 room_option: response.data.room_option,
+=======
+const getstuEvaluationDataStart = () => {
+    return {
+      type: 'GET_STU_EVAL_START',
+    }
+  }
+export const getstuEvaluationData= (student_id,test_id) => {
+    let path = '/getMyTestStepAnalysis'
+    let url = target + path;
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+                student_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_EVAL_SUCESS',
+                json: response.data,
+>>>>>>> Stashed changes
             });
         })
         .catch(function (error) {
             console.log(error);
         });
     }
+<<<<<<< Updated upstream
 }
 
 export function editLesson(key, value) {
@@ -915,3 +972,6 @@ export function editLessonHomework(index, value) {
     value,
   }
 }
+=======
+}
+>>>>>>> Stashed changes
