@@ -3,7 +3,10 @@ import jwtDecode from 'jwt-decode';
 
 const defaulatAuthData = Immutable.fromJS({
         token: null,
-        username: null,
+        nickname: null,
+        imgurl:null,
+        realname:null,
+        username: 'fei',
         userid: 1,
         isAuthenticated: false,
         isAuthenticating: false,
@@ -26,6 +29,10 @@ export const AuthData = (state = defaulatAuthData, action = {}) => {
                     .set('isAuthenticated',true)
                     .set('username',obj.identifier)
                     .set('userid',obj.userid);
+        case 'GET_USERINFO_SUCESS':
+            return state.set('nickname',action.json.nickname)
+                    .set('imgurl',action.json.avatar)
+                    .set('realname',action.json.realname);
         case 'REG_USER_SUCCESS':
             var sucRegState = {
                 isAuthenticating: false,
@@ -58,10 +65,10 @@ export const AuthData = (state = defaulatAuthData, action = {}) => {
             return Immutable.fromJS(failRegState);
         case 'LOGOUT_USER':
             return state.set('isAuthenticated', false)
-                    .set('token',null)
-                    .set('userName',null)
+                    .set('username',null)
                     .set('userid',null)
-                    .set('statusText','You have been successfully logged out.');
+                    .set('imgurl',null)
+                    .set('realname',null);
         default:
             return state;
     }

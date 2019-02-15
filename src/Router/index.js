@@ -1,7 +1,6 @@
 import React from 'react';
 
 import App from '../Component/index.js'
-import LoginView from '../Component/login.js'
 import TestCenter from '../Component/TestCenter.js'
 import StuManager from '../Component/StuManager.js'
 import LessonManager from '../Component/LessonManager.js'
@@ -38,6 +37,5 @@ export default (
       <Route path="stu_capacity/:id" component={StuCapacity}/>
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>
-      <Route path="login" component={LoginView}/>
     </Route>
 );
