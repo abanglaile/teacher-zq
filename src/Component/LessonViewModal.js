@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, Radio, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, List, Tag, Dropdown, Mention} from 'antd';
+import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, Radio, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -33,6 +33,7 @@ class LessonViewModal extends React.Component{
         this.state={
           kp_tags: [],
           select_student: [],
+          page: [],
           visible:false,
         };
         this.searchKpLabel = debounce(this.searchKpLabel, 500);
@@ -131,7 +132,14 @@ class LessonViewModal extends React.Component{
         <Item>
           <div>
           <div style={{marginBottom: '0.5rem'}}>
-            {item_title[item.content_type]} | 
+            <span style={{
+              width: "5rem", 
+              fontWeight: "bold",
+              textAlign: "right", 
+              marginRight: "1rem", 
+              paddingRight: "1rem", 
+              borderRight: "2px solid #D3D3D3"
+            }}>{item_title[item.content_type]}</span> 
             <a onClick={e => this.props.updateLessonContent({
                 lesson_id: item.lesson_id,
                 content: this.state.content,
@@ -159,21 +167,15 @@ class LessonViewModal extends React.Component{
               kp_tags: item.kpids ? JSON.parse(item.kpids) : []
             });
           }} type="edit" theme="outlined" />]}>
-          <div style={{width: "100%"}}>
-          <span style={{width: "5rem", fontWeight: "bold", textAlign: "right", marginRight: "1rem", paddingRight: "1rem", borderRight: "2px solid #D3D3D3"}}>{item_title[item.content_type]}</span><span style={{width: "25rem"}}>{item.content + "换行长什么样子呢换行大大大大多撒多阿斯顿撒大大大"}</span>
-          <Row gutter={2}>
-            <Col style={{
-              fontWeight: "bold", 
-              textAlign: "right", 
-              paddingRight: "1rem", 
-              borderRight: "2px solid #D3D3D3"
-            }} span={4}>课堂讲解</Col>
-            <Col span={20}>
-              <div>龙门专题 第10、11、23页</div>
-              <div>备注：P10 （2）（3）、P11（3）</div>
-            </Col>
-          </Row>
-          </div>
+          <span style={{
+            width: "5rem", 
+            fontWeight: "bold",
+            textAlign: "right", 
+            marginRight: "1rem", 
+            paddingRight: "1rem", 
+            borderRight: "2px solid #D3D3D3"
+          }}>{item_title[item.content_type]}</span>
+          <span style={{width: "25rem"}}>{item.content}</span>
         </Item>
       )
     }
@@ -285,14 +287,21 @@ class LessonViewModal extends React.Component{
         <Item>
           <div>
           <div style={{marginBottom: '0.5rem'}}>
-            {item_title[this.state.content_type]} | 
+            <span style={{
+              width: "5rem", 
+              fontWeight: "bold", 
+              textAlign: "right", 
+              marginRight: "1rem", 
+              paddingRight: "1rem", 
+              borderRight: "2px solid #D3D3D3"
+            }}>{item_title[item.content_type]}</span> 
             <a onClick={e => this.props.addLessonContent({
                 lesson_id: lesson.lesson_id,
                 content: this.state.content,
                 content_type: this.state.content_type,
                 resource: this.state.resource,
                 kpids: JSON.stringify(this.state.kp_tags),
-            })} style={{marginLeft: '0.5rem', marginRight: '0.5rem'}}>保存</a>
+            })} style={{marginRight: '0.5rem'}}>保存</a>
             <a onClick={e => this.props.editLesson('new_content_edit', false)}>取消</a>
           </div>
           {edit_dom}
@@ -419,8 +428,9 @@ class LessonViewModal extends React.Component{
     }
 
     renderHomeworkItem(item, index){
-      const {lesson_edit, test_option} = this.props;
+      const {lesson_edit, test_option, search_task_source} = this.props;
       const {homework_edit} = lesson_edit;
+      let item_title = ["自定义", "线上测试", "标准任务"];
       let edit_dom = [];
       
       switch(this.state.homework_type){
@@ -451,19 +461,56 @@ class LessonViewModal extends React.Component{
               {test_options}
             </Select>
           break;
+        case 2:
+          const source_option = search_task_source.map((item) =>  
+            <Option key={item.source_id} >item.source_name</Option>)
+          edit_dom = 
+            <div>
+              <Select
+                style={{ width: 300 }}
+                value={this.state.comment_label_id}
+                showSearch
+                placeholder={"选择教材"}
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                autoFocus={true}
+                onSearch={(input) => this.searchKpLabel(input)}
+                onSelect={(value, option) => this.setState(source_id)}
+                notFoundContent={null}
+              >
+                {source_option}  
+              </Select>
+              <a style={{marginLeft: "1rem"}}>添加页码</a>
+              <InputNumber
+                formatter={value => {value => 'P ${value}'}}
+                parser={value => value.replace('P', '')}
+                onChange={(value) => this.setState({page: this.state.page.push(value)})}
+              />
+            </div>
+          break;
       }
+      console.log(homework_edit[index]);
       return (
        homework_edit[index] ?
         <Item>
           <div>
           <div style={{marginBottom: '0.5rem'}}>
-            {item_title[item.content_type]} | 
+            <span style={{
+              width: "5rem", 
+              fontWeight: "bold", 
+              textAlign: "right", 
+              marginRight: "1rem", 
+              paddingRight: "1rem", 
+              borderRight: "2px solid #D3D3D3"
+            }}>{item_title[item.homework_type]}</span> 
             <a onClick={e => this.props.updateHomework({
                 lesson_id: item.lesson_id,
                 content: this.state.content,
                 resource: this.state.resource,
+                remark: this.state.remark,
                 homework_id: item.homework_id,
-            }, index)} style={{marginLeft: '0.5rem', marginRight: '0.5rem'}}>保存</a>
+            }, index)} style={{marginRight: '0.5rem'}}>保存</a>
             <a onClick={e => this.props.deleteHomework({
               lesson_id: item.lesson_id,
               homework_id: item.homework_id,
@@ -475,18 +522,24 @@ class LessonViewModal extends React.Component{
           </div>
         </Item>
         :
-        <Item onClick={e => {
+        <Item actions={[<Icon onClick={e => {
             this.props.editLessonHomework(index, true);
             this.setState({
-              homework_type: item.content_type, 
+              homework_type: item.homework_type, 
               content: item.content, 
               resource: item.resource,
+              remark: item.remark,
             });
-          }} actions={[<Icon type="right" theme="outlined" />]}>
-          <List.Item.Meta
-            title={<a >{item.content}</a>}
-            description={<Tag color={"#fde3cf"}>{item.homework_type ? "线上测试" : "课堂练习"}</Tag>}
-          />
+          }} type="edit" theme="outlined" />]}>
+          <span style={{
+            width: "5rem", 
+            fontWeight: "bold", 
+            textAlign: "right", 
+            marginRight: "1rem", 
+            paddingRight: "1rem", 
+            borderRight: "2px solid #D3D3D3"
+          }}>{item_title[item.homework_type]}</span>
+          <span style={{width: "25rem"}}>{item.content}</span>
         </Item>
       )
     }
@@ -726,12 +779,14 @@ class LessonViewModal extends React.Component{
     }
 
     renderTeacherComment(){
-      const {lesson, search_result, } = this.props;
+      const {lesson, search_result } = this.props;
       const {teacher_comment, lesson_student} = lesson;
 
       const {select_student} = this.state;
+      const {comment_label, kp_label} = search_result;
+      const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
+      const comment_options = comment_label ? comment_label.map(d => <Option group="comment" key={d.tweet_label_id}>{d.label_content}</Option>) : null;
 
-      const options = search_result.map(d => <Option key={d.kpid}>{d.kpname}</Option>);
       return(
         <div>
           <div>
@@ -756,10 +811,10 @@ class LessonViewModal extends React.Component{
             notFoundContent={null}
           >
             <OptGroup label="知识点问题">
-              {options}
+              {kp_options}
             </OptGroup>
             <OptGroup label="课堂描述">
-              <Option value="Are you kidding" group="label">Mika最可爱</Option>
+              {comment_options}
             </OptGroup>  
           </Select>
           :
@@ -816,8 +871,8 @@ class LessonViewModal extends React.Component{
     render(){
       const {sub_view} = this.props.lesson_edit;
       return(
-      <Modal title={null} onCancel={this.props.onCancel}
-        cancelText="取消"
+      <Modal title={null} onCancel={this.props.onCancel}        
+        footer={null}
         visible={this.state.visible} width={700} >
           <Tabs defaultActiveKey="1" >
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
@@ -837,7 +892,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson, lesson_edit} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, course_option, label_option, test_option, search_result } = personal_data;
+  const {teacher_option, course_option, label_option, test_option, search_result, search_task_source } = personal_data;
 
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
@@ -850,5 +905,6 @@ export default connect(state => {
     label_option: label_option,
     test_option: test_option,
     search_result: search_result,
+    search_task_source: search_task_source,
   }
 }, action)(LessonViewModal);

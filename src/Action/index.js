@@ -951,12 +951,28 @@ export const updateLessonRange = (lesson_id, start_time, end_time) => {
 }
 
 export const searchKp = (input) => {
-    let url = target + "/searchKp";
+    let url = target + "/searchCommentLabel";
     return dispatch => {
         return axios.get(url, {params: {input}})
         .then(function (response) {
             dispatch({
-                type : 'SEARCH_KP',
+                type : 'SEARCH_LABEL',
+                result: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const searchTaskSource = (input) => {
+    let url = target + "/searchTaskSource";
+    return dispatch => {
+        return axios.get(url, {params: {input}})
+        .then(function (response) {
+            dispatch({
+                type : 'SEARCH_TASK_SOURCE',
                 result: response.data, 
             });
         })

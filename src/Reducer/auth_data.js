@@ -4,7 +4,7 @@ import jwtDecode from 'jwt-decode';
 const defaulatAuthData = Immutable.fromJS({
         token: null,
         username: null,
-        userid: 1,
+        userid: 10001,
         isAuthenticated: false,
         isAuthenticating: false,
         statusText: null

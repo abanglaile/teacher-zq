@@ -51,6 +51,7 @@ const defaultPersonalData = Immutable.fromJS({//教师个人数据
         test_option: [],
         room_option : [],
         search_result: [],
+        search_task_source: [],
     });
 
 const defaultSelMenuData = Immutable.fromJS({//某班级下面的所有学生信息
@@ -199,6 +200,8 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.set('feedback_success', true);
         case 'EDIT_LESSON_CONTENT':
             return state.setIn(['lesson', 'lesson_content'], Immutable.fromJS(action.lesson_content));
+        case 'EDIT_HOMEWORK':
+            return state.setIn(['lesson', 'homework'], Immutable.fromJS(action.homework));
         case 'ADD_TEACHER_COMMENT':
             return state.setIn(['lesson', 'teacher_comment'], Immutable.fromJS(action.teacher_comment));
         case 'DELETE_TEACHER_COMMENT':
@@ -239,8 +242,10 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
                 .set('label_option', Immutable.fromJS(action.label_option))
                 .set('test_option', Immutable.fromJS(action.test_option))
                 .set('room_option', Immutable.fromJS(action.room_option));
-        case 'SEARCH_KP':
+        case 'SEARCH_LABEL':
             return state.set('search_result', Immutable.fromJS(action.result));
+        case 'SEARCH_TASK_SOURCE':
+            return state.set('search_task_source', Immutable.fromJS(action.result));
         default:
             return state;  
     }
