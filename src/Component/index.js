@@ -6,6 +6,7 @@ import Styles from '../styles/testCenter.css';
 import {connect} from 'react-redux';
 import *as action from '../Action/';
 import Zq_Header from './ZQ_Header.js';
+import { relative } from 'path';
 
 const { Header, Footer, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -31,8 +32,9 @@ class App extends React.Component{
                 <Header style={{background: '#fff',height:'80px'}}>
                   <Zq_Header/>  
                 </Header>
-                <Content style={{ padding: '0 120px' }}>
-                  <div style={{ margin: '22px 0' }}></div>
+                {/* <Content style={{ padding: '0 5px' }}> */}
+                <Content>
+                  <div style={{ margin: '5px 0'}}></div>
                   <Layout style={{ padding: '24px 0', background: '#fff'}}>
                     <Sider width={200} style={{ background: '#fff' }}>
                       <Menu

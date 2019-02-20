@@ -11,7 +11,7 @@ import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-rou
 
 import * as auth_data from './Reducer/auth_data';
 import * as reducer from './Reducer';
-import {loginUserSuccess} from './Action/auth_action';
+import {loginUserSuccess} from './Action';
 // import {getWxUserInfoSuccess} from './Action/reg_action';
 import routes from './Router/'; 
 // import reducers from './reducers' // Or wherever you keep your reducers

@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+// import { statSync } from 'fs';
 
 
 const defaultTestsData = Immutable.fromJS({//教师创建的所有测试
@@ -6,7 +7,8 @@ const defaultTestsData = Immutable.fromJS({//教师创建的所有测试
 		testlog : [], //测试试题详细信息
 		test_info : {}, //测试进本信息
 		kp_data : [],//知识点测试情况
-		test_res : {},//测试基本情况，各学生完成情况
+        test_res : {},//测试基本情况，各学生完成情况
+        test_kp: {},
         isFetching: false,
 	});
 	
@@ -63,6 +65,10 @@ const defaultbasketData = Immutable.fromJS({//试题篮里的信息
         basket_data: [],
     });
 
+const detuEvaluationData = Immutable.fromJS({
+    eval_data: [],
+    isFetching: false,
+});
 
 export const fetchTestsData = (state = defaultTestsData , action = {}) => {
     switch(action.type){
@@ -85,7 +91,9 @@ export const fetchTestsData = (state = defaultTestsData , action = {}) => {
 		case 'GET_TEST_KP_SUCESS':
 			return state.set('kp_data', Immutable.fromJS(action.json));
 		case 'GET_TEST_RES_TABLE':
-			return state.set('test_res', Immutable.fromJS(action.json)); 
+            return state.set('test_res', Immutable.fromJS(action.json)); 
+        case 'GET_MY_TEST_DATA':
+            return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
         default:
             return state;
     }
@@ -248,5 +256,16 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
             return state.set('search_task_source', Immutable.fromJS(action.result));
         default:
             return state;  
+    }
+}
+
+export const stuEvaluationData = (state = detuEvaluationData, action = {}) => {
+    switch(action.type){
+        case 'GET_STU_EVAL_START':
+            return state.set('isFetching', true);
+        case 'GET_STU_EVAL_SUCESS':
+            return state.set('eval_data', Immutable.fromJS(action.json)).set('isFetching', false);
+        default:
+            return state;
     }
 }

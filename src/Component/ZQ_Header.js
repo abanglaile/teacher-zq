@@ -1,41 +1,36 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {Row, Col} from 'antd';
-import {Icon, Menu, Button,Dropdown} from 'antd';
+import {Icon, Menu, Button, Dropdown, Avatar } from 'antd';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import { bindActionCreators } from 'redux';
-import * as actionCreators from '../Action';
+// import { bindActionCreators } from 'redux';
+// import * as actionCreators from '../Action';
+import *as action from '../Action/';
 
 
 class Zq_Header extends React.Component{
     
     componentDidMount () {
-        // this.fetchData();
-        console.log("statusText:"+this.props.statusText);
-        console.log("username:"+this.props.username);
+      const {userid} = this.props;
+      // console.log("userid:",userid);
+      this.props.getUserInfo(userid);
     }
 
-    // fetchData () {
-    //     let token = this.props.authData.token;
-    //     this.props.actions.fetchProtectedData(token);
-    // }
     handleMenuClick(e){
       if(e.key == 2){
-        this.props.actions.logoutAndRedirect();
-      }else{
-
+        this.props.logoutAndRedirect();
       }
     }
 
 
     render(){
-      const usr = this.props.username;
-      // const {dispatch} = this.props;
+      const {username ,imgurl, realname} = this.props;
       const menu = (
         <Menu onClick={(e)=>this.handleMenuClick(e)}>
-          <Menu.Item key="1">个人中心</Menu.Item>
-          <Menu.Item key="2">退出</Menu.Item>
+          <Menu.Item key="1"><Icon type="user" />{realname}</Menu.Item>
+          <Menu.Divider />
+          <Menu.Item key="2"><Icon type="poweroff" />退出登录</Menu.Item>
         </Menu>
       );
 
@@ -50,10 +45,11 @@ class Zq_Header extends React.Component{
               </Col>
               <Col span={3}>
                 <div style={{ margin: '20px 0',float:'right'}}>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      {usr} <Icon type="down" />
-                    </Button>
+                  <Dropdown overlay={menu} placement="bottomRight">
+                    <div>
+                      {imgurl ? <Avatar src={imgurl} /> : <Avatar icon="user" />}
+                      <span style={{verticalAlign:'middle',marginLeft:'1rem',fontSize:'1rem',color:'#40a9ff'}}>{username}</span>
+                    </div>
                   </Dropdown>
                 </div>
               </Col>
@@ -63,12 +59,14 @@ class Zq_Header extends React.Component{
     }
 }
 
-const mapStateToProps = (state) => ({
-    username: state.AuthData.get('username')
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  actions : bindActionCreators(actionCreators, dispatch)
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Zq_Header);
+export default connect(state => {
+  // console.log(state);
+  console.log('state.AuthData:',JSON.stringify(state.AuthData));
+  return {
+    userid: state.AuthData.get('userid'),
+    username: state.AuthData.get('username'),
+    imgurl: state.AuthData.get('imgurl'),
+    nickname: state.AuthData.get('nickname'),
+    realname: state.AuthData.get('realname'),
+  }
+}, action)(Zq_Header);

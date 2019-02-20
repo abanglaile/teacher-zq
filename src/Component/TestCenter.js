@@ -7,6 +7,7 @@ import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
 import config from '../utils/Config';
+import moment from 'moment';
 
 const { SubMenu } = Menu;
 const Option = Select.Option;
@@ -72,10 +73,14 @@ class TestCenter extends React.Component{
               );
             },
         }, {
-            title: '测试时间',
-            dataIndex: 'time',
-            width: '25%',
-        }, {
+          title: '测试时间',
+          dataIndex: 'time',
+          width: '25%',
+          render: (text, record) => {
+            if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
+            else return '';
+          },
+      },{
             title: '操作',
             dataIndex: 'action',
             render: (text, record,index) => {
@@ -104,7 +109,7 @@ class TestCenter extends React.Component{
     }
 
     loadTestTable(){
-      const {teacher_id} = this.state;
+      const {teacher_id} = this.props;
       this.props.getTestTable(teacher_id);
     }
     
@@ -148,6 +153,7 @@ class TestCenter extends React.Component{
               keys.push(extra.allCheckedNodes[j].node.key);
           }
       }
+      console.log("keys:",keys);
       this.props.distributeTest(keys,currentid,currentindex);
       this.setState({
           visible: false,

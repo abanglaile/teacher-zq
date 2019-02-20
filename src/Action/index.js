@@ -1,154 +1,33 @@
 import { checkHttpStatus, parseJSON } from '../utils';
 import { push } from 'react-router-redux'
-import jwtDecode from 'jwt-decode';
-// import fetch from 'isomorphic-fetch';
-// import NetUtil from '../utils/NetUtil';
 import config from '../utils/Config';
+import moment from 'moment';
 import axios from 'axios';
 
 let target = config.server_url;
+/*-------------------------------------------登陆登出相关----------------------------------------------*/
+export const loginUserSuccess = (token) => {
+    localStorage.setItem('token', token);
+    return {
+      type: 'LOGIN_USER_SUCCESS',
+      token: token,
+    }
+}
 
-// export function loginUserSuccess(token) {
-//   localStorage.setItem('token', token);
-//   return {
-//     type: 'LOGIN_USER_SUCCESS',
-//     payload: {
-//       token: token
-//     }
-//   }
-// }
+export const logout = () => {
+  localStorage.removeItem('token');
+  return {
+      type: 'LOGOUT_USER',
+  }
+}
 
-// export function regUserSuccess(token) {
-//   localStorage.setItem('token', token);
-//   return {
-//     type: 'REG_USER_SUCCESS',
-//     payload: {
-//       token: token
-//     }
-//   }
-// }
+export const logoutAndRedirect = () => {
+  return (dispatch) => {
+      dispatch(logout());
+      dispatch(push('/teacher-zq/root'));
+  }
+}
 
-// export function loginUserFailure(error) {
-//   localStorage.removeItem('token');
-//   return {
-//     type: 'LOGIN_USER_FAILURE',
-//     payload: {
-//       status: error.response.status,
-//       statusText: error.response.statusText
-//     }
-//   }
-// }
-
-// export function regUserFailure(error) {
-//   localStorage.removeItem('token');
-//   return {
-//     type: 'REG_USER_FAILURE',
-//     payload: {
-//       status: error.response.status,
-//       statusText: error.response.statusText
-//     }
-//   }
-// }
-
-// export function loginUserRequest() {
-//   return {
-//     type: 'LOGIN_USER_REQUEST'
-//   }
-// }
-
-// export function regUserRequest() {
-//   return {
-//     type: 'REG_USER_REQUEST'
-//   }
-// }
-
-// export function logout() {
-//     localStorage.removeItem('token');
-//     return {
-//         type: 'LOGOUT_USER'
-//     }
-// }
-
-// export function logoutAndRedirect() {
-//     return (dispatch, state) => {
-//         dispatch(logout());
-//         dispatch(push('/AuthJWT/login'));
-//     }
-// }
-
-// export function loginUser(username, password, redirect) {
-//     return function(dispatch) {
-//         let url = target + '/login';
-//         dispatch(loginUserRequest());
-//         return fetch(url, {
-//             method: 'post',
-//             mode: "cors",
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'application/json'
-//             },
-//                 body: JSON.stringify({username: username, password: password})
-//             })
-//             .then(checkHttpStatus)
-//             .then(parseJSON)
-//             .then(response => {
-//                 try {
-//                     let decoded = jwtDecode(response.token);
-//                     console.log('decoded:'+JSON.stringify(decoded));
-//                     console.log('response.token:'+response.token);
-//                     dispatch(loginUserSuccess(response.token));
-//                     dispatch(push(redirect));
-//                 } catch (e) {
-//                     console.log('response.json():'+response.json());
-//                     dispatch(loginUserFailure({
-//                         response: {
-//                             status: 403,
-//                             statusText: response.json()
-//                         }
-//                     }));
-//                 }
-//             })
-//             .catch(error => {
-//                 console.log('error:'+error);
-//                 dispatch(loginUserFailure(error));
-//             })
-//     }
-// }
-
-// export function regUser(username, password, redirect) {
-//     return function(dispatch) {
-//         let url = target + '/newuser';
-//         dispatch(regUserRequest());
-//         return fetch(url, {
-//             method: 'post',
-//             mode: "cors",
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'application/json'
-//             },
-//                 body: JSON.stringify({username: username, password: password})
-//             })
-//             .then(checkHttpStatus)
-//             .then(parseJSON)
-//             .then(response => {
-//                 try {
-//                     let decoded = jwtDecode(response.token);
-//                     dispatch(regUserSuccess(response.token));
-//                     dispatch(push(redirect));
-//                 } catch (e) {
-//                     dispatch(regUserFailure({
-//                         response: {
-//                             status: 403,
-//                             statusText: response.json()
-//                         }
-//                     }));
-//                 }
-//             })
-//             .catch(error => {
-//                 dispatch(loginUserFailure(error));
-//             })
-//     }
-// }
 // //登录注册相关结束
 // /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -229,6 +108,29 @@ const changeTestState = (index,time) => {
 
 
 // =============================================/接口/====================================================
+/*---------------------------------------获取个人信息----------------------------------*/
+
+export const getUserInfo = (userid) => {
+    let url = target + "/getUserInfo";
+    return dispatch => {
+        dispatch(getBookmenuStart());
+        return axios.get(url,{
+            params:{
+                userid,
+            }
+        })
+        .then(function (response) {
+            console.log("response.data:",response.data);
+            dispatch({
+                type : 'GET_USERINFO_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 /*---------------------------------------获取目录菜单----------------------------------*/
 
@@ -693,6 +595,28 @@ export const getKpWithScore = (chapter_id, student_id) => {
         });
     }
 }
+
+export const getstuEvaluationData= (student_id,test_id) => {
+    let path = '/getMyTestStepAnalysis'
+    let url = target + path;
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+                student_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_EVAL_SUCESS',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 /*---------------------------------------课程管理----------------------------------*/
 export const getTeacherLesson = (filter_option) => {
     let url = target + "/getTeacherLesson";
@@ -925,6 +849,46 @@ export const updateLessonLabel = (lesson_id, label_id) => {
                 lesson_basic: response.data,
             });
             dispatch(editLesson('label_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getMyTestData = (student_id, test_id) => {
+    let url = target + "/getMyTestData";
+    return (dispatch) => {
+        return axios.get(url,{
+                params:{
+                   test_id,
+                   student_id,
+                }
+        })
+        .then(function (response) {
+
+            // console.log(response);
+            
+            let test_data = response.data.test_log;
+            let start_time=moment(test_data.start_time);
+            let finish_time=moment(test_data.finish_time);
+            let pre_elapsed_time = moment(finish_time-start_time).subtract(8,'hours')
+            let elapsed_time = pre_elapsed_time >= 60*60 ? moment(pre_elapsed_time).format('HH时m分ss秒'):moment(pre_elapsed_time).format('m分ss秒');
+            let end_time = moment(test_data.finish_time).format("YYYY-M-D H:mm:ss");
+            // console.log(elapsed_time);
+            
+            let per_data = "{" + 
+                    '"test_name":' + '"' + test_data.test_name + '"' + "," + 
+                    '"elapsed_time":' + '"' + elapsed_time + '"' + "," +
+                    '"correct_rate":' + test_data.test_state + "," +
+                    '"finish_time":' + '"' + end_time + '"' +
+                    "}"
+            
+            let data=JSON.parse(per_data);
+            dispatch({
+                type: 'GET_MY_TEST_DATA',
+                json: data
+            })
         })
         .catch(function (error) {
             console.log(error);
