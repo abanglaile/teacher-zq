@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {Col,Progress,Row,Layout,Card,Breadcrumb} from 'antd';
-import Zq_Header from './ZQ_Header.js';
 import {Link} from 'react-router';
-import NetUtil from '../utils/NetUtil';
 import Styles from '../styles/stuEvaluation.css';
 import {Chart,Geom,Axis,Tooltip,Coord,Label,Legend} from "bizcharts";
 import DataSet from "@antv/data-set";

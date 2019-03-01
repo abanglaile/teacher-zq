@@ -29,7 +29,6 @@ export default (
     <Route path='teacher-zq'>
 
 
-      <Route path="root" component={App} >
       {/* <Route path="root" component={requireAuthentication(App)}> */}
       <Route path="root" component={App}>
         <IndexRoute component={TestCenter} />
@@ -38,7 +37,7 @@ export default (
         <Route path="stu_manager" component={StuManager}/>
         <Route path="lesson-manager" component={LessonManager}/>
       </Route>
-      <Route path="stu_evaluation" component={StuEvaluation}/>
+      
       <Route path="stu_capacity/:id" component={StuCapacity}/>
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, Radio, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
+import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button, Switch, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -33,10 +33,13 @@ class LessonViewModal extends React.Component{
         this.state={
           kp_tags: [],
           select_student: [],
-          page: [],
+          remark: [],
+          task_type: 0,
           visible:false,
         };
-        this.searchKpLabel = debounce(this.searchKpLabel, 500);
+        this.searchKpLabel = debounce(this.props.searchKpLabel, 500);
+        this.searchCommentLabel = debounce(this.props.searchCommentLabel, 500);
+        this.searchTaskSource = debounce(this.props.searchTaskSource, 500);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -52,6 +55,8 @@ class LessonViewModal extends React.Component{
       let item_title = ["课堂学习", "讲解知识", "讲解课件", "课堂小测"];
       let edit_dom = [];
       var tag_color = "";
+      const {kp_label} = search_result; 
+      const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
       switch(this.state.content_type){
         case 0:
           edit_dom = 
@@ -64,7 +69,7 @@ class LessonViewModal extends React.Component{
           edit_dom = 
             <div>
               {kp_tags.map((tag, index) => 
-                  <Tag key={tag.kpid} closable={true} afterClose={(removedTag) => {
+                  <Tag key={tag.kpid} closable afterClose={(removedTag) => {
                     kp_tags = this.state.kp_tags.filter(tag => tag !== removedTag);
                     this.setState({ kp_tags, content: kp_tags.map(x => x.kpname).join("，")});
                   }}>
@@ -91,7 +96,7 @@ class LessonViewModal extends React.Component{
                     this.setState({kp_input_visible: false});
                   }}
                 >
-                  {search_options}
+                  {kp_options}
                 </Select>
                 :
                 <Tag
@@ -213,11 +218,13 @@ class LessonViewModal extends React.Component{
             </div>
           break;
         case 1:
-          const search_options = search_result.map(d => <Option key={d.kpid}>{d.kpname}</Option>);
+          const {kp_label, comment_label} = search_result;
+          const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
+          
           edit_dom = 
             <div>
               {kp_tags.map((tag, index) => 
-                  <Tag key={tag.kpid} closable={index !== 0} afterClose={(removedTag) => {
+                  <Tag key={tag.kpid} closable afterClose={(removedTag) => {
                     const tags = this.state.kp_tags.filter(tag => tag !== removedTag);
                     this.setState({ kp_tags: tags, content: kp_tags.map(x => x.kpname).join("，") });
                   }}>
@@ -247,7 +254,7 @@ class LessonViewModal extends React.Component{
                     this.setState({kp_input_visible: false});
                   }}
                 >
-                  {search_options}
+                  {kp_options}
                 </Select>
                 :
                 <Tag
@@ -350,31 +357,61 @@ class LessonViewModal extends React.Component{
     }
 
     renderNewHomework(){
-      const {lesson_edit, lesson, test_option} = this.props;
+      const {lesson_edit, lesson, teacher_id, test_option, search_task_source} = this.props;
       const {new_homework_edit} = lesson_edit;
+      const {lesson_student, lesson_id} = lesson;
       let edit_dom = [];
+      const {task_type, task_count, source_id, remark} = this.state;
 
       const menu = (
         <Menu>
           <Menu.Item>
             <a onClick={e => {
-              this.setState({homework_type: 1, content: "", resource: null});
+              this.setState({homework_type: 0, content: "", resource: null});
               this.props.editLesson('new_homework_edit', true);
-            }}>测试</a>
+            }}>添加作业</a>
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => {
-              this.setState({homework_type: 0, content: "", resource: null});
+              this.setState({homework_type: 1, content: "", resource: null});
               this.props.editLesson('new_homework_edit', true);
-            }}>自定义</a>
+            }}>关联作业</a>
           </Menu.Item>
         </Menu>
       );
       switch(this.state.homework_type){
         case 0:
+          const source_option = search_task_source.map((item) =>  
+            <Option key={item.source_id} type={item.source_type}>{item.source_name}</Option>)
           edit_dom = 
-            <div style={{width: 500}}>
-              <Input placeholder="课后作业" value={this.state.content} onChange={e => this.setState({content: e.target.value})} />
+            <div>
+              <div style={{marginBottom: "0.5rem"}}>
+                <Select
+                  style={{ width: 300, marginRight: "1rem" }}
+                  value={this.state.source_id}
+                  showSearch
+                  placeholder={"选择教材"}
+                  defaultActiveFirstOption={false}
+                  showArrow={false}
+                  filterOption={false}
+                  autoFocus={true}
+                  onSearch={(input) => this.searchTaskSource(input)}
+                  onSelect={(value, option) => this.setState({source_id: value, task_type: option.props.type})}
+                  notFoundContent={null}
+                >
+                  {source_option}  
+                </Select>                
+                <span style={{marginRight: "0.5rem"}}>数量：</span>
+                <InputNumber
+                  style={{marginRight: "1rem"}}
+                  value={this.state.task_count} 
+                  disabled={this.state.task_type != 1}
+                  onChange={(value) => this.setState({task_count: value})}
+                />
+                <Switch checkedChildren="自定义" unCheckedChildren="指定" 
+                  onChange={checked => checked ? this.setState({task_type: 2, task_count: 0.5}) : null} checked={this.state.task_type == 2} defaultChecked />
+              </div>
+              {this.renderTaskSub()}  
             </div>
           break;
         case 1:
@@ -403,16 +440,17 @@ class LessonViewModal extends React.Component{
        new_homework_edit ?
         <Item>
           <div>
-          <div style={{marginBottom: '0.5rem'}}>
-            <a onClick={e => this.props.addHomework({
-                lesson_id: lesson.lesson_id,
-                content: this.state.content,
-                homework_type: this.state.homework_type,
-                resource: this.state.resource,
-            })} style={{marginLeft: '0.5rem', marginRight: '0.5rem'}}>保存</a>
-            <a onClick={e => this.props.editLesson('new_homework_edit', false)}>取消</a>
-          </div>
-          {edit_dom}
+            <div style={{marginBottom: '0.5rem'}}>
+              <a onClick={e => this.props.addHomework(lesson_id, {
+                  source_id: source_id,
+                  create_user: teacher_id, 
+                  task_type: task_type,
+                  remark: task_type ? remark : JSON.stringify(remark),
+                  task_count: task_count,
+              }, lesson_student)} style={{marginRight: '0.5rem'}}>发布</a>
+              <a onClick={e => this.props.editLesson('new_homework_edit', false)}>取消</a>
+            </div>
+            {edit_dom}
           </div>
         </Item>
         :
@@ -427,120 +465,78 @@ class LessonViewModal extends React.Component{
       )
     }
 
-    renderHomeworkItem(item, index){
-      const {lesson_edit, test_option, search_task_source} = this.props;
-      const {homework_edit} = lesson_edit;
-      let item_title = ["自定义", "线上测试", "标准任务"];
-      let edit_dom = [];
-      
-      switch(this.state.homework_type){
-        case 0:
-          edit_dom = 
-            <div style={{width: 500}}>
-              <Input placeholder="自定义作业内容" value={this.state.content} onChange={e => this.setState({content: e.target.value})} />
-            </div>
-          break;
-        case 1:
-          const test_options = test_option.map((item) =>  
-            <Option value={item.test_id.toString()} name={item.test_name}>
-              <div>{item.test_name}</div>
-              <div>{item.enable_time ? "已发布" : "未发布"} | {item.group_time}</div>
-            </Option>)
-          edit_dom = 
-            <Select
-              showSearch
-              showArrow={false}
-              style={{ width: 500 }}
-              placeholder="关联测试"
-              optionFilterProp="children"
-              onSelect={(value, option) => this.setState({resource: value, content: option.props.name})}
-              optionLabelProp={"name"}
-              value={this.state.resource}
-              filterOption={false}
-            >
-              {test_options}
-            </Select>
-          break;
-        case 2:
-          const source_option = search_task_source.map((item) =>  
-            <Option key={item.source_id} >item.source_name</Option>)
-          edit_dom = 
-            <div>
-              <Select
-                style={{ width: 300 }}
-                value={this.state.comment_label_id}
-                showSearch
-                placeholder={"选择教材"}
-                defaultActiveFirstOption={false}
-                showArrow={false}
-                filterOption={false}
-                autoFocus={true}
-                onSearch={(input) => this.searchKpLabel(input)}
-                onSelect={(value, option) => this.setState(source_id)}
-                notFoundContent={null}
-              >
-                {source_option}  
-              </Select>
-              <a style={{marginLeft: "1rem"}}>添加页码</a>
-              <InputNumber
-                formatter={value => {value => 'P ${value}'}}
-                parser={value => value.replace('P', '')}
-                onChange={(value) => this.setState({page: this.state.page.push(value)})}
-              />
-            </div>
-          break;
+    pageInputConfirm(){
+      let {remark, page} = this.state;
+      if (page && remark.indexOf(page) === -1) {
+        remark = [...remark, page];
       }
-      console.log(homework_edit[index]);
-      return (
-       homework_edit[index] ?
-        <Item>
+      this.setState({
+        task_count: remark.length,
+        remark,
+        page_input_visible: false,
+        page: '',
+      });
+    }
+
+    renderTaskSub(){
+      let {remark, page_input_visible} = this.state;
+      if(this.state.task_type){
+        return (
+          <div style={{width: 500}}>
+            <Input placeholder="添加作业描述" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
+          </div>
+        ) 
+      }else{
+        return (
           <div>
-          <div style={{marginBottom: '0.5rem'}}>
-            <span style={{
-              width: "5rem", 
-              fontWeight: "bold", 
-              textAlign: "right", 
-              marginRight: "1rem", 
-              paddingRight: "1rem", 
-              borderRight: "2px solid #D3D3D3"
-            }}>{item_title[item.homework_type]}</span> 
-            <a onClick={e => this.props.updateHomework({
-                lesson_id: item.lesson_id,
-                content: this.state.content,
-                resource: this.state.resource,
-                remark: this.state.remark,
-                homework_id: item.homework_id,
-            }, index)} style={{marginRight: '0.5rem'}}>保存</a>
-            <a onClick={e => this.props.deleteHomework({
-              lesson_id: item.lesson_id,
-              homework_id: item.homework_id,
-            }, index)}
-            style={{marginRight: '0.5rem'}}>删除</a>
-            <a onClick={e => this.props.editLessonHomework(index, false)}>取消</a>
+            {
+              remark.map((tag, index) => 
+                  <Tag key={tag} closable afterClose={(removedTag) => {
+                    const tags = this.state.remark.filter(tag => tag !== removedTag);
+                    this.setState({ remark: tags });
+                  }}>
+                    {'P ' + tag}
+                  </Tag>
+                )
+            }
+            {page_input_visible ? 
+              <InputNumber
+                size="small"
+                onChange={(value) => this.setState({page: value})}
+                onBlur={() => this.pageInputConfirm()}
+              />              
+              :
+              <Tag
+                onClick={e => this.setState({page_input_visible: true})}
+                style={{ background: '#fff', borderStyle: 'dashed' }}
+              >
+                <Icon type="plus" /> 添加页码
+              </Tag>
+            }
           </div>
-          {edit_dom}
-          </div>
-        </Item>
-        :
-        <Item actions={[<Icon onClick={e => {
-            this.props.editLessonHomework(index, true);
-            this.setState({
-              homework_type: item.homework_type, 
-              content: item.content, 
-              resource: item.resource,
-              remark: item.remark,
-            });
-          }} type="edit" theme="outlined" />]}>
-          <span style={{
-            width: "5rem", 
-            fontWeight: "bold", 
-            textAlign: "right", 
-            marginRight: "1rem", 
-            paddingRight: "1rem", 
-            borderRight: "2px solid #D3D3D3"
-          }}>{item_title[item.homework_type]}</span>
-          <span style={{width: "25rem"}}>{item.content}</span>
-        </Item>
+        )
+      }      
+    }
+
+    renderHomeworkItem(item, index){
+      const {lesson} = this.props;
+      const {lesson_student, lesson_id} = lesson;
+      const remark_dom = item.task_type ?
+          <div>{item.remark}</div> 
+          : 
+          JSON.parse(item.remark).map((tag) => <Tag key={tag}>{'P ' + tag}</Tag>)
+           
+      return (
+        <Item
+          key={item.task_id}
+          actions={[<Icon onClick = {e => this.props.deleteHomework(lesson_id, item.task_id, lesson_student)} type="delete" />]}
+          
+        >
+          <Item.Meta
+            title={<a style={{fontWeight: "bold"}}>{item.source_name}</a>}
+            description={remark_dom}
+          />
+        </Item>        
       )
     }
 
@@ -549,7 +545,7 @@ class LessonViewModal extends React.Component{
       let {homework} = lesson;
       const homework_list = homework.map((item, i) => this.renderHomeworkItem(item, i));
       return(
-        <List>
+        <List itemLayout="horizontal" bordered>
           {homework_list}
           {this.renderNewHomework()}
         </List>
@@ -617,17 +613,16 @@ class LessonViewModal extends React.Component{
           <a onClick={e => this.props.editLesson('group_edit', false)} style={{marginLeft: 10}}>取消</a> 
         </div>
         :
-        <div>
-        
-        <div style={{fontWeight: 'bold', fontSize: '1.3rem', cursor: 'pointer',}} 
-            onClick={e => {
-              this.props.editLesson('group_edit', true);
-              this.setState({group_id: lesson.stu_group_id});
-            }}>
-          {this.renderCourseAvatar(lesson.course_label)}
-          {lesson.group_name}
-          
-        </div>
+        <div>        
+          <div style={{fontWeight: 'bold', fontSize: '1.3rem', cursor: 'pointer',}} 
+              onClick={e => {
+                this.props.editLesson('group_edit', true);
+                this.setState({group_id: lesson.stu_group_id});
+              }}>
+            {this.renderCourseAvatar(lesson.course_label)}
+            {lesson.group_name}
+            
+          </div>
         </div>
         }
         <Row style={{marginTop: 20}} gutter={2}>
@@ -767,16 +762,16 @@ class LessonViewModal extends React.Component{
       )
     }
 
-    searchKpLabel(input){
-      this.props.searchKp(input);
-      // if (this.timeout) {
-      //   clearTimeout(this.timeout);
-      //   this.timeout = null;
-      // }
-      // this.currentValue = input;
-      // this.timeout = setTimeout(this.props.searchKp(input), 300);
+    // searchKpLabel(input){
+    //   this.props.searchKp(input);
+    //   if (this.timeout) {
+    //     clearTimeout(this.timeout);
+    //     this.timeout = null;
+    //   }
+    //   this.currentValue = input;
+    //   this.timeout = setTimeout(this.props.searchKp(input), 300);
       
-    }
+    // }
 
     renderTeacherComment(){
       const {lesson, search_result } = this.props;
@@ -801,7 +796,7 @@ class LessonViewModal extends React.Component{
             showArrow={false}
             filterOption={false}
             autoFocus={true}
-            onSearch={(input) => this.searchKpLabel(input)}
+            onSearch={(input) => this.searchCommentLabel(input)}
             onBlur={() => this.setState({editCommentLabel: false})}
             onSelect={(value, option) => this.setState({
               comment_label_id: value, 

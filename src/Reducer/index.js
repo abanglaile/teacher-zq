@@ -252,6 +252,8 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
                 .set('room_option', Immutable.fromJS(action.room_option));
         case 'SEARCH_LABEL':
             return state.set('search_result', Immutable.fromJS(action.result));
+        case 'SEARCH_KP_LABEL':
+            return state.setIn('search_result', 'kp_label', Immutable.fromJS(action.result))
         case 'SEARCH_TASK_SOURCE':
             return state.set('search_task_source', Immutable.fromJS(action.result));
         default:
