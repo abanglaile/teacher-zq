@@ -25,9 +25,9 @@ class StudentRes extends React.Component {
 	}
 
 	handleSearch = (selectedKeys, confirm) => () => {
-    confirm();
-    this.setState({ searchText: selectedKeys[0] });
-  }
+		confirm();
+		this.setState({ searchText: selectedKeys[0] });
+	}
 
   handleReset = clearFilters => () => {
     clearFilters();
@@ -133,7 +133,7 @@ class StudentRes extends React.Component {
 							if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
 							else return '';
             },
-            sorter: (a, b) => a.end_time - b.end_time,
+			sorter: (a, b) => (moment(a.end_time)-moment(b.end_time)),
         },{
             title: '作业耗时(分钟)',
             dataIndex: 'time_consuming',

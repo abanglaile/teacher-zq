@@ -291,7 +291,7 @@ export const getTestInfoById = (test_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_TEST_INFO_SUCESS',
-                json : response.data[0], 
+                json : response.data, 
             });
         })
         .catch(function (error) {
@@ -331,6 +331,91 @@ export const getTestResultInfo = (test_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_TEST_RES_TABLE',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+/*---------------------------------------作业管理----------------------------------*/
+//根据teacherid 获取老师创建的所有作业
+const getTasksStart = () => {
+    return {
+      type: 'GET_TASKS_START',
+    }
+}
+
+export const getTaskTable = (teacher_id) => {
+    let url = target + "/getTaskTable";
+    return dispatch => {
+        dispatch(getTasksStart());
+        return axios.get(url,{
+            params:{
+                teacher_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_TASKS_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const delOneTask = (taskid,index) => {
+    let url = target + "/deleteOneTask";
+    return dispatch => {
+        return axios.post(url,{taskid})
+        .then(function (response) {
+            dispatch({
+                type : 'DEL_ONE_TASK',
+                index : index
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getTaskInfoById = (task_id) => {
+    let url = target + "/getTaskInfoById";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                task_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_TASK_INFO_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getTaskResultInfo = (task_id) => {
+    let url = target + "/getTaskResultInfo";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                task_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_TASK_RES_INFO',
                 json : response.data, 
             });
         })

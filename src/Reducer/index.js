@@ -10,7 +10,14 @@ const defaultTestsData = Immutable.fromJS({//教师创建的所有测试
         test_res : {},//测试基本情况，各学生完成情况
         test_kp: {},
         isFetching: false,
-	});
+    });
+    
+const defaultTasksData = Immutable.fromJS({
+    task_data: [], 
+    task_info : {},
+    task_res : [],
+    isFetching: false,
+});
 	
 const defaultStudentData = Immutable.fromJS({//学生信息
 	student_info : {}, //学生基本信息
@@ -93,6 +100,35 @@ export const fetchTestsData = (state = defaultTestsData , action = {}) => {
             return state.set('test_res', Immutable.fromJS(action.json)); 
         case 'GET_MY_TEST_DATA':
             return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
+        default:
+            return state;
+    }
+}
+
+export const TasksData = (state = defaultTasksData , action = {}) => {
+    switch(action.type){
+        case 'GET_TASKS_START':
+            return state.set('isFetching', true);
+        case 'GET_TASKS_SUCESS':
+            return state.set('task_data', Immutable.fromJS(action.json)).set('isFetching', false);
+        // case 'ADD_NEW_TEST':
+        //     var newtest = {'key':action.testid,'testname':action.testname,'teststate':0,'time':''};
+        //     return state.update('test_data', test => test.push(Immutable.fromJS(newtest)));
+        case 'DEL_ONE_TASK':
+            return state.update('task_data', tasks => tasks.splice(action.index,1));
+        // case 'CHANGE_TEST_STATE':
+        //     return state.setIn(['test_data',action.index,'teststate'], 1)
+		// 			.setIn(['test_data',action.index,'time'], action.time);
+		// case 'GET_TEST_DETAIL_SUCESS':
+		// 	return state.set('testlog', Immutable.fromJS(action.json)).set('isFetching', false);
+		case 'GET_TASK_INFO_SUCESS':
+			return state.set('task_info', Immutable.fromJS(action.json));	
+		// case 'GET_TEST_KP_SUCESS':
+		// 	return state.set('kp_data', Immutable.fromJS(action.json));
+		case 'GET_TASK_RES_INFO':
+            return state.set('task_res', Immutable.fromJS(action.json)); 
+        // case 'GET_MY_TEST_DATA':
+        //     return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
         default:
             return state;
     }

@@ -94,7 +94,7 @@ class TestCenter extends React.Component{
                   }
                   <span className="ant-divider" />
                   < Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.key,index)} >
-                      < a href = "#" > 删除 < /a> 
+                      <a href = "#">删除</a> 
                   </Popconfirm >
                   <span className="ant-divider" />
                   <a onClick={()=>this.onCopy(index)}>复制</a>

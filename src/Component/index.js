@@ -61,6 +61,12 @@ class App extends React.Component{
                             课堂管理
                           </div>
                         </Menu.Item>
+                        <Menu.Item key="sub5">
+                          <div onClick={() => this.props.router.push("/teacher-zq/root/task-manager")}
+                          >
+                            作业管理
+                          </div>
+                        </Menu.Item>
                       </Menu>
                     </Sider>
                     <Content style={{ padding: '0 24px', minHeight: 350 }}>
@@ -75,7 +81,7 @@ class App extends React.Component{
         </div> 
       );
     }
-}
+} 
 
 export default connect(state => {
   return {
