@@ -756,10 +756,27 @@ export const addNewLesson = (lesson) => {
     }
 }
 
-export const addHomework = (homework) => {
+export const addHomework = (lesson_id, task, users) => {
     let url = target + "/addHomework";
     return dispatch => {
-        return axios.post(url, {homework})
+        return axios.post(url, {lesson_id, task, users})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_HOMEWORK',
+                homework: response.data, 
+            });
+            dispatch(editLesson('new_homework_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const deleteHomework = (lesson_id, task_id, users) => {
+    let url = target + "/deleteHomework";
+    return dispatch => {
+        return axios.post(url, {lesson_id, task_id, users})
         .then(function (response) {
             dispatch({
                 type : 'EDIT_HOMEWORK',
@@ -999,13 +1016,45 @@ export const updateLessonRange = (lesson_id, start_time, end_time) => {
     }
 }
 
-export const searchKp = (input) => {
-    let url = target + "/searchKp";
+export const searchCommentLabel = (input) => {
+    let url = target + "/searchCommentLabel";
     return dispatch => {
         return axios.get(url, {params: {input}})
         .then(function (response) {
             dispatch({
-                type : 'SEARCH_KP',
+                type : 'SEARCH_LABEL',
+                result: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const searchKpLabel = (input) => {
+    let url = target + "/searchKpLabel";
+    return dispatch => {
+        return axios.get(url, {params: {input}})
+        .then(function (response) {
+            dispatch({
+                type : 'SEARCH_KP_LABEL',
+                result: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const searchTaskSource = (input) => {
+    let url = target + "/searchTaskSource";
+    return dispatch => {
+        return axios.get(url, {params: {input}})
+        .then(function (response) {
+            dispatch({
+                type : 'SEARCH_TASK_SOURCE',
                 result: response.data, 
             });
         })

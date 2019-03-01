@@ -25,9 +25,11 @@ const component = (component) => {
 };
 //独立编译
 //        <Route path="Question" {...component(Question)} />
-
+      /*<Route path="root" component={requireAuthentication(App)}>*/
 export default (
     <Route path='teacher-zq'>
+
+
       {/* <Route path="root" component={requireAuthentication(App)}> */}
       <Route path="root" component={App}>
         <IndexRoute component={TestCenter} />
@@ -37,7 +39,7 @@ export default (
         <Route path="lesson-manager" component={LessonManager}/>
         <Route path="task-manager" component={TaskManager}/>
       </Route>
-      <Route path="stu_evaluation" component={StuEvaluation}/>
+      
       <Route path="stu_capacity/:id" component={StuCapacity}/>
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>
