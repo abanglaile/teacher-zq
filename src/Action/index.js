@@ -1112,6 +1112,22 @@ export const searchTaskSource = (input) => {
     }
 }
 
+export const searchTeacherTask = (teacher_id, input) => {
+    let url = target + "/searchTeacherTask";
+    return dispatch => {
+        return axios.get(url, {params: {teacher_id, input}})
+        .then(function (response) {
+            dispatch({
+                type : 'SEARCH_TEACHER_TASK',
+                result: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const getOptionData = (teacher_id, school_id) => {
     let url = target + "/getOptionData";
     console.log(teacher_id);

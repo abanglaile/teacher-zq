@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button,Breadcrumb, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, List, Tag, Dropdown, Mention} from 'antd';
+import {Icon,Spin,Table, Menu, Row, Col, Tabs, Form, Button,Breadcrumb, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, List, Tag, Dropdown, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -31,21 +31,26 @@ const IconText = ({ type, text }) => (
 class LessonManager extends React.Component{
     constructor(props) {
         super(props);
+        let start_time = new Date();
+        start_time.setDate(start_time.getDate() - 7);
+        console.log(start_time);
         this.state={
           kp_tags: [],
-          select_teacher: "10001",
+          select_teacher: "3044f0f040ba11e9ad2ca1607a4b5d90",
           select_student: [],
+          start_time: start_time,
           range_time: [],
           visible:false,
           teacher_id : 1,
         };
-        this.searchKpLabel = debounce(this.searchKpLabel, 500);
     }
 
     componentDidMount(){
-      this.props.getClassGroup(10001);
-      this.props.getOptionData(10001, 1);
-      this.props.getTeacherLesson({teacher_id: 10001});//teacher_id 为10001 暂时
+      let {teacher_id} = this.props;
+      teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
+      this.props.getClassGroup(teacher_id);
+      this.props.getOptionData(teacher_id, 1);
+      this.props.getTeacherLesson({teacher_id});
     }
 
 
@@ -160,17 +165,6 @@ class LessonManager extends React.Component{
         </Modal>
       )
     }
-
-    searchKpLabel(input){
-      this.props.searchKp(input);
-      // if (this.timeout) {
-      //   clearTimeout(this.timeout);
-      //   this.timeout = null;
-      // }
-      // this.currentValue = input;
-      // this.timeout = setTimeout(this.props.searchKp(input), 300);
-      
-    }
     
     renderCourseAvatar(course_label){
       <Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>
@@ -203,108 +197,130 @@ class LessonManager extends React.Component{
 
     renderQueryOption(){
       const {teacher_group, course_option, label_option, teacher_option} = this.props;
-      const {select_teacher, select_assistant, range_time, group_id, course_label, label_id, querySpread} = this.state;
+      const {select_teacher, select_assistant, start_time, end_time, group_id, course_label, label_id, querySpread} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
       const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
       const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       
+      console.log(start_time, end_time);
+
       return(
       <div>
-        <Row>
-          <Col span={7}>
-            <span style={{marginRight: "1rem"}}>学生分组：</span> 
-            <Select
-              showSearch
-              style={{ width: "140" }}
-              placeholder="选择学生分组"
-              optionFilterProp="children"
-              onChange={(value) => this.setState({group_id: value})}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {group_option}
-            </Select>  
-          </Col>
-          <Col span={13}>
-            <span style={{ marginRight: "1rem" }}>上课时间：</span>  
-            <RangePicker
-              locale={locale}
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              placeholder={['开始时间', '结束时间']}
-              onChange={(value,dateString) => this.setState({range_time: dateString})}
-            /> 
-          </Col>
-          <Col span={querySpread ? 0 : 4}>
-            <Button 
-              type="primary"  
-              onClick={() => this.props.getTeacherLesson({
+        <Form
+          style = {{
+            padding: "24px",
+            background: "#fbfbfb",
+            border: "1px solid #d9d9d9",
+            borderRadius: "6px"
+          }}
+          layout="inline"
+          
+        >
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col md={8} sm={24}>
+              <Form.Item label={"学生分组"}>
+                <Select
+                  showSearch
+                  style={{ width: "170" }}
+                  placeholder="选择学生分组"
+                  optionFilterProp="children"
+                  onChange={(value) => this.setState({group_id: value})}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {group_option}
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col md={8} sm={24}>
+              <Form.Item label={"开始时间"}>
+                <DatePicker
+                  locale={locale}
+                  style={{ width: 170 }}
+                  showTime={{ format: 'HH:mm' }}
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder={"开始时间"}
+                  onChange={(value,dateString) => this.setState({start_time: dateString})}
+                /> 
+              </Form.Item>
+            </Col>
+
+            <Col md={8} sm={24}>
+              <Form.Item label={"结束时间"}>
+                <DatePicker
+                  locale={locale}
+                  style={{ width: 170 }}
+                  showTime={{ format: 'HH:mm' }}
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder={"结束时间"}
+                  onChange={(value,dateString) => this.setState({end_time: dateString})}
+                /> 
+              </Form.Item>
+            </Col>            
+
+            <Col span={8} style={{ display: querySpread ? 'block' : 'none' }}>
+              <Form.Item label={"任课老师"}>
+                <Select
+                  placeholder={"选择任课老师"}
+                  value={select_teacher}
+                  onChange={(value) => this.setState({select_teacher: value})}
+                  style={{ width: "170" }}
+                >
+                  {teacherOption}
+                </Select> 
+              </Form.Item>
+            </Col>
+
+            <Col span={8} style={{ display: querySpread ? 'block' : 'none' }}>
+              <Form.Item label={"课程学科"}>
+                <Select
+                  showSearch
+                  style={{ width: 170 }}
+                  placeholder="选择学科"
+                  optionFilterProp="children"
+                  onChange={(value) => this.setState({course_label: value})}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {courseOption}
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col span={8} style={{ display: querySpread ? 'block' : 'none' }}>
+              <Form.Item label={"课程标签"}>
+                <Select
+                  showSearch
+                  style={{ width: 170 }}
+                  placeholder="选择课程标签"
+                  optionFilterProp="children"
+                  onChange={(value) => this.setState({course_label: value})}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {courseOption}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row style={{marginTop: "1rem", marginRight: "7%"}}>  
+            <Col span={24} style={{ textAlign: 'right' }}>
+              <Button type="primary" htmlType="submit" onSubmit={e => this.props.getTeacherLesson({
                 teacher_id: select_teacher, 
-                start_time: range_time[0], 
-                end_time: range_time[1], 
+                start_time: start_time, 
+                end_time: end_time, 
                 group_id: group_id,
                 course_label: course_label, 
                 label_id: label_id,
-              })}
-            >
-              查询
-            </Button>
-            <a onClick={(e) => this.setState({querySpread: true})} style={{marginLeft: "0.5rem"}}>展开<Icon type="down" /></a>
-          </Col>
-        </Row>
-        <Row style={{display: querySpread ? "" : "none", marginTop: "1rem"}}>
-          <Col span={7}>
-            <span style={{ marginRight: "1rem"}}>任课老师：</span>
-            <Select
-              placeholder={"选择任课老师"}
-              value={select_teacher}
-              onChange={(value) => this.setState({select_teacher: value})}
-              style={{ width: "140" }}
-            >
-              {teacherOption}
-            </Select>          
-          </Col>
-          <Col span={13}>
-            <span style={{marginRight: "1rem"}}>学科标签：</span>
-            <Select
-              showSearch
-              style={{ width: 170 }}
-              placeholder="选择学科"
-              optionFilterProp="children"
-              onChange={(value) => this.setState({course_label: value})}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {courseOption}
-            </Select>
-            <Select
-              showSearch
-              style={{ marginLeft: "1rem", width: 165 }}
-              placeholder="选择课程标签"
-              optionFilterProp="children"
-              onChange={(value) => this.setState({label_id: value})}
-              value={this.state.label_id}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {labelOption}
-            </Select>
-          </Col>
-          <Col span={4}>
-            <Button 
-              type="primary"  
-              onClick={() => this.props.getTeacherLesson({
-                teacher_id: select_teacher, 
-                start_time: range_time[0], 
-                end_time: range_time[1], 
-                group_id: group_id,
-                course_label: course_label, 
-                label_id: label_id,
-              })}
-            >
-              查询
-            </Button>
-            <a onClick={(e) => this.setState({querySpread: false})} style={{marginLeft: "0.5rem"}}>收起<Icon type="up" /></a>
-          </Col>
-        </Row>
+              })}>查询</Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
+                重置
+              </Button>
+              <a style={{ marginLeft: 8, fontSize: 12 }} onClick={(e) => this.setState({querySpread: !this.state.querySpread})}>
+                折叠 <Icon type={this.state.querySpread ? 'up' : 'down'} />
+              </a>
+            </Col>
+          </Row>
+        </Form>
         
         </div>
       )
@@ -341,7 +357,7 @@ class LessonManager extends React.Component{
               renderItem={item => (
                 <List.Item
                   key={item.title}
-                  actions={[<IconText type="star-o" text="156" />, <IconText type="like-o" text="156" />, <IconText type="message" text="2" />]}
+                  actions={[<Icon type="check" style={{color: '#08c'}}/>, <Icon type="delete" />, <Checkbox></Checkbox>]}
                 >
                   <List.Item.Meta
                     avatar={this.renderCourseAvatar(item.course_label)}
@@ -349,7 +365,7 @@ class LessonManager extends React.Component{
                       this.props.getOneLesson(item.lesson_id);
                       this.setState({view_modal: true});
                     }}>{item.group_name}</a>}
-                    description={moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("YYYY-MM-DD HH:mm")}
+                    description={moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("HH:mm")}
                   />
                   <div style={{marginLeft:'48px'}}>
                     <Tag style={{marginRight: 10}} color="blue">{item.room_name}</Tag>
