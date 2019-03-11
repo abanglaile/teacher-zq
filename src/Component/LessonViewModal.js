@@ -40,6 +40,7 @@ class LessonViewModal extends React.Component{
         this.searchKpLabel = debounce(this.props.searchKpLabel, 500);
         this.searchCommentLabel = debounce(this.props.searchCommentLabel, 500);
         this.searchTaskSource = debounce(this.props.searchTaskSource, 500);
+        this.searchTeacherTask = debounce(this.props.searchTeacherTask, 500);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -49,11 +50,21 @@ class LessonViewModal extends React.Component{
     }
 
     renderContentItem(item, index){
-      const {lesson_edit, test_option, search_result} = this.props;
+      const {lesson_edit, search_teacher_task, search_result} = this.props;
       const {content_edit} = lesson_edit;
       let {kp_input_visible, kp_tags} = this.state;
-      let item_title = ["课堂学习", "讲解知识", "讲解课件", "课堂小测"];
+      let item_title = ["课堂学习", "讲解知识", "课堂练习"];
       let edit_dom = [];
+      let edit_icon_dom = 
+        <Icon onClick={e => {
+          this.props.editLessonContent(index, true);
+          this.setState({
+            content_type: item.content_type, 
+            content: item.content, 
+            resource: item.resource,
+            kp_tags: item.kpids ? JSON.parse(item.kpids) : []
+          });
+        }} type="edit" theme="outlined" />;
       var tag_color = "";
       const {kp_label} = search_result; 
       const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
@@ -109,28 +120,10 @@ class LessonViewModal extends React.Component{
             </div>
 
             break;
-        case 3:
-          const test_options = test_option.map((item) =>  
-            <Option value={item.test_id.toString()} name={item.test_name}>
-              <div>{item.test_name}</div>
-              <div>{item.enable_time ? "已发布" : "未发布"} | {item.group_time}</div>
-            </Option>)
-          edit_dom = 
-            <Select
-              showSearch
-              showArrow={false}
-              style={{ width: 500 }}
-              placeholder="关联测试"
-              optionFilterProp="children"
-              onSelect={(value, option) => this.setState({resource: value, content: option.props.name})}
-              optionLabelProp={"name"}
-              value={this.state.resource}
-              filterOption={false}
-            >
-              {test_options}
-            </Select>
-
-          break;
+        case 2:
+            edit_icon_dom = null;
+            break;
+        
       }
       return (
       content_edit[index] ?
@@ -163,15 +156,13 @@ class LessonViewModal extends React.Component{
           </div>
         </Item>
         :
-        <Item actions={[<Icon onClick={e => {
-            this.props.editLessonContent(index, true);
-            this.setState({
-              content_type: item.content_type, 
-              content: item.content, 
-              resource: item.resource,
-              kp_tags: item.kpids ? JSON.parse(item.kpids) : []
-            });
-          }} type="edit" theme="outlined" />]}>
+        <Item actions={[
+            edit_icon_dom,
+            <Icon onClick={e => this.props.deleteLessonContent({
+              lesson_id: item.lesson_id,
+              lesson_content_id: item.lesson_content_id,
+            }, index)} type="delete" theme="outlined" />, 
+          ]}>
           <span style={{
             width: "5rem", 
             fontWeight: "bold",
@@ -191,7 +182,7 @@ class LessonViewModal extends React.Component{
       let {lesson_content} = lesson;
       let {new_content_edit} = lesson_edit;
       let {kp_input_visible, kp_tags} = this.state;
-      let item_title = ["自定义", "讲解知识点", "讲解课件", "课堂小测"];
+      let item_title = ["自定义", "讲解知识点", "课堂练习"];
       let edit_dom = [];
       const menu = (
         <Menu>
@@ -200,9 +191,6 @@ class LessonViewModal extends React.Component{
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => this.switchNewContent(2)}>测试</a>
-          </Menu.Item>
-          <Menu.Item>
-            <a onClick={e => this.switchNewContent(3)}>评讲</a>
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => this.switchNewContent(0)}>自定义</a>
@@ -266,25 +254,34 @@ class LessonViewModal extends React.Component{
               }
             </div>
             break;
-        case 3:
-          const test_options = test_option.map((item) =>  
-            <Option value={item.test_id.toString()} name={item.test_name}>
-              <div>{item.test_name}</div>
-              <div>{item.enable_time ? "已发布" : "未发布"} | {item.group_time}</div>
-            </Option>)
+        case 2:
+          const task_option = search_teacher_task.map((item) =>  
+            <Option key={item.task_id} name={item.source_name}>
+              <div style={{fontWeight: "bold"}}>{item.source_name}</div>
+              {
+                item.task_type ?
+                <div>{item.remark}</div> : 
+                JSON.parse(item.remark).map((tag) => <Tag key={tag}>{'P ' + tag}</Tag>)
+              }
+            </Option>
+          )
+
           edit_dom = 
             <Select
-              showSearch
-              showArrow={false}
-              style={{ width: 500 }}
-              placeholder="关联测试"
-              optionFilterProp="children"
-              onChange={(value) => this.setState({resource: value, content: option.props.name})}
-              optionLabelProp={"name"}
+              style={{ width: 300, marginRight: "1rem" }}
               value={this.state.resource}
+              showSearch
+              placeholder={"搜索任务"}
+              defaultActiveFirstOption={false}
+              showArrow={false}
               filterOption={false}
+              optionLabelProp={"name"}
+              autoFocus={true}
+              onSearch={(input) => this.searchTeacherTask(teacher_id, input)}
+              onSelect={(value, option) => this.setState({resource: value, content: option.props.name})}
+              notFoundContent={null}
             >
-              {test_options}
+              {task_option}
             </Select>
           break;
       }
@@ -357,11 +354,11 @@ class LessonViewModal extends React.Component{
     }
 
     renderNewHomework(){
-      const {lesson_edit, lesson, teacher_id, test_option, search_task_source} = this.props;
+      const {lesson_edit, lesson, teacher_id, search_teacher_task, search_task_source} = this.props;
       const {new_homework_edit} = lesson_edit;
       const {lesson_student, lesson_id} = lesson;
       let edit_dom = [];
-      const {task_type, task_count, source_id, remark} = this.state;
+      const {task_type, task_count, source_id, source_type, remark} = this.state;
 
       const menu = (
         <Menu>
@@ -369,7 +366,7 @@ class LessonViewModal extends React.Component{
             <a onClick={e => {
               this.setState({homework_type: 0, content: "", resource: null});
               this.props.editLesson('new_homework_edit', true);
-            }}>添加作业</a>
+            }}>新建作业</a>
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => {
@@ -396,7 +393,7 @@ class LessonViewModal extends React.Component{
                   filterOption={false}
                   autoFocus={true}
                   onSearch={(input) => this.searchTaskSource(input)}
-                  onSelect={(value, option) => this.setState({source_id: value, task_type: option.props.type})}
+                  onSelect={(value, option) => this.setState({source_id: value, source_type: option.props.type, task_type: option.props.type})}
                   notFoundContent={null}
                 >
                   {source_option}  
@@ -408,31 +405,40 @@ class LessonViewModal extends React.Component{
                   disabled={this.state.task_type != 1}
                   onChange={(value) => this.setState({task_count: value})}
                 />
-                <Switch checkedChildren="自定义" unCheckedChildren="指定" 
-                  onChange={checked => checked ? this.setState({task_type: 2, task_count: 0.5}) : null} checked={this.state.task_type == 2} defaultChecked />
+                <Switch style={{marginBottom: "0.2rem"}} checkedChildren="少量" unCheckedChildren="指定" 
+                  onChange={checked => checked ? this.setState({task_type: 2, task_count: 0.5}) : this.setState({task_type: source_type, task_count: 0})} checked={this.state.task_type == 2} defaultChecked />
               </div>
               {this.renderTaskSub()}  
             </div>
           break;
         case 1:
-          const test_options = test_option.map((item) =>  
-            <Option value={item.test_id.toString()} name={item.test_name}>
-              <div>{item.test_name}</div>
-              <div>{item.enable_time ? "已发布" : "未发布"} | {item.group_time}</div>
-            </Option>)
+          const task_option = search_teacher_task.map((item) =>  
+            <Option key={item.task_id} name={item.source_name}>
+              <div style={{fontWeight: "bold"}}>{item.source_name}</div>
+              {
+                item.task_type ?
+                <div>{item.remark}</div> : 
+                JSON.parse(item.remark).map((tag) => <Tag key={tag}>{'P ' + tag}</Tag>)
+              }
+            </Option>
+          )
+
           edit_dom = 
             <Select
+              style={{ width: 300, marginRight: "1rem" }}
+              value={this.state.task_id}
               showSearch
+              placeholder={"搜索任务"}
+              defaultActiveFirstOption={false}
               showArrow={false}
-              style={{ width: 500 }}
-              placeholder="关联测试"
-              optionFilterProp="children"
-              onSelect={(value, option) => this.setState({resource: value, content: option.props.name})}
-              optionLabelProp={"name"}
-              value={this.state.resource}
               filterOption={false}
+              optionLabelProp={"name"}
+              autoFocus={true}
+              onSearch={(input) => this.searchTeacherTask(teacher_id, input)}
+              onSelect={(value) => this.setState({task_id: value})}
+              notFoundContent={null}
             >
-              {test_options}
+              {task_option}
             </Select>
           break;
       }
@@ -447,7 +453,7 @@ class LessonViewModal extends React.Component{
                   task_type: task_type,
                   remark: task_type ? remark : JSON.stringify(remark),
                   task_count: task_count,
-              }, lesson_student)} style={{marginRight: '0.5rem'}}>发布</a>
+              }, lesson_student)} style={{marginRight: '0.5rem'}}>添加</a>
               <a onClick={e => this.props.editLesson('new_homework_edit', false)}>取消</a>
             </div>
             {edit_dom}
@@ -887,7 +893,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson, lesson_edit} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, course_option, label_option, test_option, search_result, search_task_source } = personal_data;
+  const {teacher_option, course_option, label_option, search_teacher_task, search_result, search_task_source } = personal_data;
 
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
@@ -898,7 +904,7 @@ export default connect(state => {
     teacher_option: teacher_option,
     course_option: course_option,
     label_option: label_option,
-    test_option: test_option,
+    search_teacher_task: search_teacher_task,
     search_result: search_result,
     search_task_source: search_task_source,
   }
