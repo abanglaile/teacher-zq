@@ -425,10 +425,36 @@ export const getTaskResultInfo = (task_id) => {
     }
 }
 
+export const setVerifyRes = (verifyState,comment,taskid,teacher_id,student_id) => {
+    let url = target + "/setVerifyRes";
+    return dispatch => {
+        return axios.post(url,{verifyState,comment,taskid,teacher_id,student_id})
+        .then(function (response) {
+            dispatch(getTaskResultInfo(taskid));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const distributeNewHW = (students, task) => {
+    let url = target + "/distributeNewHomeWork";
+    return dispatch => {
+        return axios.post(url, {students, task})
+        .then(function (response) {
+            dispatch(getTaskTable(task.create_user));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 
 /*---------------------------------------班级管理----------------------------------*/
 
-//根据教师username获取 下带的班级分组数据
+//根据教师id获取 下带的班级分组数据
 export const getClassGroup = (teacher_id) => {
     let url = target + "/getClassGroup";
     return dispatch => {
@@ -441,6 +467,28 @@ export const getClassGroup = (teacher_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_CLASSGROUP_SUCESS',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+//根据教师id获取 下带的班级分组及分组内学生的数据
+export const getStudentGroup = (teacher_id) => {
+    let url = target + "/getStudentGroup";
+    return dispatch => {
+        dispatch(getClassgroupStart());
+        return axios.get(url,{
+            params:{
+                teacher_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STUGROUP_SUCESS',
                 json: response.data,
             });
         })

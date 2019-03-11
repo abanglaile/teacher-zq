@@ -26,6 +26,7 @@ const IconText = ({ type, text }) => (
     {text}
   </span>
 );
+// renderNewHomework 摘取新建部分(){
 
 class LessonViewModal extends React.Component{
     constructor(props) {
@@ -525,6 +526,7 @@ class LessonViewModal extends React.Component{
           <div>{item.remark}</div> 
           : 
           JSON.parse(item.remark).map((tag) => <Tag key={tag}>{'P ' + tag}</Tag>)
+          // console.log("item.remark:",item.remark);
            
       return (
         <Item
@@ -869,7 +871,7 @@ class LessonViewModal extends React.Component{
       <Modal title={null} onCancel={this.props.onCancel}        
         footer={null}
         visible={this.state.visible} width={700} >
-          <Tabs defaultActiveKey="1" >
+          <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
             <TabPane tab="课堂点评" key="3">{this.renderTeacherComment()}</TabPane>

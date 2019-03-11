@@ -37,6 +37,7 @@ const defaultBookMenuData = Immutable.fromJS({//book菜单
 const defaultClassGroupData = Immutable.fromJS({//教师管理的所有班级
         classgroup_data: [],
         groupstu_data: [],
+        stugroups_data : [],
         isFetching: false,
     });
 
@@ -176,6 +177,8 @@ export const classGroupData = (state = defaultClassGroupData, action = {}) => {
                           'student_id':action.values.stuid,
                           'phone_num':action.values.phonenum};
             return state.update('groupstu_data', groupstu => groupstu.push(Immutable.fromJS(newstu)));
+        case 'GET_STUGROUP_SUCESS':
+            return state.set('stugroups_data', Immutable.fromJS(action.json)).set('isFetching', false);
         default:
             return state;
     }

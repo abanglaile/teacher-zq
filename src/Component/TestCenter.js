@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Popconfirm ,Checkbox,TreeSelect,Modal} from 'antd';
-import NetUtil from '../utils/NetUtil';
 import Styles from '../styles/testCenter.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -15,38 +14,10 @@ const SHOW_PARENT = TreeSelect.SHOW_PARENT;
 
 var urlip = config.server_url;
 
-var treeData = [{
-  label: 'Node1',
-  value: '0-0',
-  key: '0-0',
-  children: [{
-    label: 'Child Node1',
-    value: '0-0-0',
-    key: '0-0-0',
-  }],
-}, {
-  label: 'Node2',
-  value: '0-1',
-  key: '0-1',
-  children: [{
-    label: 'Child Node3',
-    value: '0-1-0',
-    key: '0-1-0',
-  }, {
-    label: 'Child Node4',
-    value: '0-1-1',
-    key: '0-1-1',
-  }, {
-    label: 'Child Node5',
-    value: '0-1-2',
-    key: '0-1-2',
-  }],
-}];
-
 class TestCenter extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false,teacher_id : 1,tree_value:[],treeData:[]};
+        this.state={visible:false, tree_value:undefined};
         this.columns = [{
             title: '测试名称',
             dataIndex: 'testname',
@@ -105,25 +76,13 @@ class TestCenter extends React.Component{
     }
 
     componentDidMount(){
-      this.loadTestTable();
-    }
-
-    loadTestTable(){
       const {teacher_id} = this.props;
       this.props.getTestTable(teacher_id);
+      this.props.getStudentGroup(teacher_id);
     }
-    
+
     onTest(testid,index){
-      const {treeData,tree_value} = this.state; 
-      this.setState({visible : true, currentid:testid,currentindex:index},()=>{
-            var data = []; 
-            var url = urlip+'/getStudentGroup';
-            NetUtil.get(url, {teacher_id : 1}, (results) => {
-                data = results;
-                console.log("treeData:"+JSON.stringify(data));
-                this.setState({ treeData : data}); 
-            })                         
-      });
+      this.setState({visible : true, currentid:testid,currentindex:index});
     }
     
     onCopy(index){
@@ -166,16 +125,13 @@ class TestCenter extends React.Component{
       });
     }
 
-    // handleAddTest(){
-    // }
-
     render(){
-      const {visible,treeData,tree_value} = this.state;
-      const {tests,isFetching} = this.props;
-      // console.log('tests:'+ JSON.stringify(tests));
+      const {visible, tree_value} = this.state;
+      const {tests, stugroups, isFetching} = this.props;
+      console.log('stugroups:'+ JSON.stringify(stugroups));
 
       const tProps = {
-        treeData : treeData,
+        treeData: stugroups,
         value: tree_value,
         onChange: (value,label,extra)=>this.onChange(value,label,extra),
         multiple: true,
@@ -212,8 +168,9 @@ class TestCenter extends React.Component{
 export default connect(state => {
   console.log(state);
   return {
-    tests: state.fetchTestsData.get('test_data').toJS(), 
-    isFetching: state.fetchTestsData.get('isFetching'), 
-    teacher_id:state.AuthData.get('userid'),
+    tests : state.fetchTestsData.get('test_data').toJS(), 
+    isFetching : state.fetchTestsData.get('isFetching'), 
+    teacher_id : state.AuthData.get('userid'),
+    stugroups : state.classGroupData.get('stugroups_data').toJS(),
   }
 }, action)(TestCenter);
