@@ -7,6 +7,7 @@ import {Chart,Geom,Axis,Tooltip,Coord,Label,Legend} from "bizcharts";
 import DataSet from "@antv/data-set";
 import *as action from '../Action/';
 import {connect} from 'react-redux';
+import Zq_Header from './ZQ_Header';
 const { Header, Footer, Content } = Layout;
 
 class StuEvaluation extends React.Component {
@@ -37,12 +38,15 @@ class StuEvaluation extends React.Component {
 	
 	ProcessKPstatus(){
 		const {eval_data} = this.props;
-		const lable = {
-			offset: 70,
+		const kp_name_lable = {
+			offset: 80,
 			htmlTemplate(text, item, index) {
 				return `<div class="o">${text}</div>`;
 			}
 		};
+		// const value_label = {
+		// 	offset
+		// }
 		const scale = {
 			value:{
 				type:"linear",
@@ -84,21 +88,21 @@ class StuEvaluation extends React.Component {
 					</Row>
 					<Row type="flex" justify="center" align="middle">
 						<Col span={20}>
-							<Chart height={400} data={this.dataProcess(eval_data[i].kp_status)} scale={scale} forceFit>
+							<Chart height={400} padding={[ 20, 30, 20, 30]} data={this.dataProcess(eval_data[i].kp_status)} scale={scale} forceFit>
 								<Legend />
 								<Coord transpose scale={[1, -1]} />
-								<Axis name="kp_name" label={lable}/>
-								<Axis name="value" visible={false} position={"right"} />
+								<Axis name="kp_name" label={kp_name_lable}/>
+								<Axis name="value" visible={false} position={"right"}  />
 								<Tooltip />
 								<Geom
 									type="interval"
 									position="kp_name*value"
 									color={"type"}
-									size={15}
+									size={10}
 									adjust={[
 										{
 											type: "dodge",
-											marginRatio: 1 / 32
+											marginRatio: 0
 										}
 									]}
 								>
@@ -111,7 +115,10 @@ class StuEvaluation extends React.Component {
 										fontSize: '18', // 文本大小
 										// fontWeight: 'bold', // 文本粗细
 										// rotate: 0,
-										// // textBaseline: 'top' // 文本基准线，可取 top middle bottom，默认为middle
+										// textBaseline: 'top' // 文本基准线，可取 top middle bottom，默认为middle
+										}}
+										formatter={(text, item, index)=>{
+											return text + "%"
 										}}
 									/>
 								</Geom>
@@ -141,7 +148,7 @@ class StuEvaluation extends React.Component {
 				</Breadcrumb>
 				<div style={{ background: '#fff', padding: 24, minHeight: 560 }}>
 					<Row type="flex" justify="center" align="middle">
-						<Col span={6}>
+						<Col span={4} offset={3}>
 							<div>
 							<Progress 
 								type="circle"
@@ -151,17 +158,17 @@ class StuEvaluation extends React.Component {
 							/>
 							</div>
 						</Col>
-						<Col span={6}>
+						<Col span={4} offset={3}>
 							<p className="row_rate_time">{TestStatus.elapsed_time}</p>
 						</Col>
-						<Col span={6}>
+						<Col span={6} offset={2}>
 							<p className="row_rate_time">{TestStatus.finish_time}</p>
 						</Col>
 					</Row>
 					<Row type="flex" justify="center" align="middle">
-						<Col span={5}><h3 className="row_rate_p">正确率</h3></Col>
-						<Col span={5}><h3 className="row_rate_p">耗时</h3></Col>
-						<Col span={5}><h3 className="row_rate_p">提交时间</h3></Col>
+						<Col span={5} offset={3}>正确率</Col>
+						<Col span={5} offset={2}>耗时</Col>
+						<Col span={3} offset={3}>提交时间</Col>
 					</Row>
                 <div>
 					{this.ProcessKPstatus()}
