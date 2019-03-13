@@ -39,7 +39,7 @@ export default (
         <Route path="lesson-manager" component={LessonManager}/>
         <Route path="task-manager" component={TaskManager}/>
       </Route>
-      
+      <Route path="stu_evaluation" component={StuEvaluation}/>      
       <Route path="stu_capacity/:id" component={StuCapacity}/>
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>

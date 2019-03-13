@@ -36,7 +36,14 @@ class App extends React.Component{
                 <Content>
                   <div style={{ margin: '5px 0'}}></div>
                   <Layout style={{ padding: '24px 0', background: '#fff'}}>
-                    <Sider width={200} style={{ background: '#fff' }}>
+                    <Sider 
+                      width={200} 
+                      style={{ background: '#fff' }}
+                      breakpoint="lg"
+                      collapsedWidth="0"
+                      onBreakpoint={(broken) => { console.log("broken:",broken); }}
+                      onCollapse={(collapsed, type) => { console.log("collapsed, type:",collapsed, type); }}
+                    >
                       <Menu
                         mode="inline"
                         defaultOpenKeys={['sub1']}

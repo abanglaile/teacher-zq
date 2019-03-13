@@ -1,59 +1,32 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Input, Menu, Select, Button,Breadcrumb, Popconfirm ,Checkbox,TreeSelect,Modal,Tag} from 'antd';
-import NetUtil from '../utils/NetUtil';
-import Styles from '../styles/testCenter.css';
+import {Icon,Spin,Table,Input, Steps, Menu, Select, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
-// import {Link} from 'react-router';
 import config from '../utils/Config';
 import moment from 'moment';
+import debounce from 'lodash/debounce';
 
 const { SubMenu } = Menu;
 const Option = Select.Option;
+const Step = Steps.Step;
 const SHOW_PARENT = TreeSelect.SHOW_PARENT;
 
 var urlip = config.server_url;
 
-var treeData = [{
-  label: 'Node1',
-  value: '0-0',
-  key: '0-0',
-  children: [{
-    label: 'Child Node1',
-    value: '0-0-0',
-    key: '0-0-0',
-  }],
-}, {
-  label: 'Node2',
-  value: '0-1',
-  key: '0-1',
-  children: [{
-    label: 'Child Node3',
-    value: '0-1-0',
-    key: '0-1-0',
-  }, {
-    label: 'Child Node4',
-    value: '0-1-1',
-    key: '0-1-1',
-  }, {
-    label: 'Child Node5',
-    value: '0-1-2',
-    key: '0-1-2',
-  }],
-}];
-
 class TaskManager extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false,tree_value:[],treeData:[],
+        this.state={visible:false,tree_value:[],remark: [],task_type: 0,
             filterDropdownVisible: false, searchText: '', filtered: false, checked : false
         };
+        this.searchTaskSource = debounce(this.props.searchTaskSource, 500);
     }
     
     componentDidMount(){
       const {teacher_id} = this.props;
       this.props.getTaskTable(teacher_id);
+      this.props.getStudentGroup(teacher_id);
     }
 
     handleSearch = (selectedKeys, confirm) => () => {
@@ -66,25 +39,7 @@ class TaskManager extends React.Component{
         this.setState({ searchText: '' });
     }
 
-    onTest(testid,index){
-      const {treeData,tree_value} = this.state; 
-      this.setState({visible : true, currentid:testid,currentindex:index},()=>{
-            var data = []; 
-            var url = urlip+'/getStudentGroup';
-            NetUtil.get(url, {teacher_id : 1}, (results) => {
-                data = results;
-                console.log("treeData:"+JSON.stringify(data));
-                this.setState({ treeData : data}); 
-            })                         
-      });
-    }
-    
-    onCopy(index){
-      // const {data} = this.state;
-
-    }
-
-    onChange(value,label,extra){
+    onTreeChange(value,label,extra){
       console.log(extra);
       console.log("value,label:"+value+" "+label);
       this.setState({ tree_value : value , extra : extra});
@@ -95,22 +50,34 @@ class TaskManager extends React.Component{
     }
 
     handleOk(){
-      const {extra,currentid,currentindex} =this.state;
-      var keys = [];
-      for(var j = 0;j<extra.allCheckedNodes.length;j++){
-          if(extra.allCheckedNodes[j].children != null){
-              for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
-                  keys.push(extra.allCheckedNodes[j].children[i].node.key);
-              }
-          }else{
-              keys.push(extra.allCheckedNodes[j].node.key);
-          }
-      }
-      console.log("keys:",keys);
-      this.props.distributeTest(keys,currentid,currentindex);
-      this.setState({
-          visible: false,
-      });
+        const { teacher_id, search_task_source} = this.props;
+        const {task_type, task_count, source_id, remark, extra} = this.state;
+        var keys = [];
+        for(var j = 0;j<extra.allCheckedNodes.length;j++){
+            if(extra.allCheckedNodes[j].children != null){
+                for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
+                    keys.push({student_id :extra.allCheckedNodes[j].children[i].node.key});
+                }
+            }else{
+                keys.push({student_id : extra.allCheckedNodes[j].node.key});
+            }
+        }
+        console.log("keys:",keys);
+        this.props.distributeNewHW(keys,{
+            source_id: source_id,
+            create_user: teacher_id, 
+            task_type: task_type,
+            remark: task_type ? remark : JSON.stringify(remark),
+            task_count: task_count,
+        });
+        this.setState({
+            visible: false,
+            source_id: null,
+            task_count : null,
+            remark : [],
+            task_type : 0,
+            tree_value : [],
+        });
     }
 
     handleCancel(){
@@ -119,8 +86,151 @@ class TaskManager extends React.Component{
       });
     }
 
-    // handleAddTest(){
-    // }
+    renderNewHomework(){
+        const { teacher_id, search_task_source} = this.props;
+        let edit_dom = [];
+        const {task_type, task_count, source_id, remark} = this.state;
+
+        edit_dom = (
+            <div>
+                {this.renderSelectSource()}
+                {this.renderTaskSub()}
+                {this.renderTreeSelect()}
+            </div>
+        )
+        
+        return (
+            <div>
+                {/* <div style={{marginBottom: '0.5rem'}}>
+                <a onClick={e => this.props.addHomework(lesson_id, {
+                    source_id: source_id,
+                    create_user: teacher_id, 
+                    task_type: task_type,
+                    remark: task_type ? remark : JSON.stringify(remark),
+                    task_count: task_count,
+                }, lesson_student)} style={{marginRight: '0.5rem'}}>发布</a>
+                <a onClick={e => this.props.editLesson('new_homework_edit', false)}>取消</a>
+                </div> */}
+                {edit_dom}
+            </div>
+           )
+    }
+
+    pageInputConfirm(){
+        let {remark, page} = this.state;
+        if (page && remark.indexOf(page) === -1) {
+          remark = [...remark, page];
+        }
+        this.setState({
+          task_count: remark.length,
+          remark,
+          page_input_visible: false,
+          page: '',
+        });
+    }
+
+    renderSelectSource(){
+        const { teacher_id, search_task_source} = this.props;
+        const {task_type, task_count, source_id, remark} = this.state;
+  
+        const source_option = search_task_source.map((item) =>  
+            <Option key={item.source_id} type={item.source_type}>{item.source_name}</Option>)
+        return (
+            <div style={{marginBottom: "0.5rem"}}>
+                <Select
+                    style={{ width: 300, marginRight: "1rem" }}
+                    value={this.state.source_id}
+                    showSearch
+                    placeholder={"选择教材"}
+                    defaultActiveFirstOption={false}
+                    showArrow={false}
+                    filterOption={false}
+                    autoFocus={true}
+                    onSearch={(input) => this.searchTaskSource(input)}
+                    onSelect={(value, option) => this.setState({source_id: value, task_type: option.props.type})}
+                    notFoundContent={null}
+                >
+                    {source_option}  
+                </Select>                
+                <span style={{marginRight: "0.5rem"}}>数量：</span>
+                <InputNumber
+                    style={{marginRight: "1rem"}}
+                    value={this.state.task_count} 
+                    disabled={this.state.task_type != 1}
+                    onChange={(value) => this.setState({task_count: value})}
+                />
+                <Switch checkedChildren="自定义" unCheckedChildren="指定" 
+                    onChange={checked => checked ? this.setState({task_type: 2, task_count: 0.5}) : this.setState({task_type: 0, task_count: null})} 
+                    checked={this.state.task_type == 2} />
+            </div>
+           )
+    }
+
+    renderTaskSub(){
+        let {remark, page_input_visible} = this.state;
+        if(this.state.task_type){
+          return (
+            <div style={{width: 500}}>
+              <Input placeholder="添加作业描述" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
+            </div>
+          ) 
+        }else{
+          return (
+            <div>
+              {
+                remark.map((tag, index) => 
+                    <Tag key={tag} closable afterClose={(removedTag) => {
+                      const tags = this.state.remark.filter(tag => tag !== removedTag);
+                      this.setState({ remark: tags });
+                    }}>
+                      {'P ' + tag}
+                    </Tag>
+                  )
+              }
+              {page_input_visible ? 
+                <InputNumber
+                  size="small"
+                  onChange={(value) => this.setState({page: value})}
+                  onBlur={() => this.pageInputConfirm()}
+                />              
+                :
+                <Tag
+                  onClick={e => this.setState({page_input_visible: true})}
+                  style={{ background: '#fff', borderStyle: 'dashed' }}
+                >
+                  <Icon type="plus" /> 添加页码
+                </Tag>
+              }
+            </div>
+          )
+        }      
+    }
+    
+    renderTreeSelect(){
+        const {tree_value} = this.state;
+        const { stugroups } = this.props;
+        console.log('stugroups:'+ JSON.stringify(stugroups));
+
+        const tProps = {
+            treeData: stugroups,
+            value: tree_value,
+            onChange: (value,label,extra)=>this.onTreeChange(value,label,extra),
+            multiple: true,
+            treeCheckable: true,
+            showCheckedStrategy: SHOW_PARENT,
+            searchPlaceholder: '请选择发布班组',
+            style: {
+            width: 300,
+            },
+        };
+        return(
+            <div style={{marginTop: "1rem"}}>
+                <TreeSelect {...tProps}/>
+            </div>
+        );
+    }
+
+
 
     render(){
         this.columns = [{
@@ -164,7 +274,7 @@ class TaskManager extends React.Component{
                 ) : text;
                 return(
                     <div onClick={() => this.props.router.push("/teacher-zq/task_result/"+record.task_id)}>
-                      {textDom}
+                      <a>{textDom}</a>
                     </div>
                   );
             },
@@ -174,7 +284,7 @@ class TaskManager extends React.Component{
             width: '30%',
             render: (text, record) => {
                 var obj = null;
-                if(record.task_type == '1'){
+                if(record.task_type == '0'){
                     obj = JSON.parse(text);
                 }
                 return(
@@ -212,35 +322,22 @@ class TaskManager extends React.Component{
                 );
             },
         }];
-        const {visible,treeData,tree_value} = this.state;
+        const {visible} = this.state;
         const {tasks,isFetching} = this.props;
-        // console.log('tasks:'+ JSON.stringify(tasks));
-        
-        const tProps = {
-            treeData : treeData,
-            value: tree_value,
-            onChange: (value,label,extra)=>this.onChange(value,label,extra),
-            multiple: true,
-            treeCheckable: true,
-            showCheckedStrategy: SHOW_PARENT,
-            searchPlaceholder: '请选择发布班组',
-            style: {
-            width: 300,
-            },
-        };
+       
         return(
             <div>
                 <Spin spinning={isFetching} />
                 <div style={{marginBottom:"10px"}}>
                 <Button 
                     type="primary"  
-                    onClick={() => this.props.router.push("/teacher-zq/exerview")}
+                    onClick={() => this.setState({visible: true})}
                 >
                     <Icon type="plus" />添加作业
                 </Button>
                 </div>
-                <Modal title="试题分发" visible={visible} width={500} style={{height:400}} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()} okText="确定">
-                    <TreeSelect {...tProps}/>
+                <Modal title="新建作业并发布" visible={visible} width={600} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
+                    {this.renderNewHomework()}
                 </Modal>
                 < Table 
                 columns = { this.columns } 
@@ -253,9 +350,12 @@ class TaskManager extends React.Component{
 
 export default connect(state => {
   console.log('TasksData:',JSON.stringify(state.TasksData));
+  const { search_task_source } = state.personalData.toJS();;
   return {
     tasks: state.TasksData.get('task_data').toJS(), 
     isFetching: state.TasksData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
+    search_task_source: search_task_source,
+    stugroups : state.classGroupData.get('stugroups_data').toJS(),
   }
 }, action)(TaskManager);

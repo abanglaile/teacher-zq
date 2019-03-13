@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Layout,Breadcrumb} from 'antd';
+import { Layout,Breadcrumb,Divider} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
@@ -28,7 +28,18 @@ class TaskResult extends React.Component {
 	
 	render(){
 		const {taskid} = this.state;
-		const {sourcename} = this.props;
+        const {sourcename, task_type, remark} = this.props;
+        const obj = (task_type == '0') ? JSON.parse(remark) : null;
+        const remarkDom = (
+            obj ? 
+            <span style = {{color:"#8c8c8c"}}>
+                { obj.map(item => {
+                    return <span>第{item}页 </span>;
+                })}
+            </span>
+            :
+            <span style = {{color:"#8c8c8c"}}>{remark}</span>
+        );
 		console.log("sourcename",sourcename);
 		if(sourcename){
 			return(
@@ -41,7 +52,11 @@ class TaskResult extends React.Component {
 						<Breadcrumb.Item> 
 							<Link to="/teacher-zq/root/task-manager">作业管理</Link>
 						</Breadcrumb.Item>
-						<Breadcrumb.Item>{sourcename}</Breadcrumb.Item>
+                        <Breadcrumb.Item>
+                            {sourcename}
+                            <Divider type="vertical" />
+                            {remarkDom}
+                        </Breadcrumb.Item>
 					</Breadcrumb>
 					<div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
                         <StuTaskRes taskid={taskid}/>
@@ -62,7 +77,9 @@ export default connect(state => {
   const {task_info} = state.TasksData.toJS();	
 //   console.log('TasksData:',JSON.stringify(state.TasksData));
   return {
-	  sourcename : task_info.source_name,
+      sourcename : task_info.source_name,
+      remark : task_info.remark,
+      task_type : task_info.task_type,
   }
 }, action)(TaskResult);
 

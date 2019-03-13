@@ -37,6 +37,7 @@ class LessonManager extends React.Component{
         this.state={
           kp_tags: [],
           select_teacher: "",
+          select_assistant:"",
           select_student: [],
           start_time: start_time,
           range_time: [],
@@ -48,8 +49,8 @@ class LessonManager extends React.Component{
       let {teacher_id} = this.props;
       teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
       this.props.getClassGroup(teacher_id);
-      this.props.getOptionData(teacher_id, 1);
       this.props.getTeacherLesson(teacher_id, {});
+      // this.props.getOptionData(teacher_id, 1);
     }
 
 
@@ -69,11 +70,19 @@ class LessonManager extends React.Component{
       this.props.addNewLesson(new_lesson);
     }
 
+    onGroupChange(value){
+      console.log("onGroupChange value:",value);
+      var temp = value.split('-');
+      this.setState({group_id: temp[0], course_label : temp[1]});
+      this.props.getOptionData(temp[0]);
+    }
+
     renderNewModal(){
-      const {teacher_group, course_option, label_option, teacher_option, room_option} = this.props;
+      const {teacher_group, label_option, teacher_option, room_option} = this.props;
+      // console.log("teacher_group:",JSON.stringify(teacher_group));
       const {select_teacher, select_assistant} = this.state;
-      const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
-      const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
+      const group_option = teacher_group.map((item) => <Option value={item.stu_group_id+'-'+item.course_label}>{item.group_name}</Option>)
+      // const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
       const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       const roomOption = room_option.map((item) => <Option value={item.room_id}>{item.room_name}</Option>)
@@ -90,7 +99,8 @@ class LessonManager extends React.Component{
               style={{ width: 200 }}
               placeholder="选择学生分组"
               optionFilterProp="children"
-              onChange={(value) => this.setState({group_id: value})}
+              // onChange={(value) => this.setState({group_id: value})}
+              onChange={(value) => this.onGroupChange(value)}
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {group_option}
@@ -108,7 +118,7 @@ class LessonManager extends React.Component{
             </Select> 
           </div>
           <div style={{marginTop: 15}}>
-            <Select
+            {/* <Select
               showSearch
               style={{ width: 200 }}
               placeholder="选择学科"
@@ -117,11 +127,12 @@ class LessonManager extends React.Component{
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {courseOption}
-            </Select>
+            </Select> */}
 
             <Select
               showSearch
-              style={{ marginLeft: 20, width: 200 }}
+              // style={{ marginLeft: 20, width: 200 }}
+              style={{ width: 200 }}
               placeholder="选择课程标签"
               optionFilterProp="children"
               onChange={(value) => this.setState({label_id: value})}
@@ -130,23 +141,25 @@ class LessonManager extends React.Component{
             >
               {labelOption}
             </Select>
+
+            <Select
+              placeholder={"选择任课老师"}
+              optionFilterProp="children"
+              // value={select_teacher}
+              onChange={(value) => this.setState({select_teacher: value})}
+              style={{ marginLeft: 20, width: 200 }}
+            >
+              {teacherOption}
+            </Select>
           </div>
 
           <div style={{marginTop: 15}}>
             <Select
-              placeholder={"选择任课老师"}
-              value={select_teacher}
-              onChange={(value) => this.setState({select_teacher: value})}
-              style={{ width: '200' }}
-            >
-              {teacherOption}
-            </Select>
-
-            <Select
               placeholder="选择助教老师"
-              style={{ marginLeft: 20, width: 200 }}
+              optionFilterProp="children"
+              style={{ width: 200 }}
               onChange={(value) => this.setState({select_assistant: value})}
-              value={select_assistant}
+              // value={select_assistant}
             >
               {teacherOption}
             </Select>
@@ -296,7 +309,7 @@ class LessonManager extends React.Component{
                   onChange={(value) => this.setState({course_label: value})}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
-                  {courseOption}
+                  {labelOption}
                 </Select>
               </Form.Item>
             </Col>
@@ -356,7 +369,13 @@ class LessonManager extends React.Component{
               renderItem={(item, index) => (
                 <List.Item
                   key={item.title}
-                  actions={[<Icon type="check" style={{color: '#08c'}}/>, <Icon type="delete" />, <Checkbox></Checkbox>]}
+                  // actions={[<Icon type="check" style={{color: '#08c'}}/>, <Icon type="delete" />]}
+                  // actions={[<span style={{color: '#52c41a'}}>已签到</span>, <Icon type="delete" />]}
+                  actions={[<span style={{color: '#69c0ff'}}>未签到</span>, <Icon type="delete" />]}
+                  // <Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.task_id,index)} >
+                        // <Icon type="delete"/>
+                  // </Popconfirm >
+                  
                 >
                   <List.Item.Meta
                     avatar={this.renderCourseAvatar(item.course_label)}
@@ -376,7 +395,7 @@ class LessonManager extends React.Component{
             />
          </div>   
       );
-    }
+    }primary
 }
 
 export default connect(state => {
@@ -385,7 +404,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson, lesson_edit, teacher_lesson} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, course_option, label_option, test_option, room_option, search_result } = personal_data;
+  const {teacher_option, course_option, label_option, room_option, search_result } = personal_data;
 
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
@@ -397,7 +416,7 @@ export default connect(state => {
     teacher_option: teacher_option,
     course_option: course_option,
     label_option: label_option,
-    test_option: test_option,
+    // test_option: test_option,
     room_option: room_option,
     search_result: search_result,
   }

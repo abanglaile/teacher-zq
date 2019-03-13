@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button, Switch, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
+import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Button, Switch, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -26,6 +26,7 @@ const IconText = ({ type, text }) => (
     {text}
   </span>
 );
+// renderNewHomework 摘取新建部分(){
 
 class LessonViewModal extends React.Component{
     constructor(props) {
@@ -328,7 +329,6 @@ class LessonViewModal extends React.Component{
       const {teacher_lesson, lesson_index} = this.props;
       let {lesson_content, homework} = teacher_lesson[lesson_index];
       let content_list = lesson_content ? lesson_content.map((item, i) => this.renderContentItem(item, i)) : [];
-      const homework_list = homework ? homework.map((item, i) => this.renderHomeworkItem(item, i)): [];
       return(
         <div>
           <div style={{marginBottom: "1rem"}}>
@@ -346,10 +346,7 @@ class LessonViewModal extends React.Component{
             <span style={{fontSize: "1rem", color: "#D3D3D3", marginLeft: "0.5rem"}}>作业</span>
           </div>
           <div style={{padding: "0px 1rem 0px 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
-            <List split={false} size={"small"}>
-              {homework_list}
-              {this.renderNewHomework()}
-            </List>
+            {this.renderHomework()}
           </div>
         </div>
       )
@@ -526,6 +523,7 @@ class LessonViewModal extends React.Component{
       }      
     }
 
+
     renderHomework(){
       const {teacher_lesson, lesson_index} = this.props;
       let {homework} = teacher_lesson[lesson_index];
@@ -586,6 +584,10 @@ class LessonViewModal extends React.Component{
       );
     }
 
+    onConfirm(e){
+
+    }
+
     renderLessonBasic(){
       const {teacher_group, course_option, label_option, teacher_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
       const {teacher_edit, assistant_edit} = lesson_edit;
@@ -599,12 +601,22 @@ class LessonViewModal extends React.Component{
 
       return(
         <div>
-        <div>        
-          <div style={{fontWeight: 'bold', fontSize: '1.3rem'}} >
-            {this.renderCourseAvatar(course_label)}
-            {group_name}
-          </div>
-        </div>
+        <Row  gutter={2} type="flex" justify="space-between" align="middle">
+          <Col span={18}>
+            <div>        
+              <div style={{fontWeight: 'bold', fontSize: '1.3rem'}} >
+                {this.renderCourseAvatar(course_label)}
+                {group_name}
+              </div>
+            </div>
+          </Col>
+          <Col span={4}>
+            {/* <Popconfirm placement="bottomRight" onConfirm={(e) => this.onConfirm(e)} title="确定课程是否完成？" okText="确定" cancelText="取消">
+              <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
+            </Popconfirm> */}
+            <Button type="primary" size={"small"}>已签到</Button>
+          </Col>
+        </Row>
         <Row style={{marginTop: 20}} gutter={2}>
           <Col style={{color: '#a6a6a6'}} span={6}>
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="tags" theme="outlined" />课程标签</div>
@@ -827,7 +839,7 @@ class LessonViewModal extends React.Component{
       <Modal title={null} onCancel={this.props.onCancel}        
         footer={null}
         visible={this.state.visible} width={700} >
-          <Tabs defaultActiveKey="1" >
+          <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
             <TabPane tab="课堂点评" key="3">{this.renderTeacherComment()}</TabPane>
