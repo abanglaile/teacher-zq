@@ -1128,18 +1128,17 @@ export const searchTeacherTask = (teacher_id, input) => {
     }
 }
 
-export const getOptionData = (teacher_id, school_id) => {
+export const getOptionData = (group_id) => {
     let url = target + "/getOptionData";
-    console.log(teacher_id);
     return dispatch => {
-        return axios.get(url, {params: {teacher_id, school_id}})
+        return axios.get(url, {params: {group_id}})
         .then(function (response) {
             dispatch({
                 type : 'GET_TEACHER_OPTION',
                 teacher_option: response.data.teacher_option, 
                 course_option: response.data.course_option,
                 label_option: response.data.label_option,
-                test_option: response.data.test_option,
+                // test_option: response.data.test_option,
                 room_option: response.data.room_option,
             });
         })

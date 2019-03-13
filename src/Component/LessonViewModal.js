@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Button, Switch, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
+import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Button, Switch, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -590,6 +590,10 @@ class LessonViewModal extends React.Component{
       );
     }
 
+    onConfirm(e){
+
+    }
+
     renderLessonBasic(){
       const {teacher_group, course_option, label_option, teacher_option, lesson, lesson_edit} = this.props;
       const {teacher_edit, assistant_edit} = lesson_edit;
@@ -603,36 +607,45 @@ class LessonViewModal extends React.Component{
 
       return(
         <div>
-        
-        {lesson_edit.group_edit ? 
-        <div>
-          <Select
-            showSearch
-            style={{ width: 200 }}
-            placeholder="选择学生分组"
-            optionFilterProp="children"
-            onChange={(value) => this.setState({group_id: value})}
-            value={this.state.group_id}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          >
-            {group_option}
-          </Select>
-          <a onClick={e => this.props.updateLessonGroup(lesson.lesson_id, this.state.group_id)} style={{marginLeft: 10}}>确定</a>
-          <a onClick={e => this.props.editLesson('group_edit', false)} style={{marginLeft: 10}}>取消</a> 
-        </div>
-        :
-        <div>        
-          <div style={{fontWeight: 'bold', fontSize: '1.3rem', cursor: 'pointer',}} 
-              onClick={e => {
-                this.props.editLesson('group_edit', true);
-                this.setState({group_id: lesson.stu_group_id});
-              }}>
-            {this.renderCourseAvatar(lesson.course_label)}
-            {lesson.group_name}
-            
-          </div>
-        </div>
-        }
+        <Row  gutter={2} type="flex" justify="space-between" align="middle">
+          <Col span={18}>
+            {lesson_edit.group_edit ? 
+            <div>
+              <Select
+                showSearch
+                style={{ width: 200 }}
+                placeholder="选择学生分组"
+                optionFilterProp="children"
+                onChange={(value) => this.setState({group_id: value})}
+                value={this.state.group_id}
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                {group_option}
+              </Select>
+              <a onClick={e => this.props.updateLessonGroup(lesson.lesson_id, this.state.group_id)} style={{marginLeft: 10}}>确定</a>
+              <a onClick={e => this.props.editLesson('group_edit', false)} style={{marginLeft: 10}}>取消</a> 
+            </div>
+            :
+            <div>        
+              <div style={{fontWeight: 'bold', fontSize: '1.3rem', cursor: 'pointer',}} 
+                  onClick={e => {
+                    this.props.editLesson('group_edit', true);
+                    this.setState({group_id: lesson.stu_group_id});
+                  }}>
+                {this.renderCourseAvatar(lesson.course_label)}
+                {lesson.group_name}
+                
+              </div>
+            </div>
+            }
+          </Col>
+          <Col  span={4}>
+            {/* <Popconfirm placement="bottomRight" onConfirm={(e) => this.onConfirm(e)} title="确定课程是否完成？" okText="确定" cancelText="取消">
+              <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
+            </Popconfirm> */}
+            <Button type="primary" size={"small"}>已签到</Button>
+          </Col>
+        </Row>
         <Row style={{marginTop: 20}} gutter={2}>
           <Col style={{color: '#a6a6a6'}} span={6}>
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="tags" theme="outlined" />课程标签</div>

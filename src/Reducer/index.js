@@ -287,7 +287,6 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
             return state.set('teacher_option', Immutable.fromJS(action.teacher_option))
                 .set('course_option', Immutable.fromJS(action.course_option))
                 .set('label_option', Immutable.fromJS(action.label_option))
-                .set('test_option', Immutable.fromJS(action.test_option))
                 .set('room_option', Immutable.fromJS(action.room_option));
         case 'SEARCH_LABEL':
             return state.set('search_result', Immutable.fromJS(action.result));
