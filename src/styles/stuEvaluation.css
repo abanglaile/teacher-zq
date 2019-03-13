@@ -1,5 +1,9 @@
 .o{
-    width: 60px;
+    width: 70px;
     word-wrap:break-word;
     text-align:center
+}
+.row_rate_p{
+	margin: 5px 0 0 8px;
+	font-size:9px;
 }

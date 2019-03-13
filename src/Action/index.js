@@ -729,27 +729,27 @@ export const getKpWithScore = (chapter_id, student_id) => {
     }
 }
 
-export const getstuEvaluationData= (student_id,test_id) => {
-    let path = '/getMyTestStepAnalysis'
-    let url = target + path;
-    return dispatch => {
-        return axios.get(url,{
-            params:{
-                test_id,
-                student_id,
-            }
-        })
-        .then(function (response) {
-            dispatch({
-                type : 'GET_STU_EVAL_SUCESS',
-                json: response.data,
-            });
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-}
+// export const getstuEvaluationData= (student_id,test_id) => {
+//     let path = '/getMyTestStepAnalysis'
+//     let url = target + path;
+//     return dispatch => {
+//         return axios.get(url,{
+//             params:{
+//                 test_id,
+//                 student_id,
+//             }
+//         })
+//         .then(function (response) {
+//             dispatch({
+//                 type : 'GET_STU_EVAL_SUCESS',
+//                 json: response.data,
+//             });
+//         })
+//         .catch(function (error) {
+//             console.log(error);
+//         });
+//     }
+// }
 /*---------------------------------------课程管理----------------------------------*/
 export const getTeacherLesson = (filter_option) => {
     let url = target + "/getTeacherLesson";
@@ -1140,6 +1140,32 @@ export const getOptionData = (group_id) => {
                 label_option: response.data.label_option,
                 // test_option: response.data.test_option,
                 room_option: response.data.room_option,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+export const getstuEvaluationDataStart = () => {
+    return {
+      type: 'GET_STU_EVAL_START',
+    }
+  }
+export const getstuEvaluationData= (student_id,test_id) => {
+    let path = '/getMyTestStepAnalysis'
+    let url = target + path;
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+                student_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_EVAL_SUCESS',
+                json: response.data,
             });
         })
         .catch(function (error) {
