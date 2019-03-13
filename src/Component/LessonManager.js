@@ -372,11 +372,11 @@ class LessonManager extends React.Component{
                   key={item.title}
                   // actions={[<Icon type="check" style={{color: '#08c'}}/>, <Icon type="delete" />]}
                   // actions={[<span style={{color: '#52c41a'}}>已签到</span>, <Icon type="delete" />]}
-                  actions={[<span style={{color: '#69c0ff'}}>未签到</span>, <Icon type="delete" />]}
-                  // <Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.task_id,index)} >
-                        // <Icon type="delete"/>
-                  // </Popconfirm >
-                  
+                  actions={[<span style={{color: '#69c0ff'}}>未签到</span>,
+                  <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteOneLesson(item.lesson_id)} >
+                      <Icon type="delete"/>
+                  </Popconfirm >
+                  ]}
                 >
                   <List.Item.Meta
                     avatar={this.renderCourseAvatar(item.course_label)}

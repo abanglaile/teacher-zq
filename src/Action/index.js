@@ -788,6 +788,23 @@ export const getOneLesson = (lesson_id) => {
     }
 }
 
+export const deleteOneLesson = (lesson_id) => {
+    let url = target + "/deleteOneLesson";
+    console.log(lesson_id);
+    return dispatch => {
+        return axios.post(url, {lesson_id})
+        .then(function (response) {
+            dispatch({
+                type : 'DELETE_ONE_LESSON',
+                lesson: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const addNewLesson = (lesson) => {
     let url = target + "/addNewLesson";
     return dispatch => {
