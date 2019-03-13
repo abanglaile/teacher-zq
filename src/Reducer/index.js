@@ -42,13 +42,13 @@ const defaultClassGroupData = Immutable.fromJS({//教师管理的所有班级
 
 const defaultLessonData = Immutable.fromJS({//课程管理
         school_teacher: [],
-        teacher_lesson: [],
-        lesson: {
+        teacher_lesson: [{
             lesson_teacher: [],
             lesson_student: [],
             homework: [],
             lesson_content: [{content: "abc"}]
-        },
+        }],
+        lesson_index: 0,
         lesson_edit: {content_edit: [], homework_edit: [], sub_view: 0},
         isFetching: false,
     });
@@ -239,7 +239,9 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'GET_TEACHER_LESSON':
             return state.set('teacher_lesson', Immutable.fromJS(action.teacher_lesson));
         case 'GET_ONE_LESSON':
-            return state.set('lesson', Immutable.fromJS(action.lesson));
+            return state.setIn(['teacher_lesson', action.index], Immutable.fromJS(action.lesson));
+        case 'SET_LESSON_INDEX':
+            return state.set('lesson_index', action.index);
         case 'ADD_LESSON':
             return state.set('feedback_success', true);
         case 'EDIT_LESSON_CONTENT':
@@ -256,15 +258,15 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'UPDATE_LESSON_ASSISTANT':
             return state.setIn(['lesson','assistant_id'], action.lesson_basic.assistant_id)
                 .setIn(['lesson','assistant_name'], action.lesson_basic.assistant_name);
-        case 'UPDATE_LESSON_GROUP':
-            return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
-                .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);
-        case 'UPDATE_LESSON_COURSE':
-            return state.setIn(['lesson','course_id'], action.lesson_basic.course_id)
-                .setIn(['lesson','course_name'], action.lesson_basic.course_name);
-        case 'UPDATE_LESSON_LABEL':
-            return state.setIn(['lesson','label_id'], action.lesson_basic.label_id)
-                .setIn(['lesson','label_name'], action.lesson_basic.label_name);
+        // case 'UPDATE_LESSON_GROUP':
+        //     return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
+        //         .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);
+        // case 'UPDATE_LESSON_COURSE':
+        //     return state.setIn(['lesson','course_id'], action.lesson_basic.course_id)
+        //         .setIn(['lesson','course_name'], action.lesson_basic.course_name);
+        // case 'UPDATE_LESSON_LABEL':
+        //     return state.setIn(['lesson','label_id'], action.lesson_basic.label_id)
+        //         .setIn(['lesson','label_name'], action.lesson_basic.label_name);
         case 'UPDATE_LESSON_RANGE':
             return state.setIn(['lesson','start_time'], Immutable.fromJS(action.start_time))
                 .setIn(['lesson','end_time'], Immutable.fromJS(action.end_time));

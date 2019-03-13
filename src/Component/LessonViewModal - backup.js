@@ -327,8 +327,8 @@ class LessonViewModal extends React.Component{
     renderLessonContent(){
       const {teacher_lesson, lesson_index} = this.props;
       let {lesson_content, homework} = teacher_lesson[lesson_index];
-      let content_list = lesson_content ? lesson_content.map((item, i) => this.renderContentItem(item, i)) : [];
-      const homework_list = homework ? homework.map((item, i) => this.renderHomeworkItem(item, i)): [];
+      let content_list = lesson_content.map((item, i) => this.renderContentItem(item, i));
+      const homework_list = homework.map((item, i) => this.renderHomeworkItem(item, i));
       return(
         <div>
           <div style={{marginBottom: "1rem"}}>
@@ -587,9 +587,9 @@ class LessonViewModal extends React.Component{
     }
 
     renderLessonBasic(){
-      const {teacher_group, course_option, label_option, teacher_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
+      const {teacher_group, course_option, label_option, teacher_option, lesson, lesson_edit} = this.props;
       const {teacher_edit, assistant_edit} = lesson_edit;
-      const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, lesson_id} = teacher_lesson[lesson_index];
+      const {teacher_name, assistant_name} = lesson;
       const {select_teacher, select_assistant} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
       const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
@@ -599,20 +599,67 @@ class LessonViewModal extends React.Component{
 
       return(
         <div>
+        
+        {lesson_edit.group_edit ? 
+        <div>
+          <Select
+            showSearch
+            style={{ width: 200 }}
+            placeholder="选择学生分组"
+            optionFilterProp="children"
+            onChange={(value) => this.setState({group_id: value})}
+            value={this.state.group_id}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
+            {group_option}
+          </Select>
+          <a onClick={e => this.props.updateLessonGroup(lesson.lesson_id, this.state.group_id)} style={{marginLeft: 10}}>确定</a>
+          <a onClick={e => this.props.editLesson('group_edit', false)} style={{marginLeft: 10}}>取消</a> 
+        </div>
+        :
         <div>        
-          <div style={{fontWeight: 'bold', fontSize: '1.3rem'}} >
-            {this.renderCourseAvatar(course_label)}
-            {group_name}
+          <div style={{fontWeight: 'bold', fontSize: '1.3rem', cursor: 'pointer',}} 
+              onClick={e => {
+                this.props.editLesson('group_edit', true);
+                this.setState({group_id: lesson.stu_group_id});
+              }}>
+            {this.renderCourseAvatar(lesson.course_label)}
+            {lesson.group_name}
+            
           </div>
         </div>
+        }
         <Row style={{marginTop: 20}} gutter={2}>
           <Col style={{color: '#a6a6a6'}} span={6}>
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="tags" theme="outlined" />课程标签</div>
           </Col>
           <Col span={16}>
-            <div style={{fontSize: '1rem'}}>
-              <Tag style={{marginRight: 10}} color="green">{label_name}</Tag>  
-            </div>
+            {
+              lesson_edit.label_edit ?
+              <div>
+                <Select
+                  showSearch
+                  style={{ width: 120 }}
+                  placeholder="选择标签"
+                  optionFilterProp="children"
+                  onChange={(value) => this.setState({label_id: value})}
+                  value={this.state.label_id}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {labelOption}
+                </Select>
+                <a onClick={e => this.props.updateLessonLabel(lesson.lesson_id, this.state.label_id)} style={{marginLeft: 10}}>确定</a>
+                <a onClick={e => this.props.editLesson('label_edit', false)} style={{marginLeft: 10}}>取消</a> 
+              </div>
+              :
+              <div style={{fontSize: '1rem', cursor: 'pointer'}} 
+                  onClick={e => {
+                    this.props.editLesson('label_edit', true);
+                    this.setState({course_label: lesson.course_label, label_id: lesson.label_id});
+                  }}>
+                <Tag style={{marginRight: 10}} color="green">{lesson.label_name}</Tag>  
+              </div>
+            }
           </Col>
         </Row>
         <Row style={{marginTop: 20}} gutter={2}>
@@ -631,7 +678,7 @@ class LessonViewModal extends React.Component{
                   placeholder={['Start Time', 'End Time']}
                 />
                 <div style={{marginTop: 5}}>
-                  <a onClick={e => this.props.updateLessonRange(lesson_id, this.state.start_time.toDate(), this.state.end_time.toDate())}>确定</a>
+                  <a onClick={e => this.props.updateLessonRange(lesson.lesson_id, this.state.start_time.toDate(), this.state.end_time.toDate())}>确定</a>
                   <a onClick={e => this.props.editLesson('range_edit', false)} style={{marginLeft: 10}}>取消</a> 
                 </div>
               </div>
@@ -639,9 +686,9 @@ class LessonViewModal extends React.Component{
               <div style={{fontSize: '1rem', cursor: 'pointer'}} 
                   onClick={e => {
                     this.props.editLesson('range_edit', true);
-                    this.setState({start_time: moment(start_time), end_time: moment(end_time)});
+                    this.setState({start_time: moment(lesson.start_time), end_time: moment(lesson.end_time)});
                   }}>
-                {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("YYYY-MM-DD HH:mm")}
+                {moment(lesson.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(lesson.end_time).format("YYYY-MM-DD HH:mm")}
               </div>
             }  
           </Col>
@@ -651,7 +698,7 @@ class LessonViewModal extends React.Component{
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="idcard" theme="outlined" />课室</div>
           </Col>
           <Col className="gutter-row" span={16}>
-            <Tag style={{marginRight: 10}} color="#2db7f5">{room_name}</Tag>
+            <Tag style={{marginRight: 10}} color="#2db7f5">{lesson.room_name}</Tag>
           </Col>
         </Row>
         <Row style={{marginTop: 20}} gutter={2}>
@@ -671,13 +718,13 @@ class LessonViewModal extends React.Component{
                 >
                   {teacherOption}
                 </Select>
-                <a onClick={e => this.props.updateLessonTeacher(lesson_id, select_teacher)} style={{marginLeft: 10}}>确定</a>
+                <a onClick={e => this.props.updateLessonTeacher(lesson.lesson_id, select_teacher)} style={{marginLeft: 10}}>确定</a>
                 <a onClick={e => this.props.editLesson('teacher_edit', false)} style={{marginLeft: 10}}>取消</a>
               </div>
               :
               <div style={{cursor: 'pointer', }} onClick={e => {
                     this.props.editLesson('teacher_edit', true);
-                    this.setState({select_teacher: teacher_id});
+                    this.setState({select_teacher: lesson.teacher_id});
                   }}>
                 {teacher_name}
               </div>
@@ -784,8 +831,7 @@ class LessonViewModal extends React.Component{
                 style={{ width: '12rem', marginRight: '1rem' }}
               >
                 {
-                  lesson_student ? 
-                  lesson_student.map(item => <Option key={item.student_id}>{item.realname}</Option>) : []
+                  lesson_student.map(item => <Option key={item.student_id}>{item.realname}</Option>)
                 }
               </Select>
               <Button 
@@ -850,7 +896,6 @@ export default connect(state => {
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
-    teacher_lesson: teacher_lesson,
     lesson_index: lesson_index,
     lesson_edit: lesson_edit,
     teacher_group: classgroup_data,
