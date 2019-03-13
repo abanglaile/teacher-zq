@@ -42,7 +42,6 @@ class LessonManager extends React.Component{
           start_time: start_time,
           range_time: [],
           visible:false,
-          teacher_id : 1,
         };
     }
 
@@ -50,8 +49,8 @@ class LessonManager extends React.Component{
       let {teacher_id} = this.props;
       teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
       this.props.getClassGroup(teacher_id);
+      this.props.getTeacherLesson(teacher_id, {});
       // this.props.getOptionData(teacher_id, 1);
-      this.props.getTeacherLesson({teacher_id});
     }
 
 
@@ -209,7 +208,7 @@ class LessonManager extends React.Component{
     }
 
     renderQueryOption(){
-      const {teacher_group, label_option, course_option, teacher_option} = this.props;
+      const {teacher_group, course_option, label_option, teacher_option, teacher_id} = this.props;
       const {select_teacher, select_assistant, start_time, end_time, group_id, course_label, label_id, querySpread} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
       const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
@@ -317,13 +316,13 @@ class LessonManager extends React.Component{
           </Row>
           <Row style={{marginTop: "1rem", marginRight: "7%"}}>  
             <Col span={24} style={{ textAlign: 'right' }}>
-              <Button type="primary" htmlType="submit" onSubmit={e => this.props.getTeacherLesson({
-                teacher_id: select_teacher, 
-                start_time: start_time, 
-                end_time: end_time, 
-                group_id: group_id,
-                course_label: course_label, 
-                label_id: label_id,
+              <Button type="primary" htmlType="submit" onSubmit={e => this.props.getTeacherLesson(teacher_id, {
+                select_teacher, 
+                start_time, 
+                end_time, 
+                group_id,
+                course_label, 
+                label_id,
               })}>查询</Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
                 重置
@@ -367,7 +366,7 @@ class LessonManager extends React.Component{
                 pageSize: 3,
               }}
               dataSource={teacher_lesson}
-              renderItem={item => (
+              renderItem={(item, index) => (
                 <List.Item
                   key={item.title}
                   // actions={[<Icon type="check" style={{color: '#08c'}}/>, <Icon type="delete" />]}
@@ -381,7 +380,8 @@ class LessonManager extends React.Component{
                   <List.Item.Meta
                     avatar={this.renderCourseAvatar(item.course_label)}
                     title={<a onClick={e => {
-                      this.props.getOneLesson(item.lesson_id);
+                      this.props.getOneLesson(item.lesson_id, index);
+                      this.props.setLessonIndexVisible(index);
                       this.setState({view_modal: true});
                     }}>{item.group_name}</a>}
                     description={moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("HH:mm")}

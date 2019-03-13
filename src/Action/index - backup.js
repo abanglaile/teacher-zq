@@ -425,36 +425,10 @@ export const getTaskResultInfo = (task_id) => {
     }
 }
 
-export const setVerifyRes = (verifyState,comment,taskid,teacher_id,student_id) => {
-    let url = target + "/setVerifyRes";
-    return dispatch => {
-        return axios.post(url,{verifyState,comment,taskid,teacher_id,student_id})
-        .then(function (response) {
-            dispatch(getTaskResultInfo(taskid));
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-}
-
-export const distributeNewHW = (students, task) => {
-    let url = target + "/distributeNewHomeWork";
-    return dispatch => {
-        return axios.post(url, {students, task})
-        .then(function (response) {
-            dispatch(getTaskTable(task.create_user));
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-}
-
 
 /*---------------------------------------班级管理----------------------------------*/
 
-//根据教师id获取 下带的班级分组数据
+//根据教师username获取 下带的班级分组数据
 export const getClassGroup = (teacher_id) => {
     let url = target + "/getClassGroup";
     return dispatch => {
@@ -467,28 +441,6 @@ export const getClassGroup = (teacher_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_CLASSGROUP_SUCESS',
-                json: response.data,
-            });
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-}
-
-//根据教师id获取 下带的班级分组及分组内学生的数据
-export const getStudentGroup = (teacher_id) => {
-    let url = target + "/getStudentGroup";
-    return dispatch => {
-        dispatch(getClassgroupStart());
-        return axios.get(url,{
-            params:{
-                teacher_id,
-            }
-        })
-        .then(function (response) {
-            dispatch({
-                type : 'GET_STUGROUP_SUCESS',
                 json: response.data,
             });
         })
@@ -729,32 +681,32 @@ export const getKpWithScore = (chapter_id, student_id) => {
     }
 }
 
-// export const getstuEvaluationData= (student_id,test_id) => {
-//     let path = '/getMyTestStepAnalysis'
-//     let url = target + path;
-//     return dispatch => {
-//         return axios.get(url,{
-//             params:{
-//                 test_id,
-//                 student_id,
-//             }
-//         })
-//         .then(function (response) {
-//             dispatch({
-//                 type : 'GET_STU_EVAL_SUCESS',
-//                 json: response.data,
-//             });
-//         })
-//         .catch(function (error) {
-//             console.log(error);
-//         });
-//     }
-// }
+export const getstuEvaluationData= (student_id,test_id) => {
+    let path = '/getMyTestStepAnalysis'
+    let url = target + path;
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+                student_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_EVAL_SUCESS',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 /*---------------------------------------课程管理----------------------------------*/
-export const getTeacherLesson = (teacher_id, filter_option) => {
+export const getTeacherLesson = (filter_option) => {
     let url = target + "/getTeacherLesson";
     return dispatch => {
-        return axios.post(url, {teacher_id, filter_option})
+        return axios.post(url, {filter_option})
         .then(function (response) {
             dispatch({
                 type : 'GET_TEACHER_LESSON',
@@ -781,23 +733,6 @@ export const getOneLesson = (lesson_id, index) => {
                 type : 'GET_ONE_LESSON',
                 lesson: response.data,
                 index: index,
-            });
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-}
-
-export const deleteOneLesson = (lesson_id) => {
-    let url = target + "/deleteOneLesson";
-    console.log(lesson_id);
-    return dispatch => {
-        return axios.post(url, {lesson_id})
-        .then(function (response) {
-            dispatch({
-                type : 'DELETE_ONE_LESSON',
-                lesson: response.data,
             });
         })
         .catch(function (error) {
@@ -946,22 +881,22 @@ export const deleteTeacherComment = (comment_id, lesson_id) => {
     }
 }
 
-// export const updateLessonGroup = (lesson_id, group_id) => {
-//     let url = target + "/updateLessonGroup";
-//     return dispatch => {
-//         return axios.post(url, {lesson_id, group_id})
-//         .then(function (response) {
-//             dispatch({
-//                 type: 'UPDATE_LESSON_GROUP',
-//                 lesson_basic: response.data,
-//             });
-//             dispatch(editLesson('group_edit', false));
-//         })
-//         .catch(function (error) {
-//             console.log(error);
-//         });
-//     }
-// }
+export const updateLessonGroup = (lesson_id, group_id) => {
+    let url = target + "/updateLessonGroup";
+    return dispatch => {
+        return axios.post(url, {lesson_id, group_id})
+        .then(function (response) {
+            dispatch({
+                type: 'UPDATE_LESSON_GROUP',
+                lesson_basic: response.data,
+            });
+            dispatch(editLesson('group_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 export const updateLessonTeacher = (lesson_id, teacher_id) => {
     let url = target + "/updateLessonTeacher";
@@ -997,39 +932,39 @@ export const updateLessonAssistant = (lesson_id, assistant_id) => {
     }
 }
 
-// export const updateLessonCourse = (lesson_id, course_id) => {
-//     let url = target + "/updateLessonCourse";
-//     return dispatch => {
-//         return axios.post(url, {lesson_id, course_id})
-//         .then(function (response) {
-//             dispatch({
-//                 type : 'UPDATE_LESSON_TEACHER',
-//                 lesson_basic: response.data,
-//             });
-//             dispatch(editLesson('label_edit', false));
-//         })
-//         .catch(function (error) {
-//             console.log(error);
-//         });
-//     }
-// }
+export const updateLessonCourse = (lesson_id, course_id) => {
+    let url = target + "/updateLessonCourse";
+    return dispatch => {
+        return axios.post(url, {lesson_id, course_id})
+        .then(function (response) {
+            dispatch({
+                type : 'UPDATE_LESSON_TEACHER',
+                lesson_basic: response.data,
+            });
+            dispatch(editLesson('label_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
-// export const updateLessonLabel = (lesson_id, label_id) => {
-//     let url = target + "/updateLessonLabel";
-//     return dispatch => {
-//         return axios.post(url, {lesson_id, label_id})
-//         .then(function (response) {
-//             dispatch({
-//                 type : 'UPDATE_LESSON_LABEL',
-//                 lesson_basic: response.data,
-//             });
-//             dispatch(editLesson('label_edit', false));
-//         })
-//         .catch(function (error) {
-//             console.log(error);
-//         });
-//     }
-// }
+export const updateLessonLabel = (lesson_id, label_id) => {
+    let url = target + "/updateLessonLabel";
+    return dispatch => {
+        return axios.post(url, {lesson_id, label_id})
+        .then(function (response) {
+            dispatch({
+                type : 'UPDATE_LESSON_LABEL',
+                lesson_basic: response.data,
+            });
+            dispatch(editLesson('label_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 export const getMyTestData = (student_id, test_id) => {
     let url = target + "/getMyTestData";
@@ -1153,44 +1088,19 @@ export const searchTeacherTask = (teacher_id, input) => {
     }
 }
 
-export const getOptionData = (group_id) => {
+export const getOptionData = (teacher_id, school_id) => {
     let url = target + "/getOptionData";
+    console.log(teacher_id);
     return dispatch => {
-        return axios.get(url, {params: {group_id}})
+        return axios.get(url, {params: {teacher_id, school_id}})
         .then(function (response) {
             dispatch({
                 type : 'GET_TEACHER_OPTION',
                 teacher_option: response.data.teacher_option, 
                 course_option: response.data.course_option,
                 label_option: response.data.label_option,
-                // test_option: response.data.test_option,
+                test_option: response.data.test_option,
                 room_option: response.data.room_option,
-            });
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-}
-export const getstuEvaluationDataStart = () => {
-    return {
-      type: 'GET_STU_EVAL_START',
-    }
-  }
-export const getstuEvaluationData= (student_id,test_id) => {
-    let path = '/getMyTestStepAnalysis'
-    let url = target + path;
-    return dispatch => {
-        return axios.get(url,{
-            params:{
-                test_id,
-                student_id,
-            }
-        })
-        .then(function (response) {
-            dispatch({
-                type : 'GET_STU_EVAL_SUCESS',
-                json: response.data,
             });
         })
         .catch(function (error) {
