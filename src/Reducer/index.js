@@ -238,6 +238,7 @@ export const studentData = (state = defaultStudentData , action = {}) => {
 }
 
 export const lessonData = (state = defaultLessonData , action = {}) => {
+    const index = state.get('lesson_index');
     switch(action.type){
         case 'GET_TEACHER_LESSON':
             return state.set('teacher_lesson', Immutable.fromJS(action.teacher_lesson));
@@ -247,20 +248,21 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.set('lesson_index', action.index);
         case 'ADD_LESSON':
             return state.set('feedback_success', true);
-        case 'EDIT_LESSON_CONTENT':
-            return state.setIn(['lesson', 'lesson_content'], Immutable.fromJS(action.lesson_content));
+        case 'EDIT_LESSON_CONTENT':            
+            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.lesson_content));
         case 'EDIT_HOMEWORK':
-            return state.setIn(['lesson', 'homework'], Immutable.fromJS(action.homework));
+            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.homework));
         case 'ADD_TEACHER_COMMENT':
-            return state.setIn(['lesson', 'teacher_comment'], Immutable.fromJS(action.teacher_comment));
+            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.teacher_comment));
         case 'DELETE_TEACHER_COMMENT':
-            return state.setIn(['lesson', 'teacher_comment'], Immutable.fromJS(action.teacher_comment))
+            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.teacher_comment))
         case 'UPDATE_LESSON_TEACHER':
-            return state.setIn(['lesson','teacher_id'], action.lesson_basic.teacher_id)
-                .setIn(['lesson','teacher_name'], action.lesson_basic.teacher_name);
+            return state.setIn(['teacher_lesson', index], action.lesson_basic.teacher_id)
+                .setIn(['teacher_lesson', action.index], action.lesson_basic.teacher_name);
         case 'UPDATE_LESSON_ASSISTANT':
-            return state.setIn(['lesson','assistant_id'], action.lesson_basic.assistant_id)
-                .setIn(['lesson','assistant_name'], action.lesson_basic.assistant_name);
+            const index = state.get('lesson_index');
+            return state.setIn(['teacher_lesson', index], action.lesson_basic.assistant_id)
+                .setIn(['teacher_lesson', index], action.lesson_basic.assistant_name);
         // case 'UPDATE_LESSON_GROUP':
         //     return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
         //         .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);

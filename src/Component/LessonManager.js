@@ -341,6 +341,7 @@ class LessonManager extends React.Component{
     render(){
       const {visible, treeData,tree_value} = this.state;
       const {tests,teacher_lesson,isFetching} = this.props;
+      console.log(teacher_lesson);
 
       return(
         <div>
