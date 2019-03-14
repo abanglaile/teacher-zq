@@ -249,20 +249,21 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'ADD_LESSON':
             return state.set('feedback_success', true);
         case 'EDIT_LESSON_CONTENT':            
-            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.lesson_content));
+            return state.setIn(['teacher_lesson', index, 'lesson_content'], Immutable.fromJS(action.lesson_content));
         case 'EDIT_HOMEWORK':
-            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.homework));
+            return state.setIn(['teacher_lesson', index, 'homework'], Immutable.fromJS(action.homework));
         case 'ADD_TEACHER_COMMENT':
-            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.teacher_comment));
+            return state.setIn(['teacher_lesson', index, 'teacher_comment'], Immutable.fromJS(action.teacher_comment));
         case 'DELETE_TEACHER_COMMENT':
-            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.teacher_comment))
+            return state.setIn(['teacher_lesson', index, 'teacher_comment'], Immutable.fromJS(action.teacher_comment))
         case 'UPDATE_LESSON_TEACHER':
-            return state.setIn(['teacher_lesson', index], action.lesson_basic.teacher_id)
-                .setIn(['teacher_lesson', action.index], action.lesson_basic.teacher_name);
+            return state.setIn(['teacher_lesson', index, 'teacher_id'], action.lesson_basic.teacher_id)
+                .setIn(['teacher_lesson', index, 'teacher_name'], action.lesson_basic.teacher_name);
         case 'UPDATE_LESSON_ASSISTANT':
-            const index = state.get('lesson_index');
-            return state.setIn(['teacher_lesson', index], action.lesson_basic.assistant_id)
-                .setIn(['teacher_lesson', index], action.lesson_basic.assistant_name);
+            return state.setIn(['teacher_lesson', index, , 'assistant_id'], action.lesson_basic.assistant_id)
+                .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);
+        case 'UPDATE_LESSON_ASSISTANT':
+            return state.setIn(['teacher_lesson', index, 'is_sign'], true);
         // case 'UPDATE_LESSON_GROUP':
         //     return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
         //         .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);

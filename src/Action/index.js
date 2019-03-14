@@ -1003,10 +1003,8 @@ export const signLesson = (lesson_id) => {
         return axios.post(url, {lesson_id})
         .then(function (response) {
             dispatch({
-                type: 'UPDATE_LESSON_ASSISTANT',
-                lesson_basic: response.data,
+                type: 'SIGN_LESSON',
             });
-            dispatch(editLesson('assistant_edit', false));
         })
         .catch(function (error) {
             console.log(error);
