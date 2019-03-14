@@ -527,7 +527,7 @@ class LessonViewModal extends React.Component{
     renderHomework(){
       const {teacher_lesson, lesson_index} = this.props;
       let {homework} = teacher_lesson[lesson_index];
-      const homework_list = homework.map((item, i) => {           
+      const homework_list = homework ? homework.map((item, i) => {           
         return (
           <Item
             key={item.task_id}
@@ -544,7 +544,7 @@ class LessonViewModal extends React.Component{
             />
           </Item>        
         )
-      })
+      }) : [];
 
       return(
         <List itemLayout="horizontal" bordered>
