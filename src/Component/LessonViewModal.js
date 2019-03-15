@@ -26,7 +26,6 @@ const IconText = ({ type, text }) => (
     {text}
   </span>
 );
-// renderNewHomework 摘取新建部分(){
 
 class LessonViewModal extends React.Component{
     constructor(props) {
@@ -335,17 +334,17 @@ class LessonViewModal extends React.Component{
             <Icon type="ordered-list" style={{color:"#D3D3D3"}}/>
             <span style={{fontSize: "1rem", color: "#D3D3D3", marginLeft: "0.5rem"}}>课堂</span>
           </div>
-          <div style={{padding: "0.5rem 1rem 0px 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
-          <List split={false} size={"small"}>
-            {content_list}
-            {this.renderNewContent()}
-          </List>
+          <div style={{padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
+            <List split={false} size={"small"}>
+              {content_list}
+              {this.renderNewContent()}
+            </List>
           </div>
           <div style={{marginTop: "1rem", marginBottom: "1rem"}}>
             <Icon type="ordered-list" style={{color:"#D3D3D3"}}/>
             <span style={{fontSize: "1rem", color: "#D3D3D3", marginLeft: "0.5rem"}}>作业</span>
           </div>
-          <div style={{padding: "0px 1rem 0px 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
+          <div style={{padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
             {this.renderHomework()}
           </div>
         </div>
@@ -547,7 +546,7 @@ class LessonViewModal extends React.Component{
       }) : [];
 
       return(
-        <List itemLayout="horizontal" bordered>
+        <List size={"small"}>
           {homework_list}
           {this.renderNewHomework()}
         </List>
@@ -591,7 +590,7 @@ class LessonViewModal extends React.Component{
     renderLessonBasic(){
       const {teacher_group, course_option, label_option, teacher_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
       const {teacher_edit, assistant_edit} = lesson_edit;
-      const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, lesson_id} = teacher_lesson[lesson_index];
+      const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
       const {select_teacher, select_assistant} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
       const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
@@ -611,10 +610,13 @@ class LessonViewModal extends React.Component{
             </div>
           </Col>
           <Col span={4}>
-            {/* <Popconfirm placement="bottomRight" onConfirm={(e) => this.onConfirm(e)} title="确定课程是否完成？" okText="确定" cancelText="取消">
-              <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
-            </Popconfirm> */}
-            <Button type="primary" size={"small"}>已签到</Button>
+            {is_sign ? 
+              <Button type="primary" size={"small"}>已签到</Button>
+              :
+              <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id)} title="确定是否签到课程？" okText="确定" cancelText="取消">
+                <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
+              </Popconfirm>
+            }
           </Col>
         </Row>
         <Row style={{marginTop: 20}} gutter={2}>

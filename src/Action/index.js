@@ -913,7 +913,7 @@ export const deleteLessonContent = (lesson_content, i) => {
     }
 }
 
-export const addTeacherComment = (label_id, label_type, select_student,teacher_comment) => {
+export const addTeacherComment = (label_id, label_type, select_student, teacher_comment) => {
     let url = target + "/addTeacherComment";
     return dispatch => {
         return axios.post(url, {label_id, label_type, select_student, teacher_comment})
@@ -984,6 +984,23 @@ export const updateLessonAssistant = (lesson_id, assistant_id) => {
     let url = target + "/updateLessonAssistant";
     return dispatch => {
         return axios.post(url, {lesson_id, assistant_id})
+        .then(function (response) {
+            dispatch({
+                type: 'UPDATE_LESSON_ASSISTANT',
+                lesson_basic: response.data,
+            });
+            dispatch(editLesson('assistant_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const signLesson = (lesson_id) => {
+    let url = target + "/signLesson";
+    return dispatch => {
+        return axios.post(url, {lesson_id})
         .then(function (response) {
             dispatch({
                 type: 'UPDATE_LESSON_ASSISTANT',
