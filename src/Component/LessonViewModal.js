@@ -190,7 +190,7 @@ class LessonViewModal extends React.Component{
             <a onClick={e => {
               this.setState({ content_type: 2, content: "", kp_tags: [], resource: null})
               this.props.editLesson("new_content_edit", true)
-            }}>测试</a>
+            }}>课堂练习</a>
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => {
