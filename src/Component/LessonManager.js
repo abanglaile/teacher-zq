@@ -31,26 +31,32 @@ const IconText = ({ type, text }) => (
 class LessonManager extends React.Component{
     constructor(props) {
         super(props);
-        let start_time = new Date();
-        start_time.setDate(start_time.getDate() - 7);
-        console.log(start_time);
+        let start_time = moment().day(-7);;
+        // console.log("start_time:",start_time);
         this.state={
           kp_tags: [],
-          select_teacher: "",
-          select_assistant:"",
+          select_teacher: undefined,
+          select_assistant:undefined,
           select_student: [],
           start_time: start_time,
           range_time: [],
+          // select_teacher: null,
+          // start_time: moment().day(-7),
+          end_time: null,
+          group_id: undefined,
+          course_label: undefined,
+          label_id:undefined,
+
           visible:false,
         };
     }
 
     componentDidMount(){
       let {teacher_id} = this.props;
-      teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
+      // teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
       this.props.getClassGroup(teacher_id);
       this.props.getTeacherLesson(teacher_id, {});
-      // this.props.getOptionData(teacher_id, 1);
+      this.props.getOptionData(teacher_id);
     }
 
 
@@ -74,18 +80,18 @@ class LessonManager extends React.Component{
       console.log("onGroupChange value:",value);
       var temp = value.split('-');
       this.setState({group_id: temp[0], course_label : temp[1]});
-      this.props.getOptionData(temp[0]);
+      this.props.getLinkageOptionData(temp[0]);
     }
 
     renderNewModal(){
-      const {teacher_group, label_option, teacher_option, room_option} = this.props;
+      const {teacher_group, label_option, teacher_link_option, room_link_option} = this.props;
       // console.log("teacher_group:",JSON.stringify(teacher_group));
       const {select_teacher, select_assistant} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id+'-'+item.course_label}>{item.group_name}</Option>)
       // const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
-      const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
-      const roomOption = room_option.map((item) => <Option value={item.room_id}>{item.room_name}</Option>)
+      const teacherOption = teacher_link_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
+      const roomOption = room_link_option.map((item) => <Option value={item.room_id}>{item.room_name}</Option>)
       // const teacher_option = school_teacher.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       return (
         <Modal title="新建课堂" onOk={(e) => this.createNewLesson()}
@@ -222,8 +228,22 @@ class LessonManager extends React.Component{
       );
     }
 
+    handleReset(){
+      const {teacher_id} = this.props;
+      // let teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
+      this.setState({
+        select_teacher: undefined,
+        start_time: moment().day(-7),
+        end_time: undefined,
+        group_id: undefined,
+        course_label: undefined,
+        label_id:undefined,
+      },()=>{this.props.getTeacherLesson(teacher_id, {});});
+    }
+
     renderQueryOption(){
-      const {teacher_group, course_option, label_option, teacher_option, teacher_id} = this.props;
+      let {teacher_group, course_option, label_option, teacher_option, teacher_id} = this.props;
+      // teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
       const {select_teacher, select_assistant, start_time, end_time, group_id, course_label, label_id, querySpread} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
       const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
@@ -252,6 +272,7 @@ class LessonManager extends React.Component{
                   style={{ width: "170" }}
                   placeholder="选择学生分组"
                   optionFilterProp="children"
+                  value={group_id}
                   onChange={(value) => this.setState({group_id: value})}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
@@ -264,6 +285,7 @@ class LessonManager extends React.Component{
               <Form.Item label={"开始时间"}>
                 <DatePicker
                   locale={locale}
+                  value={start_time}
                   style={{ width: 170 }}
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
@@ -277,6 +299,7 @@ class LessonManager extends React.Component{
               <Form.Item label={"结束时间"}>
                 <DatePicker
                   locale={locale}
+                  value={end_time}
                   style={{ width: 170 }}
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
@@ -304,6 +327,7 @@ class LessonManager extends React.Component{
                 <Select
                   showSearch
                   style={{ width: 170 }}
+                  value={course_label}
                   placeholder="选择学科"
                   optionFilterProp="children"
                   onChange={(value) => this.setState({course_label: value})}
@@ -318,6 +342,7 @@ class LessonManager extends React.Component{
               <Form.Item label={"课程标签"}>
                 <Select
                   showSearch
+                  value={label_id}
                   style={{ width: 170 }}
                   placeholder="选择课程标签"
                   optionFilterProp="children"
@@ -331,7 +356,7 @@ class LessonManager extends React.Component{
           </Row>
           <Row style={{marginTop: "1rem", marginRight: "7%"}}>  
             <Col span={24} style={{ textAlign: 'right' }}>
-              <Button type="primary" htmlType="submit" onSubmit={e => this.props.getTeacherLesson(teacher_id, {
+              <Button type="primary" htmlType="submit" onClick={() => this.props.getTeacherLesson(teacher_id, {
                 select_teacher, 
                 start_time, 
                 end_time, 
@@ -339,7 +364,7 @@ class LessonManager extends React.Component{
                 course_label, 
                 label_id,
               })}>查询</Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
+              <Button style={{ marginLeft: 8 }} onClick={() => this.handleReset()}>
                 重置
               </Button>
               <a style={{ marginLeft: 8, fontSize: 12 }} onClick={(e) => this.setState({querySpread: !this.state.querySpread})}>
@@ -356,7 +381,7 @@ class LessonManager extends React.Component{
     render(){
       const {visible, treeData,tree_value} = this.state;
       const {tests,teacher_lesson,isFetching} = this.props;
-      console.log(teacher_lesson);
+      // console.log("teacher_lesson::::::",teacher_lesson);
 
       return(
         <div>
@@ -370,7 +395,11 @@ class LessonManager extends React.Component{
               </Button>
             </div>
             {this.renderQueryOption()}
-            <LessonViewModal visible={this.state.view_modal} onCancel={e => this.setState({view_modal: false})}/>
+            {teacher_lesson[0] ?
+              <LessonViewModal visible={this.state.view_modal} onCancel={e => this.setState({view_modal: false})}/>
+              :
+              null
+            }
             {this.renderNewModal()}
             <List
               // itemLayout="vertical"
@@ -385,13 +414,19 @@ class LessonManager extends React.Component{
               renderItem={(item, index) => (
                 <List.Item
                   key={item.title}
-                  // actions={[<Icon type="check" style={{color: '#08c'}}/>, <Icon type="delete" />]}
-                  // actions={[<span style={{color: '#52c41a'}}>已签到</span>, <Icon type="delete" />]}
-                  actions={[<span style={{color: '#69c0ff'}}>未签到</span>,
-                  <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteOneLesson(item.lesson_id)} >
-                      <Icon type="delete"/>
-                  </Popconfirm >
-                  ]}
+                  actions={item.is_sign?
+                    [<span style={{color: '#52c41a'}}>已签到</span>,
+                    <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteOneLesson(item.lesson_id)} >
+                        <Icon type="delete"/>
+                    </Popconfirm >
+                    ]
+                    :
+                    [<span style={{color: '#69c0ff'}}>未签到</span>,
+                    <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteOneLesson(item.lesson_id)} >
+                        <Icon type="delete"/>
+                    </Popconfirm >
+                    ]
+                  }
                 >
                   <List.Item.Meta
                     avatar={this.renderCourseAvatar(item.course_label)}
@@ -420,7 +455,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson, lesson_edit, teacher_lesson} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, course_option, label_option, room_option, search_result } = personal_data;
+  const {teacher_option, course_option, label_option, room_option, search_result, teacher_link_option, room_link_option} = personal_data;
 
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
@@ -434,6 +469,8 @@ export default connect(state => {
     label_option: label_option,
     // test_option: test_option,
     room_option: room_option,
+    teacher_link_option: teacher_link_option,
+    room_link_option: room_link_option,
     search_result: search_result,
   }
 }, action)(LessonManager);

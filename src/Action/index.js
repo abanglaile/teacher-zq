@@ -753,6 +753,7 @@ export const getKpWithScore = (chapter_id, student_id) => {
 /*---------------------------------------课程管理----------------------------------*/
 export const getTeacherLesson = (teacher_id, filter_option) => {
     let url = target + "/getTeacherLesson";
+    console.log("filter_option:",JSON.stringify(filter_option));
     return dispatch => {
         return axios.post(url, {teacher_id, filter_option})
         .then(function (response) {
@@ -1168,10 +1169,10 @@ export const searchTeacherTask = (teacher_id, input) => {
     }
 }
 
-export const getOptionData = (group_id) => {
+export const getOptionData = (teacher_id) => {
     let url = target + "/getOptionData";
     return dispatch => {
-        return axios.get(url, {params: {group_id}})
+        return axios.get(url, {params: {teacher_id}})
         .then(function (response) {
             dispatch({
                 type : 'GET_TEACHER_OPTION',
@@ -1187,6 +1188,27 @@ export const getOptionData = (group_id) => {
         });
     }
 }
+
+export const getLinkageOptionData = (group_id) => {
+    let url = target + "/getLinkageOptionData";
+    return dispatch => {
+        return axios.get(url, {params: {group_id}})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_TEACHER_LINK_OPTION',
+                teacher_link_option: response.data.teacher_link_option, 
+                // course_option: response.data.course_option,
+                // label_option: response.data.room_link_option,
+                // test_option: response.data.test_option,
+                room_link_option: response.data.room_link_option,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const getstuEvaluationDataStart = () => {
     return {
       type: 'GET_STU_EVAL_START',
