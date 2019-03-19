@@ -860,11 +860,18 @@ export default connect(state => {
   const {lesson_index, lesson_edit, teacher_lesson } = lesson_data;
   const {classgroup_data} = group_data;
   const {teacher_option, course_option, label_option, search_teacher_task, search_result, search_task_source } = personal_data;
+  const default_teacher_lesson = [{
+    lesson_teacher: [],
+    lesson_student: [],
+    homework: [],
+    lesson_content: [{content: "abc"}]
+  }];
+  
 
   return { 
     isFetching: state.fetchTestsData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
-    teacher_lesson: teacher_lesson,
+    teacher_lesson: teacher_lesson[0] ? teacher_lesson : default_teacher_lesson,
     lesson_index: lesson_index,
     lesson_edit: lesson_edit,
     teacher_group: classgroup_data,
