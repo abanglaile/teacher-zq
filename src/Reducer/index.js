@@ -60,7 +60,7 @@ const defaultPersonalData = Immutable.fromJS({//教师个人数据
         label_option: [],
         search_teacher_task: [],
         room_option : [],
-        search_result: [],
+        search_result: {},
         search_task_source: [],
     });
 
@@ -296,7 +296,7 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
         case 'SEARCH_LABEL':
             return state.set('search_result', Immutable.fromJS(action.result));
         case 'SEARCH_KP_LABEL':
-            return state.setIn('search_result', 'kp_label', Immutable.fromJS(action.result))
+            return state.setIn(['search_result', 'kp_label'], Immutable.fromJS(action.result))
         case 'SEARCH_TASK_SOURCE':
             return state.set('search_task_source', Immutable.fromJS(action.result));
         case 'SEARCH_TEACHER_TASK':

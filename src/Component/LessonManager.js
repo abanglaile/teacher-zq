@@ -286,7 +286,7 @@ class LessonManager extends React.Component{
               </Form.Item>
             </Col>            
 
-            <Col span={8} style={{ display: querySpread ? 'block' : 'none' }}>
+            <Col md={8} sm={24} style={{ display: querySpread ? 'block' : 'none' }}>
               <Form.Item label={"任课老师"}>
                 <Select
                   placeholder={"选择任课老师"}
@@ -299,7 +299,7 @@ class LessonManager extends React.Component{
               </Form.Item>
             </Col>
 
-            <Col span={8} style={{ display: querySpread ? 'block' : 'none' }}>
+            <Col md={8} sm={24} style={{ display: querySpread ? 'block' : 'none' }}>
               <Form.Item label={"课程学科"}>
                 <Select
                   showSearch
@@ -314,7 +314,7 @@ class LessonManager extends React.Component{
               </Form.Item>
             </Col>
 
-            <Col span={8} style={{ display: querySpread ? 'block' : 'none' }}>
+            <Col md={8} sm={24} style={{ display: querySpread ? 'block' : 'none' }}>
               <Form.Item label={"课程标签"}>
                 <Select
                   showSearch

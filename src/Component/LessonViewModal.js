@@ -55,7 +55,7 @@ class LessonViewModal extends React.Component{
       let {kp_input_visible, kp_tags} = this.state;
       let item_title = ["课堂学习", "讲解知识", "课堂练习"];
       let edit_dom = [];
-      let edit_icon_dom = 
+      let icon_dom = [
         <Icon onClick={e => {
           this.props.editLessonContent(index, true);
           this.setState({
@@ -64,11 +64,15 @@ class LessonViewModal extends React.Component{
             resource: item.resource,
             kp_tags: item.kpids ? JSON.parse(item.kpids) : []
           });
-        }} type="edit" theme="outlined" />;
-      var tag_color = "";
+        }} type="edit" theme="outlined" />,
+        <Icon onClick={e => this.props.deleteLessonContent({
+                lesson_id: item.lesson_id,
+                lesson_content_id: item.lesson_content_id,
+              }, index)} type="delete" theme="outlined" />
+      ]
       const {kp_label} = search_result; 
       const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
-      switch(this.state.content_type){
+      switch(item.content_type){
         case 0:
           edit_dom = 
             <div style={{width: 500}}>
@@ -76,7 +80,6 @@ class LessonViewModal extends React.Component{
             </div>
           break;
         case 1:
-          const search_options = search_result.map(d => <Option key={d.kpid}>{d.kpname}</Option>);
           edit_dom = 
             <div>
               {kp_tags.map((tag, index) => 
@@ -121,7 +124,7 @@ class LessonViewModal extends React.Component{
 
             break;
         case 2:
-            edit_icon_dom = null;
+            icon_dom.splice(0, 1);
             break;
         
       }
@@ -145,24 +148,13 @@ class LessonViewModal extends React.Component{
                 kpids: JSON.stringify(this.state.kp_tags),
                 lesson_content_id: item.lesson_content_id,
             }, index)} style={{marginLeft: '0.5rem', marginRight: '0.5rem'}}>保存</a>
-            <a onClick={e => this.props.deleteLessonContent({
-              lesson_id: item.lesson_id,
-              lesson_content_id: item.lesson_content_id,
-            }, index)}
-            style={{marginRight: '0.5rem'}}>删除</a>
             <a onClick={e => this.props.editLessonContent(index, false)}>取消</a>
           </div>
           {edit_dom}
           </div>
         </Item>
         :
-        <Item actions={[
-            edit_icon_dom,
-            <Icon onClick={e => this.props.deleteLessonContent({
-              lesson_id: item.lesson_id,
-              lesson_content_id: item.lesson_content_id,
-            }, index)} type="delete" theme="outlined" />, 
-          ]}>
+        <Item actions={icon_dom}>
           <span style={{
             width: "5rem", 
             fontWeight: "bold",
@@ -178,23 +170,33 @@ class LessonViewModal extends React.Component{
 
 
     renderNewContent(){
-      const {teacher_lesson, lesson_index, lesson_edit, test_option, search_result} = this.props;
+      const {teacher_lesson, lesson_index, lesson_edit, test_option, search_result, teacher_id, search_teacher_task} = this.props;
 
       let {lesson_content, lesson_id} = teacher_lesson[lesson_index];
       let {new_content_edit} = lesson_edit;
-      let {kp_input_visible, kp_tags} = this.state;
+      let {kp_input_visible, kp_tags, content_type} = this.state;
       let item_title = ["自定义", "讲解知识点", "课堂练习"];
       let edit_dom = [];
+
       const menu = (
         <Menu>
           <Menu.Item>
-            <a onClick={e => this.switchNewContent(1)}>知识点讲解</a>
+            <a onClick={e => {
+              this.setState({ content_type: 1, content: "", kp_tags: [], resource: null});
+              this.props.editLesson("new_content_edit", true);
+            }}>知识点讲解</a>
           </Menu.Item>
           <Menu.Item>
-            <a onClick={e => this.switchNewContent(2)}>测试</a>
+            <a onClick={e => {
+              this.setState({ content_type: 2, content: "", kp_tags: [], resource: null})
+              this.props.editLesson("new_content_edit", true)
+            }}>测试</a>
           </Menu.Item>
           <Menu.Item>
-            <a onClick={e => this.switchNewContent(0)}>自定义</a>
+            <a onClick={e => {
+              this.setState({ content_type: 0, content: "", kp_tags: [], resource: null})
+              this.props.editLesson("new_content_edit", true)
+            }}>自定义</a>
           </Menu.Item>
         </Menu>
       );
@@ -208,6 +210,7 @@ class LessonViewModal extends React.Component{
           break;
         case 1:
           const {kp_label, comment_label} = search_result;
+
           const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
           
           edit_dom = 
@@ -257,7 +260,7 @@ class LessonViewModal extends React.Component{
             break;
         case 2:
           const task_option = search_teacher_task.map((item) =>  
-            <Option key={item.task_id} name={item.source_name}>
+            <Option key={item.task_id} name={item.source_name} type={item.task_type} remark={item.remark}>
               <div style={{fontWeight: "bold"}}>{item.source_name}</div>
               {
                 item.task_type ?
@@ -267,6 +270,7 @@ class LessonViewModal extends React.Component{
             </Option>
           )
 
+          
           edit_dom = 
             <Select
               style={{ width: 300, marginRight: "1rem" }}
@@ -279,7 +283,11 @@ class LessonViewModal extends React.Component{
               optionLabelProp={"name"}
               autoFocus={true}
               onSearch={(input) => this.searchTeacherTask(teacher_id, input)}
-              onSelect={(value, option) => this.setState({resource: value, content: option.props.name})}
+              onSelect={(value, option) => {
+                const {remark, task_type, name} = option.props;
+                const remark_str = task_type ? remark : JSON.parse(remark).map(item => 'P' + item).join(', ')
+                this.setState({resource: value, content: name + " " + remark_str})
+              }}
               notFoundContent={null}
             >
               {task_option}
@@ -299,7 +307,7 @@ class LessonViewModal extends React.Component{
               marginRight: "1rem", 
               paddingRight: "1rem", 
               borderRight: "2px solid #D3D3D3"
-            }}>{item_title[item.content_type]}</span> 
+            }}>{item_title[content_type]}</span> 
             <a onClick={e => this.props.addLessonContent({
                 lesson_id: lesson_id,
                 content: this.state.content,
@@ -314,7 +322,7 @@ class LessonViewModal extends React.Component{
         </Item>
         :
         <Item>
-          <Dropdown overlay={menu}>         
+          <Dropdown overlay={menu} trigger={['click']}>         
             <a className="ant-dropdown-link" href="#">
               <Icon style={{ fontSize: "1rem", marginRight: "0.5rem" }} type="plus" />
               添加内容
@@ -459,7 +467,7 @@ class LessonViewModal extends React.Component{
         </Item>
         :
         <Item>
-          <Dropdown overlay={menu}>
+          <Dropdown overlay={menu} trigger={['click']}>
             <a className="ant-dropdown-link" href="#">
               <Icon style={{ fontSize: "1rem", marginRight: "0.5rem" }} type="plus" />
               添加作业
