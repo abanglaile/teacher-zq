@@ -65,10 +65,12 @@ class LessonViewModal extends React.Component{
             kp_tags: item.kpids ? JSON.parse(item.kpids) : []
           });
         }} type="edit" theme="outlined" />,
-        <Icon onClick={e => this.props.deleteLessonContent({
-                lesson_id: item.lesson_id,
-                lesson_content_id: item.lesson_content_id,
-              }, index)} type="delete" theme="outlined" />
+        <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteLessonContent({
+              lesson_id: item.lesson_id,
+              lesson_content_id: item.lesson_content_id,
+            }, index)}>
+          <Icon type="delete" theme="outlined" />
+        </Popconfirm>
       ]
       const {kp_label} = search_result; 
       const kp_options = kp_label ? kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
@@ -538,8 +540,10 @@ class LessonViewModal extends React.Component{
         return (
           <Item
             key={item.task_id}
-            actions={[<Icon onClick = {e => this.props.deleteHomework(lesson_id, item.task_id, lesson_student)} type="delete" />]}
-            
+            actions={[<Popconfirm title = "确定删除?" onConfirm ={() => this.props.deleteHomework(lesson_id, item.task_id, lesson_student)}>
+                <Icon type="delete" />
+              </Popconfirm>
+              ]}
           >
             <Item.Meta
               title={<a style={{fontWeight: "bold"}}>{item.source_name}</a>}
@@ -597,6 +601,8 @@ class LessonViewModal extends React.Component{
 
     renderLessonBasic(){
       const {teacher_group, course_option, label_option, teacher_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
+      // console.log("teacher_lesson:",JSON.stringify(teacher_lesson));
+      // console.log("lesson_index:",lesson_index);
       const {teacher_edit, assistant_edit} = lesson_edit;
       const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
       const {select_teacher, select_assistant} = this.state;
@@ -621,7 +627,7 @@ class LessonViewModal extends React.Component{
             {is_sign ? 
               <Button type="primary" size={"small"}>已签到</Button>
               :
-              <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id)} title="确定是否签到课程？" okText="确定" cancelText="取消">
+              <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id)} title="是否签到课程？" okText="确定" cancelText="取消">
                 <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
               </Popconfirm>
             }
