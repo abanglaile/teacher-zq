@@ -52,6 +52,7 @@ class StudentRes extends React.Component {
   }
 
 	render(){
+		const {testid} = this.props;
 		this.columns = [{
             title: '姓名',
             dataIndex: 'studentname',
@@ -84,16 +85,23 @@ class StudentRes extends React.Component {
 							});
 						}
 					},
-					render: (text) => {
+					render: (text,record) => {
 						const { searchText } = this.state;
 						return searchText ? (
+							record.completion ? 
+							<a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>
+								{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
+									fragment.toLowerCase() === searchText.toLowerCase()
+										? <a key={i} className="highlight" >{fragment}</a> : fragment// eslint-disable-line
+								))}
+							</a> :
 							<span>
 								{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
 									fragment.toLowerCase() === searchText.toLowerCase()
 										? <span key={i} className="highlight">{fragment}</span> : fragment // eslint-disable-line
 								))}
 							</span>
-						) : text;
+						) : (record.completion ? <a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>{text}</a> : <span>{text}</span>);
 					},
 	    }, {
             title: '完成情况',
