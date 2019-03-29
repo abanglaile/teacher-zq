@@ -73,36 +73,36 @@ class StudentRes extends React.Component {
           		<Button onClick={this.handleReset(clearFilters)}>Reset</Button>
 		        </div>
 	      	),
-					filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
-					onFilter: (value, record) => {
-						var indexs = record.studentname.indexOf(value);
-						return (indexs >= 0 ? true : false);
-					},
-	      	onFilterDropdownVisibleChange: (visible) => {
-						if (visible) {
-							setTimeout(() => {
-								this.searchInput.focus();
-							});
-						}
-					},
-					render: (text,record) => {
-						const { searchText } = this.state;
-						return searchText ? (
-							record.completion ? 
-							<a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>
-								{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
-									fragment.toLowerCase() === searchText.toLowerCase()
-										? <a key={i} className="highlight" >{fragment}</a> : fragment// eslint-disable-line
-								))}
-							</a> :
-							<span>
-								{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
-									fragment.toLowerCase() === searchText.toLowerCase()
-										? <span key={i} className="highlight">{fragment}</span> : fragment // eslint-disable-line
-								))}
-							</span>
-						) : (record.completion ? <a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>{text}</a> : <span>{text}</span>);
-					},
+			filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
+			onFilter: (value, record) => {
+				var indexs = record.studentname.indexOf(value);
+				return (indexs >= 0 ? true : false);
+			},
+			onFilterDropdownVisibleChange: (visible) => {
+				if (visible) {
+					setTimeout(() => {
+						this.searchInput.focus();
+					});
+				}
+			},
+			render: (text,record) => {
+				const { searchText } = this.state;
+				return searchText ? (
+					record.completion ? 
+					<a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>
+						{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
+							fragment.toLowerCase() === searchText.toLowerCase()
+								? <a key={i} className="highlight" >{fragment}</a> : fragment// eslint-disable-line
+						))}
+					</a> :
+					<span>
+						{text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
+							fragment.toLowerCase() === searchText.toLowerCase()
+								? <span key={i} className="highlight">{fragment}</span> : fragment // eslint-disable-line
+						))}
+					</span>
+				) : (record.completion ? <a href={"/teacher-zq/stu_evaluation?test_id=" + testid + "&" + "student_id=" + record.student_id}>{text}</a> : <span>{text}</span>);
+			},
 	    }, {
             title: '完成情况',
             dataIndex: 'completion',
