@@ -411,11 +411,7 @@ class LessonManager extends React.Component{
                 <List.Item
                   key={item.title}
                   actions={item.is_sign?
-                    [<span style={{color: '#52c41a'}}>已签到</span>,
-                    <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteOneLesson(item.lesson_id,teacher_id)} >
-                        <Icon type="delete"/>
-                    </Popconfirm >
-                    ]
+                    [<span style={{color: '#52c41a'}}>已签到</span>,]
                     :
                     [<span style={{color: '#69c0ff'}}>未签到</span>,
                     <Popconfirm title = "确定删除?" onConfirm = {() => this.props.deleteOneLesson(item.lesson_id,teacher_id)} >
