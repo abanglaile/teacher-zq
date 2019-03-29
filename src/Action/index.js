@@ -914,14 +914,45 @@ export const deleteLessonContent = (lesson_content, i) => {
     }
 }
 
-export const addTeacherComment = (label_id, label_type, select_student, teacher_comment) => {
-    let url = target + "/addTeacherComment";
+export const addLessonKpComment = (lesson_id, select_student, kp_comment) => {
+    let url = target + "/addLessonKpComment";
     return dispatch => {
-        return axios.post(url, {label_id, label_type, select_student, teacher_comment})
+        return axios.post(url, {lesson_id, select_student, kp_comment})
         .then(function (response) {
-            console.log(response.data);
             dispatch({
-                type : 'ADD_TEACHER_COMMENT',
+                type : 'EDIT_LESSON_KPCOMMENT',
+                kp_comment: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const addLessonPfComment = (lesson_id, select_student, pf_comment) => {
+    let url = target + "/addLessonPfComment";
+    return dispatch => {
+        return axios.post(url, {lesson_id, select_student, pf_comment})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_LESSON_PFCOMMENT',
+                pf_comment: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const deleteLessonPfComment = (comment_id, lesson_id) => {
+    let url = target + "/deleteLessonPfComment";
+    return dispatch => {
+        return axios.post(url, {comment_id, lesson_id})
+        .then(function (response) {
+            dispatch({
+                type : 'DELETE_TEACHER_COMMENT',
                 teacher_comment: response.data, 
             });
         })
@@ -931,8 +962,8 @@ export const addTeacherComment = (label_id, label_type, select_student, teacher_
     }
 }
 
-export const deleteTeacherComment = (comment_id, lesson_id) => {
-    let url = target + "/deleteTeacherComment";
+export const deleteLessonKpComment = (comment_id, lesson_id) => {
+    let url = target + "/deleteLessonKpComment";
     return dispatch => {
         return axios.post(url, {comment_id, lesson_id})
         .then(function (response) {
@@ -1105,13 +1136,13 @@ export const updateLessonRange = (lesson_id, start_time, end_time) => {
     }
 }
 
-export const searchCommentLabel = (input) => {
-    let url = target + "/searchCommentLabel";
+export const searchPfLabel = (input) => {
+    let url = target + "/searchPfLabel";
     return dispatch => {
         return axios.get(url, {params: {input}})
         .then(function (response) {
             dispatch({
-                type : 'SEARCH_LABEL',
+                type : 'SEARCH_PF_LABEL',
                 result: response.data, 
             });
         })

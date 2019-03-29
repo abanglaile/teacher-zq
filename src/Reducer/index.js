@@ -254,10 +254,10 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.setIn(['teacher_lesson', index, 'lesson_content'], Immutable.fromJS(action.lesson_content));
         case 'EDIT_HOMEWORK':
             return state.setIn(['teacher_lesson', index, 'homework'], Immutable.fromJS(action.homework));
-        case 'ADD_TEACHER_COMMENT':
-            return state.setIn(['teacher_lesson', index, 'teacher_comment'], Immutable.fromJS(action.teacher_comment));
-        case 'DELETE_TEACHER_COMMENT':
-            return state.setIn(['teacher_lesson', index, 'teacher_comment'], Immutable.fromJS(action.teacher_comment))
+        case 'EDIT_LESSON_KPCOMMENT':
+            return state.setIn(['teacher_lesson', index, 'kp_comment'], Immutable.fromJS(action.kp_comment));
+        case 'EDIT_LESSON_FPCOMMENT':
+            return state.setIn(['teacher_lesson', index, 'pf_comment'], Immutable.fromJS(action.pf_comment));
         case 'UPDATE_LESSON_TEACHER':
             return state.setIn(['teacher_lesson', index, 'teacher_id'], action.lesson_basic.teacher_id)
                 .setIn(['teacher_lesson', index, 'teacher_name'], action.lesson_basic.teacher_name);
@@ -298,10 +298,10 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
         case 'GET_TEACHER_LINK_OPTION':
             return state.set('teacher_link_option', Immutable.fromJS(action.teacher_link_option))
                 .set('room_link_option', Immutable.fromJS(action.room_link_option));
-        case 'SEARCH_LABEL':
-            return state.set('search_result', Immutable.fromJS(action.result));
+        case 'SEARCH_PF_LABEL':
+            return state.set('search_pf_label', Immutable.fromJS(action.result));
         case 'SEARCH_KP_LABEL':
-            return state.setIn(['search_result', 'kp_label'], Immutable.fromJS(action.result))
+            return state.set('search_kp_label', Immutable.fromJS(action.result))
         case 'SEARCH_TASK_SOURCE':
             return state.set('search_task_source', Immutable.fromJS(action.result));
         case 'SEARCH_TEACHER_TASK':
