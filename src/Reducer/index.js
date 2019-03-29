@@ -264,7 +264,7 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'UPDATE_LESSON_ASSISTANT':
             return state.setIn(['teacher_lesson', index, , 'assistant_id'], action.lesson_basic.assistant_id)
                 .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);
-        case 'UPDATE_LESSON_ASSISTANT':
+        case 'SIGN_LESSON':
             return state.setIn(['teacher_lesson', index, 'is_sign'], true);
         // case 'UPDATE_LESSON_GROUP':
         //     return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
