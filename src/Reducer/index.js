@@ -256,7 +256,7 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.setIn(['teacher_lesson', index, 'homework'], Immutable.fromJS(action.homework));
         case 'EDIT_LESSON_KPCOMMENT':
             return state.setIn(['teacher_lesson', index, 'kp_comment'], Immutable.fromJS(action.kp_comment));
-        case 'EDIT_LESSON_FPCOMMENT':
+        case 'EDIT_LESSON_PFCOMMENT':
             return state.setIn(['teacher_lesson', index, 'pf_comment'], Immutable.fromJS(action.pf_comment));
         case 'UPDATE_LESSON_TEACHER':
             return state.setIn(['teacher_lesson', index, 'teacher_id'], action.lesson_basic.teacher_id)

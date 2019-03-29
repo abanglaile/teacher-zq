@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Button, Switch, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber, Mention} from 'antd';
+import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -15,10 +15,9 @@ const SHOW_PARENT = TreeSelect.SHOW_PARENT;
 const { RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
 const Item = List.Item;
+const RadioGroup = Radio.Group;
 
 const { TextArea } = Input;
-
-const { toString, toContentState } = Mention;
 
 const IconText = ({ type, text }) => (
   <span>
@@ -797,7 +796,7 @@ class LessonViewModal extends React.Component{
     renderKpComment(){
       const {teacher_lesson, lesson_index, search_kp_label } = this.props;
       let {kp_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
-      const {select_student, kpid, kpname, kp_comment_content } = this.state;
+      const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
       
       kp_comment = kp_comment ? kp_comment : [];
@@ -823,6 +822,10 @@ class LessonViewModal extends React.Component{
             >
               {kp_options}  
             </Select>
+            <RadioGroup style={{marginLeft: "1rem"}} onChange={e => this.setState({side: e.target.value})} value={side}>
+              <Radio value={1}><Icon style={{color: "#1890ff"}} type="like" /></Radio>
+              <Radio value={0}><Icon style={{color: "#1890ff"}} type="exclamation-circle" /></Radio>
+            </RadioGroup>
           </div>
           <TextArea style={{marginTop: '0.5rem'}} placeholder="填写点评情况" autosize={{ minRows: 2 }}
             onChange={(e) => this.setState({kp_comment_content: e.target.value})} value={this.state.kp_comment_content}/>
@@ -849,17 +852,20 @@ class LessonViewModal extends React.Component{
                   kpid: (kpid | 0) === kpid ? kpid : undefined, 
                   kp_comment_content: this.state.kp_comment_content,
                   comment_source: lesson_id,
+                  side: side,
                   teacher_id: this.props.teacher_id,
                 }
               )}>点评</Button>                
           </div>
-          <div style={{marginTop: "1rem", padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
-            <div style={{marginTop: "1rem", fontSize: "1rem", color: "#87d068", fontWeight: "bold"}}><Icon style={{ marginRight: "0.5rem"}} type="like" />进步表扬</div>
+          
+            
+          <Alert message="表扬进步" type="success" style={{marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
+            showIcon description={
             <List
               itemLayout="horizontal"
               dataSource={p_comment}
               renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteKpComment(lesson_id, item.comment_id)}/>]}>
+                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
                   <Item.Meta
                     title={
                       <div>
@@ -873,13 +879,15 @@ class LessonViewModal extends React.Component{
                 
               )}
             />
+          } />
 
-            <div style={{marginTop: "1rem", fontSize: "1rem", color: "#D3D3D3", fontWeight: "bold"}}><Icon style={{ marginRight: "0.5rem"}} type="warning" />存在问题</div>
+          <Alert message="存在问题" type="warning" showIcon 
+            description={
             <List
               itemLayout="horizontal"
               dataSource={n_comment}
               renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteKpComment(lesson_id, item.comment_id)}/>]}>
+                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
                   <Item.Meta
                     title={
                       <div>
@@ -893,7 +901,8 @@ class LessonViewModal extends React.Component{
                 
               )}
             />
-          </div>
+          } />
+            
         </div>
       )
     }
@@ -950,6 +959,7 @@ class LessonViewModal extends React.Component{
                   label_name: label_name,
                   label_id: (label_id | 0) === label_id ? label_id : undefined, 
                   pf_comment_content: pf_comment_content,
+                  comment_source: lesson_id,
                   teacher_id: this.props.teacher_id,
                 }
               )}>点评</Button>                
@@ -959,7 +969,7 @@ class LessonViewModal extends React.Component{
               itemLayout="horizontal"
               dataSource={pf_comment}
               renderItem={item => (
-                <List.Item>
+                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonPfComment(item.comment_id, lesson_id)}/>]}>
                   <Item.Meta
                     title={<div>
                         <span style={{fontWeight: "bold"}}>{item.label_name}</span>
