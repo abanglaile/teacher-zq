@@ -954,8 +954,8 @@ export const deleteLessonPfComment = (comment_id, lesson_id) => {
         return axios.post(url, {comment_id, lesson_id})
         .then(function (response) {
             dispatch({
-                type : 'DELETE_TEACHER_COMMENT',
-                teacher_comment: response.data, 
+                type : 'EDIT_LESSON_PFCOMMENT',
+                kp_comment: response.data, 
             });
         })
         .catch(function (error) {
@@ -970,8 +970,8 @@ export const deleteLessonKpComment = (comment_id, lesson_id) => {
         return axios.post(url, {comment_id, lesson_id})
         .then(function (response) {
             dispatch({
-                type : 'DELETE_TEACHER_COMMENT',
-                teacher_comment: response.data, 
+                type : 'EDIT_LESSON_KPCOMMENT',
+                pf_comment: response.data, 
             });
         })
         .catch(function (error) {

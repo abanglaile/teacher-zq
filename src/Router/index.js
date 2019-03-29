@@ -28,12 +28,9 @@ const component = (component) => {
       /*<Route path="root" component={requireAuthentication(App)}>*/
 export default (
     <Route path='teacher-zq'>
-
-
-      <Route path="root" component={requireAuthentication(App)}>
+      <Route path="root" component={App}>
       {/* <Route path="root" component={App}> */}
-        <IndexRoute component={TestCenter} />
-        
+        <IndexRoute component={TestCenter} />        
         <Route path="testcenter" component={TestCenter}/>
         <Route path="stu_manager" component={StuManager}/>
         <Route path="lesson-manager" component={LessonManager}/>

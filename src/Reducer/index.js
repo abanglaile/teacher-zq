@@ -256,7 +256,7 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.setIn(['teacher_lesson', index, 'homework'], Immutable.fromJS(action.homework));
         case 'EDIT_LESSON_KPCOMMENT':
             return state.setIn(['teacher_lesson', index, 'kp_comment'], Immutable.fromJS(action.kp_comment));
-        case 'EDIT_LESSON_FPCOMMENT':
+        case 'EDIT_LESSON_PFCOMMENT':
             return state.setIn(['teacher_lesson', index, 'pf_comment'], Immutable.fromJS(action.pf_comment));
         case 'UPDATE_LESSON_TEACHER':
             return state.setIn(['teacher_lesson', index, 'teacher_id'], action.lesson_basic.teacher_id)
@@ -264,8 +264,6 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'UPDATE_LESSON_ASSISTANT':
             return state.setIn(['teacher_lesson', index, , 'assistant_id'], action.lesson_basic.assistant_id)
                 .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);
-        case 'UPDATE_LESSON_ASSISTANT':
-            return state.setIn(['teacher_lesson', index, 'is_sign'], true);
         // case 'UPDATE_LESSON_GROUP':
         //     return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
         //         .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);
