@@ -790,16 +790,17 @@ export const getOneLesson = (lesson_id, index) => {
     }
 }
 
-export const deleteOneLesson = (lesson_id) => {
+export const deleteOneLesson = (lesson_id,teacher_id) => {
     let url = target + "/deleteOneLesson";
     console.log(lesson_id);
     return dispatch => {
         return axios.post(url, {lesson_id})
         .then(function (response) {
-            dispatch({
-                type : 'DELETE_ONE_LESSON',
-                lesson: response.data,
-            });
+            dispatch(getTeacherLesson(teacher_id,{}));
+            // dispatch({
+            //     type : 'DELETE_ONE_LESSON',
+            //     lesson: response.data,
+            // });
         })
         .catch(function (error) {
             console.log(error);
@@ -814,15 +815,16 @@ export const setLessonIndexVisible = (index) => {
     }
 }
 
-export const addNewLesson = (lesson) => {
+export const addNewLesson = (lesson, teacher_id) => {
     let url = target + "/addNewLesson";
     return dispatch => {
         return axios.post(url, {lesson})
         .then(function (response) {
-            dispatch({
-                type : 'ADD_NEW_LESSON',
-                lesson_id : response.data,
-            });
+            dispatch(getTeacherLesson(teacher_id,{}));
+            // dispatch({
+            //     type : 'ADD_NEW_LESSON',
+            //     lesson_id : response.data,
+            // });
         })
         .catch(function (error) {
             console.log(error);
