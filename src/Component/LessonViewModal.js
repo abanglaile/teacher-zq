@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
+import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Popover, Progress, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -52,7 +52,7 @@ class LessonViewModal extends React.Component{
       const {lesson_edit, search_teacher_task, search_kp_label} = this.props;
       const {content_edit} = lesson_edit;
       let {kp_input_visible, kp_tags} = this.state;
-      let item_title = ["课堂学习", "讲解知识", "课堂练习"];
+      let item_title = ["课堂学习", "知识讲解", "课堂练习"];
       let edit_dom = [];
       let icon_dom = [
         <Icon onClick={e => {
@@ -185,7 +185,7 @@ class LessonViewModal extends React.Component{
       let {lesson_content, lesson_id} = teacher_lesson[lesson_index];
       let {new_content_edit} = lesson_edit;
       let {kp_input_visible, kp_tags, content_type} = this.state;
-      let item_title = ["自定义", "讲解知识点", "课堂练习"];
+      let item_title = ["自定义", "知识讲解", "课堂练习"];
       let edit_dom = [];
 
       const menu = (
@@ -194,7 +194,7 @@ class LessonViewModal extends React.Component{
             <a onClick={e => {
               this.setState({ content_type: 1, content: "", kp_tags: [], resource: null});
               this.props.editLesson("new_content_edit", true);
-            }}>知识点讲解</a>
+            }}>知识讲解</a>
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => {
@@ -374,19 +374,27 @@ class LessonViewModal extends React.Component{
       const {new_homework_edit} = lesson_edit;
       const {lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let edit_dom = [];
-      const {task_type, task_count, source_id, source_type, remark} = this.state;
+      const {task_type, task_count, source_id, source_type, remark, remark_page} = this.state;
 
       const menu = (
         <Menu>
           <Menu.Item>
             <a onClick={e => {
-              this.setState({homework_type: 0, content: "", resource: null});
+              this.setState({
+                homework_type: 0, 
+                source_id: null, 
+                task_count: 0,
+                remark: null,
+                remark_page: [],  
+                source_type: 0, 
+                task_type: 0
+              });
               this.props.editLesson('new_homework_edit', true);
             }}>新建作业</a>
           </Menu.Item>
           <Menu.Item>
             <a onClick={e => {
-              this.setState({homework_type: 1, content: "", resource: null});
+              this.setState({homework_type: 1, remark: null});
               this.props.editLesson('new_homework_edit', true);
             }}>关联作业</a>
           </Menu.Item>
@@ -568,7 +576,7 @@ class LessonViewModal extends React.Component{
 
     renderHomework(){
       const {teacher_lesson, lesson_index} = this.props;
-      let {homework} = teacher_lesson[lesson_index];
+      let {homework, lesson_id, lesson_student} = teacher_lesson[lesson_index];
       const homework_list = homework ? homework.map((item, i) => {           
         return (
           <Item
@@ -859,7 +867,7 @@ class LessonViewModal extends React.Component{
           </div>
           
             
-          <Alert message="表扬进步" type="success" style={{marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
+          <Alert message="表扬进步" type="success" style={{background: "#FFF", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
             showIcon description={
             <List
               itemLayout="horizontal"
@@ -881,7 +889,7 @@ class LessonViewModal extends React.Component{
             />
           } />
 
-          <Alert message="存在问题" type="warning" showIcon 
+          <Alert message="存在问题" style={{background: "#FFF"}} type="warning" showIcon 
             description={
             <List
               itemLayout="horizontal"

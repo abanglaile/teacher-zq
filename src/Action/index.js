@@ -972,7 +972,7 @@ export const deleteLessonPfComment = (comment_id, lesson_id) => {
         .then(function (response) {
             dispatch({
                 type : 'EDIT_LESSON_PFCOMMENT',
-                kp_comment: response.data, 
+                pf_comment: response.data, 
             });
         })
         .catch(function (error) {
