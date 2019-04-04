@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Input, Steps, Menu, Select, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
+import {Icon,Spin,Table,Input, Row, Col, Steps, Menu, Select, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 import config from '../utils/Config';
@@ -17,7 +17,7 @@ var urlip = config.server_url;
 class TaskManager extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false,tree_value:[],remark: [],task_type: 0,
+        this.state={visible:false,tree_value:[],remark: [],task_type: 0, remark_page: [],
             filterDropdownVisible: false, searchText: '', filtered: false, checked : false
         };
         this.searchTaskSource = debounce(this.props.searchTaskSource, 500);
@@ -51,7 +51,7 @@ class TaskManager extends React.Component{
 
     handleOk(){
         const { teacher_id, search_task_source} = this.props;
-        const {task_type, task_count, source_id, remark, extra} = this.state;
+        const {task_type, task_count, source_id, remark, extra, remark_page} = this.state;
         var keys = [];
         for(var j = 0;j<extra.allCheckedNodes.length;j++){
             if(extra.allCheckedNodes[j].children != null){
@@ -67,14 +67,16 @@ class TaskManager extends React.Component{
             source_id: source_id,
             create_user: teacher_id, 
             task_type: task_type,
-            remark: task_type ? remark : JSON.stringify(remark),
+            remark: task_type ? remark : JSON.stringify(remark_page),
             task_count: task_count,
         });
         this.setState({
             visible: false,
             source_id: null,
+            source_type: null,
             task_count : null,
             remark : [],
+            remark_page : [],
             task_type : 0,
             tree_value : [],
         });
@@ -117,13 +119,13 @@ class TaskManager extends React.Component{
     }
 
     pageInputConfirm(){
-        let {remark, page} = this.state;
-        if (page && remark.indexOf(page) === -1) {
-          remark = [...remark, page];
+        let {remark_page, page} = this.state;
+        if (page && remark_page.indexOf(page) === -1) {
+          remark_page = [...remark_page, page];
         }
         this.setState({
-          task_count: remark.length,
-          remark,
+          task_count: remark_page.length,
+          remark_page,
           page_input_visible: false,
           page: '',
         });
@@ -147,7 +149,14 @@ class TaskManager extends React.Component{
                     filterOption={false}
                     autoFocus={true}
                     onSearch={(input) => this.searchTaskSource(input)}
-                    onSelect={(value, option) => this.setState({source_id: value, task_type: option.props.type})}
+                    onSelect={(value, option) => this.setState({
+                        source_id: value,
+                        task_count: 0,
+                        remark: null,
+                        remark_page: [],  
+                        source_type: option.props.type, 
+                        task_type: option.props.type,
+                    })}
                     notFoundContent={null}
                 >
                     {source_option}  
@@ -159,48 +168,69 @@ class TaskManager extends React.Component{
                     disabled={this.state.task_type != 1}
                     onChange={(value) => this.setState({task_count: value})}
                 />
-                <Switch checkedChildren="自定义" unCheckedChildren="指定" 
+                {/* <Switch checkedChildren="自定义" unCheckedChildren="指定" 
                     onChange={checked => checked ? this.setState({task_type: 2, task_count: 0.5}) : this.setState({task_type: 0, task_count: null})} 
-                    checked={this.state.task_type == 2} />
+                    checked={this.state.task_type == 2} /> */}
             </div>
            )
     }
 
     renderTaskSub(){
-        let {remark, page_input_visible} = this.state;
-        if(this.state.task_type){
-          return (
-            <div style={{width: 500}}>
-              <Input placeholder="添加作业描述" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
-            </div>
-          ) 
+        // let {remark, page_input_visible} = this.state;
+        let {source_type, task_type, remark, remark_page, page_input_visible} = this.state;
+
+        if(source_type){//非教材类
+            return (
+              <div style={{width: 500}}>
+                <Input placeholder="添加作业描述" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
+              </div>
+            ) 
+        }else if(task_type){
+          //自定义
+            return(
+                <Row type="flex" gutter={2} justify="space-between" align="middle">
+                <Col span={20}>
+                    <Input placeholder="自定义内容" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
+                </Col>
+                <Col span={2}>
+                    <Icon type="snippets" onClick={e => this.setState({task_type: 0, task_count: remark_page.length})} />
+                </Col>
+                </Row>
+            )
         }else{
           return (
             <div>
-              {
-                remark.map((tag, index) => 
-                    <Tag key={tag} closable afterClose={(removedTag) => {
-                      const tags = this.state.remark.filter(tag => tag !== removedTag);
-                      this.setState({ remark: tags });
-                    }}>
-                      {'P ' + tag}
-                    </Tag>
-                  )
-              }
-              {page_input_visible ? 
-                <InputNumber
-                  size="small"
-                  onChange={(value) => this.setState({page: value})}
-                  onBlur={() => this.pageInputConfirm()}
-                />              
-                :
-                <Tag
-                  onClick={e => this.setState({page_input_visible: true})}
-                  style={{ background: '#fff', borderStyle: 'dashed' }}
-                >
-                  <Icon type="plus" /> 添加页码
-                </Tag>
-              }
+                <Row>
+                    <Col span={22}>
+                        {
+                            remark_page.map((tag, index) => 
+                                <Tag key={tag} closable afterClose={(removedTag) => {
+                                    const tags = remark_page.filter(tag => tag !== removedTag);
+                                    this.setState({ remark_page: tags });
+                                }}>
+                                    {'P ' + tag}
+                                </Tag>
+                            )
+                        }
+                        {page_input_visible ? 
+                            <InputNumber
+                            size="small"
+                            onChange={(value) => this.setState({page: value})}
+                            onBlur={() => this.pageInputConfirm()}
+                            />              
+                            :
+                            <Tag
+                            onClick={e => this.setState({page_input_visible: true})}
+                            style={{ background: '#fff', borderStyle: 'dashed' }}
+                            >
+                            <Icon type="plus" /> 添加页码
+                            </Tag>
+                        }
+                    </Col>
+                    <Col span={2}>
+                        <Icon type="edit" onClick={e => this.setState({task_type: 2, task_count: 0.5})} />
+                    </Col>
+                </Row>
             </div>
           )
         }      
