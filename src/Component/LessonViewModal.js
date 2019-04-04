@@ -376,7 +376,7 @@ class LessonViewModal extends React.Component{
       const {new_homework_edit} = lesson_edit;
       const {lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let edit_dom = [];
-      const {task_type, task_count, source_id, source_type, remark, remark_page, task_id} = this.state;
+      const {task_type, task_count, source_id, source_type, remark, remark_page, task_id, homework_type} = this.state;
 
       const menu = (
         <Menu>
