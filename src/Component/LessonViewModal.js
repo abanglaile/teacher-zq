@@ -1004,7 +1004,8 @@ class LessonViewModal extends React.Component{
       const {teacher_lesson, lesson_index } = this.props;
       let {is_sign} = teacher_lesson[lesson_index];
       return(
-      <Modal title={null} onCancel={this.props.onCancel}        
+      // <Modal title={null} onCancel={this.props.onCancel}  
+      <Modal title={null} onCancel={()=>{this.props.editLesson("new_content_edit", false);this.props.editLesson('new_homework_edit', false);this.setState({visible:false})}}              
         footer={null}
         visible={this.state.visible} width={700} >
           <Tabs defaultActiveKey="1">
