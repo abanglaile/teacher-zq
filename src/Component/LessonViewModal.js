@@ -344,7 +344,7 @@ class LessonViewModal extends React.Component{
 
     renderLessonContent(){
       const {teacher_lesson, lesson_index} = this.props;
-      let {lesson_content, homework} = teacher_lesson[lesson_index];
+      let {lesson_content, homework, is_sign} = teacher_lesson[lesson_index];
       let content_list = lesson_content ? lesson_content.map((item, i) => this.renderContentItem(item, i)) : [];
       return(
         <div>
@@ -358,12 +358,14 @@ class LessonViewModal extends React.Component{
               {this.renderNewContent()}
             </List>
           </div>
-          <div style={{marginTop: "1rem", marginBottom: "1rem"}}>
-            <Icon type="ordered-list" style={{color:"#D3D3D3"}}/>
-            <span style={{fontSize: "1rem", color: "#D3D3D3", marginLeft: "0.5rem"}}>作业</span>
-          </div>
-          <div style={{padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
-            {this.renderHomework()}
+          <div style={{display: is_sign ? "inline" : "none"}}>
+            <div style={{marginTop: "1rem", marginBottom: "1rem"}}>
+              <Icon type="ordered-list" style={{color:"#D3D3D3"}}/>
+              <span style={{fontSize: "1rem", color: "#D3D3D3", marginLeft: "0.5rem"}}>作业</span>
+            </div>
+            <div style={{padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
+              {this.renderHomework()}
+            </div>
           </div>
         </div>
       )
@@ -374,7 +376,7 @@ class LessonViewModal extends React.Component{
       const {new_homework_edit} = lesson_edit;
       const {lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let edit_dom = [];
-      const {task_type, task_count, source_id, source_type, remark, remark_page} = this.state;
+      const {task_type, task_count, source_id, source_type, remark, remark_page, task_id} = this.state;
 
       const menu = (
         <Menu>
@@ -476,7 +478,10 @@ class LessonViewModal extends React.Component{
         <Item>
           <div>
             <div style={{marginBottom: '0.5rem'}}>
-              <a onClick={e => this.props.addHomework(lesson_id, {
+              <a onClick={e => homework_type ?
+                this.props.relateHomework(lesson_id, task_id, lesson_student)
+                :
+                this.props.addHomework(lesson_id, {
                   source_id: source_id,
                   create_user: teacher_id, 
                   task_type: task_type,
@@ -996,7 +1001,8 @@ class LessonViewModal extends React.Component{
     }
 
     render(){
-      const {sub_view} = this.props.lesson_edit;
+      const {teacher_lesson, lesson_index } = this.props;
+      let {is_sign} = teacher_lesson[lesson_index];
       return(
       // <Modal title={null} onCancel={this.props.onCancel}  
       <Modal title={null} onCancel={()=>{this.props.editLesson("new_content_edit", false);this.props.editLesson('new_homework_edit', false);this.setState({visible:false})}}              
@@ -1005,8 +1011,8 @@ class LessonViewModal extends React.Component{
           <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
-            <TabPane tab="知识点点评" key="3">{this.renderKpComment()}</TabPane>
-            <TabPane tab="课堂表现" key="4">{this.renderPfComment()}</TabPane>
+            <TabPane tab="知识点点评" disabled={!is_sign} key="3">{this.renderKpComment()}</TabPane>
+            <TabPane tab="课堂表现" disabled={!is_sign} key="4">{this.renderPfComment()}</TabPane>
           </Tabs> 
       </Modal>
       )

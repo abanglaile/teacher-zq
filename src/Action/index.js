@@ -866,6 +866,23 @@ export const addHomework = (lesson_id, task, users) => {
     }
 }
 
+export const relateHomework = (lesson_id, task_id, users) => {
+    let url = target + "/relateHomework";
+    return dispatch => {
+        return axios.post(url, {lesson_id, task_id, users})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_HOMEWORK',
+                homework: response.data, 
+            });
+            dispatch(editLesson('new_homework_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const deleteHomework = (lesson_id, task_id, users) => {
     let url = target + "/deleteHomework";
     return dispatch => {
