@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Col,Progress,Row,Layout,Card,Breadcrumb} from 'antd';
+import {Col,Progress,Row,Layout,Card,Breadcrumb,Statistic,Icon,Divider} from 'antd';
 import {Link} from 'react-router';
 import Styles from '../styles/stuEvaluation.css';
 import {Chart,Geom,Axis,Tooltip,Coord,Label,Legend} from "bizcharts";
@@ -14,119 +14,171 @@ class StuEvaluation extends React.Component {
 	componentWillMount(){
 		let { query } = this.props.location;
 		this.props.getMyTestData(query.student_id,query.test_id);
-		this.props.getstuEvaluationData(query.student_id,query.test_id);
+		// this.props.getStuTestSurvey(query.student_id,query.test_id);
+		this.props.getStuEvaluationData(query.student_id,query.test_id);
 	}
 
-	dataProcess(data){
-		const ds = new DataSet().createView().source(data);
-		ds.transform({
-			type: "rename",
-			map: {
-				kp_correct_percent: '本次测试知识点正确率',
-				kp_correct_rating: '知识点累计掌握度'
-			}
-		}).transform({
-			type: "fold",
-			fields: ["知识点累计掌握度", "本次测试知识点正确率"],
-			// 展开字段集
-			key: "type",
-			// key字段
-			value: "value" // value字段
-		  });
-		return ds
-	}
-	
 	ProcessKPstatus(){
 		const {eval_data} = this.props;
+		console.log("eval_data:",JSON.stringify(eval_data));
 		const kp_name_lable = {
 			offset: 80,
 			htmlTemplate(text, item, index) {
 				return `<div class="o">${text}</div>`;
 			}
 		};
-		// const value_label = {
-		// 	offset
-		// }
-		const scale = {
-			value:{
-				type:"linear",
-				max:100
+		
+		const cols_r = {
+			kp_name: {
+				alias: '知识点', // 为属性定义别名
+			},
+			kp_correct_rating: {
+				alias: '知识点掌握度', // 为属性定义别名
+				max: 100,
 			}
-		}
+		};
+		const cols_p = {
+			kp_name: {
+				alias: '知识点', // 为属性定义别名
+			},
+			kp_correct_percent: {
+				alias: '知识点正确率', // 为属性定义别名
+				max: 100,
+			}
+		};
 		let KPstatus=[];
 		for (var i=0;i<eval_data.length;i++){
 			KPstatus.push(
-			<Card>
+			// <Card  bordered={false} title={<h2>{eval_data[i].chapter_name}</h2>} >
 				<div>
-					<Row type="flex" justify="center" align="middle">
-						<Col span={8}>
-							<h1>
-								{eval_data[i].chapter_name}
-							</h1>
+					<div style={{marginLeft:'24px'}}><h2>{eval_data[i].chapter_name}</h2></div>
+					{/* <Divider orientation="left"><h2>{eval_data[i].chapter_name}</h2></Divider> */}
+					<Row type="flex" justify="space-around" align="middle">
+						<Col span={11}>
+							<Card>
+								<div>
+									<Row type="flex" justify="space-around" align="middle">
+										<Col span={11}>
+											<Progress 
+												strokeLinecap="square"
+												type="circle"
+												width={100}
+												percent={eval_data[i].chapter_ratting} 
+												format={(percent) => `${percent}%`}  
+											/>
+										</Col>
+										<Col span={11}>
+											<Statistic
+												title="章节掌握度"
+												value={11.28}
+												precision={2}
+												valueStyle={{ color: '#3f8600' }}
+												prefix={<Icon type="arrow-up" />}
+												suffix="%"
+											/>
+										</Col>
+									</Row>
+									<Row type="flex" justify="space-around" align="middle" style={{marginTop:'2rem'}}>
+										<Col span={22}>
+											<Chart height={400} data={eval_data[i].kp_status} scale={cols_r} forceFit>
+												<Coord transpose />	
+												<Axis name="kp_name" label={kp_name_lable}/>
+												<Axis name="kp_correct_rating"  title={true}/>
+												<Tooltip
+													crosshairs={{
+														type: "rect",
+													}}
+												/>
+												<Geom type="interval" 
+													position="kp_name*kp_correct_rating" 
+													color='kp_name'
+													tooltip={['kp_name*kp_correct_rating', (kp_name, kp_correct_rating) => {
+														return { //自定义 tooltip 上显示的 title 显示内容等。
+														name: kp_name + '',
+														title: '知识点掌握度',
+														value: kp_correct_rating + '%'
+														};
+													}]}
+													adjust= {[
+														{
+														type: 'dodge',//   'stack', 'dodge', 'jitter', 'symmetric'
+														}
+													]}
+												>
+													<Label
+														content="kp_correct_rating"
+														formatter={(text, item, index)=>{
+															return text + "%"
+														}}
+													/>
+												</Geom>
+											</Chart>
+										</Col>
+									</Row>
+								</div>
+							</Card>
 						</Col>
-						<Col span={8}>
-						<Progress 
-							type="circle"
-							width={80}
-							percent={eval_data[i].chapter_ratting} 
-							format={(percent) => `${percent}%`}  
-						/>
-						</Col>
-						<Col span={8}>
-							<Progress 
-							type="circle"
-							width={80}
-							percent={eval_data[i].chapter_correct_percent} 
-							format={(percent) => `${percent}%`}  
-						/>
-						</Col>
-					</Row>
-					<Row type="flex" justify="center" align="middle">
-						<Col span={8}></Col>
-						<Col span={8}><span>知识点掌握度</span></Col>
-						<Col span={8}><span>章节答题正确率</span></Col>
-					</Row>
-					<Row type="flex" justify="center" align="middle">
-						<Col span={20}>
-							<Chart height={400} padding={[ 20, 30, 20, 30]} data={this.dataProcess(eval_data[i].kp_status)} scale={scale} forceFit>
-								<Legend />
-								<Coord transpose scale={[1, -1]} />
-								<Axis name="kp_name" label={kp_name_lable}/>
-								<Axis name="value" visible={false} position={"right"}  />
-								<Tooltip />
-								<Geom
-									type="interval"
-									position="kp_name*value"
-									color={"type"}
-									size={10}
-									adjust={[
-										{
-											type: "dodge",
-											marginRatio: 0
-										}
-									]}
-								>
-									<Label
-										content="value"
-										// labelLine= "false"
-										textStyle={{
-										// textAlign: 'start', // 文本对齐方向，可取值为： start middle end
-										// fill: '#404040', // 文本的颜色
-										fontSize: '18', // 文本大小
-										// fontWeight: 'bold', // 文本粗细
-										// rotate: 0,
-										// textBaseline: 'top' // 文本基准线，可取 top middle bottom，默认为middle
-										}}
-										formatter={(text, item, index)=>{
-											return text + "%"
-										}}
-									/>
-								</Geom>
-							</Chart>
+						<Col span={11}>
+							<Card>
+								<div>
+									<Row type="flex" justify="space-around" align="middle">
+										<Col span={8}>
+											<Progress 
+												strokeLinecap="square"
+												strokeColor = "red"
+												type="circle"
+												width={100}
+												percent={eval_data[i].chapter_correct_percent} 
+												format={(percent) => `${percent}%`}  
+											/>
+										</Col>
+										<Col span={8}>
+											<span>章节正确率</span>
+										</Col>
+									</Row>
+									<Row type="flex" justify="space-around" align="middle" style={{marginTop:'2rem'}}>
+										<Col span={22}>
+											<Chart height={400} data={eval_data[i].kp_status} scale={cols_p} forceFit>
+												<Coord transpose />	
+												<Axis name="kp_name" label={kp_name_lable} />
+												<Axis name="kp_correct_percent"  title={true}/>
+												<Tooltip
+													crosshairs={{
+														type: "rect",
+													}}
+												/>
+												<Geom type="interval" 
+													position="kp_name*kp_correct_percent" 
+													color='kp_name'
+													tooltip={['kp_name*kp_correct_percent', (kp_name, kp_correct_percent) => {
+														return { //自定义 tooltip 上显示的 title 显示内容等。
+														name: kp_name + '',
+														title: '知识点正确率',
+														value: kp_correct_percent + '%'
+														};
+													}]}
+													adjust= {[
+														{
+														type: 'dodge',//   'stack', 'dodge', 'jitter', 'symmetric'
+														}
+													]}
+												>
+													<Label
+														content="kp_correct_percent"
+														formatter={(text, item, index)=>{
+															return text + "%"
+														}}
+													/>
+												</Geom>
+											</Chart>
+										</Col>
+									</Row>
+								</div>
+							</Card>
 						</Col>
 					</Row>
 				</div>
-			</Card>
+			// </Card>
 			)
 		}
 		return KPstatus;
@@ -134,7 +186,7 @@ class StuEvaluation extends React.Component {
 
     render () {
 		const {eval_data,TestStatus,isFetching} = this.props;
-
+		console.log("TestStatus:",JSON.stringify(TestStatus));
         return (
 			<Layout className="layout">
 			<Header style={{background: '#fff',height:'80px'}}>
@@ -147,29 +199,39 @@ class StuEvaluation extends React.Component {
 					<Breadcrumb.Item>{TestStatus.test_name}</Breadcrumb.Item>
 				</Breadcrumb>
 				<div style={{ background: '#fff', padding: 24, minHeight: 560 }}>
-					<Row type="flex" justify="center" align="middle">
-						<Col span={4} offset={3}>
-							<div>
-							<Progress 
-								type="circle"
-								width={80}
-								percent={TestStatus.correct_rate} 
-								format={(percent) => `${percent}%`} 
-							/>
-							</div>
-						</Col>
-						<Col span={4} offset={3}>
-							<p className="row_rate_time">{TestStatus.elapsed_time}</p>
-						</Col>
-						<Col span={6} offset={2}>
-							<p className="row_rate_time">{TestStatus.finish_time}</p>
-						</Col>
-					</Row>
-					<Row type="flex" justify="center" align="middle">
-						<Col span={5} offset={3}>正确率</Col>
-						<Col span={5} offset={2}>耗时</Col>
-						<Col span={3} offset={3}>提交时间</Col>
-					</Row>
+					<div style={{padding: 24}}>
+						<div><h2>概况</h2></div>
+						<Card>
+						<Row type="flex" justify="space-around" align="middle">
+							<Col span={4}>
+								<div>
+									<Progress 
+										strokeLinecap="square"
+										type="circle"
+										width={80}
+										percent={TestStatus.correct_rate} 
+										format={(percent) => `${percent}%`} 
+									/>
+								</div>
+							</Col>
+							<Col span={4} >
+								<p style={{fontSize: 28,color:'#0e77ca',marginLeft:8}}>800</p>
+							</Col>
+							<Col span={4} >
+								<p style={{fontSize: 24,color:'#0e77ca'}}>{TestStatus.elapsed_time}</p>
+							</Col>
+							<Col span={6}>
+								<p style={{fontSize: 16,color:'#0e77ca'}}>{TestStatus.finish_time}</p>
+							</Col>
+						</Row>
+						<Row type="flex" justify="space-around" align="middle">
+							<Col span={4} ><p className="p_row_rate">正确率</p></Col>
+							<Col span={4} ><p className="row_rate_p">天梯分</p></Col>
+							<Col span={4} ><p className="row_rate_p">耗时</p></Col>
+							<Col span={6} ><p className="row_rate_p">提交时间</p></Col>
+						</Row>
+					</Card>
+					</div>
                 <div>
 					{this.ProcessKPstatus()}
                 </div>

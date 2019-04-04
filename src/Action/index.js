@@ -133,7 +133,24 @@ export const getUserInfo = (userid) => {
 }
 
 /*---------------------------------------获取目录菜单----------------------------------*/
+export const getCourse = () => {
+    let url = target + "/getCourse";
+    return (dispatch) => {
+        return axios.get(url).then(function(response){
+            dispatch({
+                type: 'GET_COURSE',
+                course: response.data,
+            })            
+        })
+    }
+}
 
+export const setCourseId = (value) => {
+    return {
+        type: 'SET_COURSE_ID',
+        data: value,
+    }
+}
 
 export const fetchBookMenu = (course_id) => {
     let url = target + "/getBookChapter";
@@ -203,10 +220,10 @@ export const getTestTable = (teacher_id) => {
 }
 
 // 保存新建测试信息，并上传后台
-export const saveNewTest = (test_name,teacher_id,test_exercise) => {
+export const saveNewTest = (test_name,teacher_id,test_exercise,course_id) => {
     let url = target + "/addNewTest";
     return dispatch => {
-        return axios.post(url,{test_name,teacher_id,test_exercise})
+        return axios.post(url,{test_name,teacher_id,test_exercise,course_id})
         .then(function (response) {
             dispatch(clearBasketData());
             dispatch({
@@ -1080,6 +1097,46 @@ export const signLesson = (lesson_id) => {
 //     }
 // }
 
+export const getStuTestSurvey = (student_id, test_id) => {
+    let url = target + "/getStuTestSurvey";
+    return (dispatch) => {
+        return axios.get(url,{
+                params:{
+                   student_id,
+                   test_id,
+                }
+        })
+        .then(function (response) {
+
+            console.log("getStuTestSurvey:",JSON.stringify(response.data));
+            
+            let test_data = response.data.test_log;
+            let start_time=moment(test_data.start_time);
+            let finish_time=moment(test_data.finish_time);
+            let pre_elapsed_time = moment(finish_time-start_time).subtract(8,'hours')
+            let elapsed_time = pre_elapsed_time >= 60*60 ? moment(pre_elapsed_time).format('HH时m分ss秒'):moment(pre_elapsed_time).format('m分ss秒');
+            let end_time = moment(test_data.finish_time).format("YYYY-M-D H:mm:ss");
+            // console.log(elapsed_time);
+            
+            let per_data = "{" + 
+                    '"test_name":' + '"' + test_data.test_name + '"' + "," + 
+                    '"elapsed_time":' + '"' + elapsed_time + '"' + "," +
+                    '"correct_rate":' + test_data.test_state + "," +
+                    '"finish_time":' + '"' + end_time + '"' +
+                    "}"
+            
+            let data=JSON.parse(per_data);
+            dispatch({
+                type: 'GET_MY_TEST_DATA',
+                json: data
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const getMyTestData = (student_id, test_id) => {
     let url = target + "/getMyTestData";
     return (dispatch) => {
@@ -1247,8 +1304,8 @@ export const getstuEvaluationDataStart = () => {
       type: 'GET_STU_EVAL_START',
     }
   }
-export const getstuEvaluationData= (student_id,test_id) => {
-    let path = '/getMyTestStepAnalysis'
+export const getStuEvaluationData= (student_id,test_id) => {
+    let path = '/getStuTestStepAnalysis'
     let url = target + path;
     return dispatch => {
         return axios.get(url,{

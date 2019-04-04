@@ -3,7 +3,28 @@
     word-wrap:break-word;
     text-align:center
 }
+
+.row_rate{
+	margin : 15px 0 25px 0;
+}
 .row_rate_p{
 	margin: 5px 0 0 8px;
 	font-size:9px;
+}
+.row_rate_p{
+	margin: 5px 0 0 8px;
+	font-size:12px;
+}
+.p_row_rate{
+    margin: 5px 0 0 18px;
+	font-size:12px;
+}
+.row_rate_time{
+	font-size: 24px;
+	color: #0e77ca;
+	margin-left: 10px; 
+}
+.row_kp_count{
+	font-size:15px;
+	color: #0e77ca;
 }

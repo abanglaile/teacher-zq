@@ -361,19 +361,11 @@ class KpExerciseView extends React.Component {
 	}
 
 	componentDidMount(){
-      this.loadBookMenu();
-      this.loadDefaultSelMenu();
+		const {course_id} = this.props;
+		this.props.getCourse();
+		this.props.fetchBookMenu(course_id);
+		this.props.fetchSelectMenu(655363);//loadDefaultSelMenu
     }
-
-	loadBookMenu(){
-	  //course_id
-      this.props.fetchBookMenu(3);
-	}
-
-	loadDefaultSelMenu(){
-	  //chapter_id
-      this.props.fetchSelectMenu(655363);	
-	}
 
 	handlePreView(){
 		this.setState({previsible: true});
@@ -411,7 +403,7 @@ class KpExerciseView extends React.Component {
 
     handleProOk(){
     	const form = this.form;
-    	const {basket_tests} = this.props;
+    	const {teacher_id,basket_tests,course_id} = this.props;
 	    form.validateFields((err, values) => {
 	      if (err) {
 	        return;
@@ -424,14 +416,7 @@ class KpExerciseView extends React.Component {
 		  for(var j = 0; j < basket_tests.length; j++) {
 		  	 test_exerid.push(basket_tests[j].exercise.exercise_id)
           }
-		  console.log("test_exerid:"+test_exerid);
-		  console.log("test_name:",values.testname);
-		  var postdata = {
-			  "test_name":values.testname,
-			  "teacher_id":this.props.teacher_id,
-			  "test_exercise":test_exerid
-		  };
-	      this.props.saveNewTest(values.testname,this.props.teacher_id,test_exerid);
+	      this.props.saveNewTest(values.testname,teacher_id,test_exerid,course_id);
 	    });
 	}
 
@@ -465,8 +450,10 @@ class KpExerciseView extends React.Component {
 
 	render(){
 		const {exer_data,previsible,provisible} = this.state;
-		const {menu_data,selmenu,basket_tests} = this.props;
-		console.log("basket_tests count:"+basket_tests.length);
+		const {course,course_id,menu_data,selmenu,basket_tests} = this.props;
+		console.log("course_id:",course_id);
+		console.log("menu_data:",JSON.stringify(menu_data));
+		// console.log("basket_tests count:"+basket_tests.length);
 		if(menu_data){//存储章节的侧边栏信息
 			var menuHtml = menu_data.map(function(bookmenu,index,input) {
                       var chaEl = [];
@@ -475,7 +462,7 @@ class KpExerciseView extends React.Component {
                             chaEl.push(<Menu.Item key= {chmenu[j].chapterid}>{chmenu[j].chaptername}</Menu.Item>);
                       }
                       return(
-                            <SubMenu key={bookmenu.bookid} title={<span><Icon type="mail" /><span>{bookmenu.bookname}</span></span>}>
+                            <SubMenu key={bookmenu.bookid} title={bookmenu.bookname}>
                                 {chaEl}
                             </SubMenu>
                       )
@@ -489,14 +476,16 @@ class KpExerciseView extends React.Component {
 		}
 		const menu = (
 		  <Menu>
-		    <Menu.Item className="menu_item">
-		      <Button onClick={()=>this.handlePreView()} type="primary">试题预览</Button>
+			<Menu.Item>
+			  <a onClick={()=>this.handlePreView()}>试题预览</a>
 		    </Menu.Item>
-		    <Menu.Item className="menu_item">
-		      <Button onClick={()=>this.handleProduce()} type="primary">生成试卷</Button>
+			<Menu.Item>
+			  <a onClick={()=>this.handleProduce()}>生成试卷</a>
 		    </Menu.Item>
 		  </Menu>
 		);
+		const course_option = course.map((item) => <Option value={item.value}>{item.label}</Option>)
+		
 		if(basket_tests){//试题篮中题目预览
 			var exerViews = [];
 			for(var j = 0; j < basket_tests.length; j++) {
@@ -540,6 +529,13 @@ class KpExerciseView extends React.Component {
 			    <Content style={{ padding: '24px 120px' }}>
 			      <Layout style={{ padding: '24px 0', background: '#fff'}}>
 			        <Sider width={300} style={{ background: '#fff' }}>
+						<div style={{margin:'10px 0 10px 24px'}}>
+							<Select defaultValue={'音乐'} style={{ width: 120 }} 
+								onChange={(value)=> {this.props.setCourseId(value);this.props.fetchBookMenu(value);}}
+							>
+								{course_option}
+							</Select>
+						</div>
 			            <Menu onClick = { (e) => this.handleClick(e) } style = {{ width: 300 } }
                             defaultSelectedKeys = {['655363']}
                             defaultOpenKeys={['20']}
@@ -601,10 +597,13 @@ class KpExerciseView extends React.Component {
 }
 
 export default connect(state => {
-  console.log(state);
+  const course_data = state.bookMenuData.toJS();
+  const {course,course_id,bookmenu_data} = course_data;
   return {
 	teacher_id:state.AuthData.get('userid'),
-    menu_data: state.bookMenuData.get('bookmenu_data').toJS(),   //左侧可选科目栏数据
+	course:course,   //课程类型
+	course_id:course_id,  //当前选中的科目
+    menu_data: bookmenu_data,   //左侧可选科目栏数据
     selmenu:state.selMenuData.get('selmenu_data').toJS(),       //栏目下的具体知识点
 	basket_tests : state.basketDataMonitor.get('basket_data').toJS(),
   }

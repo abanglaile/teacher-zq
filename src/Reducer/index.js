@@ -30,6 +30,8 @@ const defaultStudentData = Immutable.fromJS({//学生信息
 });
 
 const defaultBookMenuData = Immutable.fromJS({//book菜单
+        course : [],
+        course_id : '3',
         bookmenu_data: [],
         isFetching: false,
     });
@@ -140,6 +142,14 @@ export const TasksData = (state = defaultTasksData , action = {}) => {
 
 export const bookMenuData = (state = defaultBookMenuData, action = {}) => {
     switch(action.type){
+        case 'GET_COURSE':
+            var course = [];
+            for(var i = 0; i < action.course.length; i++){
+                course.push({value: action.course[i].course_id, label: action.course[i].course_name});
+            }
+            return state.set('course', course).set('isFetching', false);
+        case 'SET_COURSE_ID':
+            return state.set('course_id', action.data);
         case 'GET_BOOKMENU_START':
             return state.set('isFetching', true);
         case 'GET_BOOKMENU_SUCESS':
