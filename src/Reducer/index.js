@@ -79,6 +79,11 @@ const defaultbasketData = Immutable.fromJS({//试题篮里的信息
 
 const detuEvaluationData = Immutable.fromJS({
     eval_data: [],
+    survey_data: {
+        test_log:[],
+        student_rating:null,
+        delta_rating: null,
+    },
     isFetching: false,
 });
 
@@ -104,8 +109,8 @@ export const fetchTestsData = (state = defaultTestsData , action = {}) => {
 			return state.set('kp_data', Immutable.fromJS(action.json));
 		case 'GET_TEST_RES_TABLE':
             return state.set('test_res', Immutable.fromJS(action.json)); 
-        case 'GET_MY_TEST_DATA':
-            return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
+        // case 'GET_MY_TEST_DATA':
+        //     return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
         default:
             return state;
     }
@@ -327,6 +332,8 @@ export const stuEvaluationData = (state = detuEvaluationData, action = {}) => {
             return state.set('isFetching', true);
         case 'GET_STU_EVAL_SUCESS':
             return state.set('eval_data', Immutable.fromJS(action.json)).set('isFetching', false);
+        case 'GET_STU_TEST_SURVEY':
+            return state.set('survey_data', Immutable.fromJS(action.json));
         default:
             return state;
     }

@@ -610,7 +610,6 @@ class LessonViewModal extends React.Component{
         </List>
       )
     }
-    
 
     renderCourseAvatar(course_label){
       <Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}>U</Avatar>
@@ -619,19 +618,34 @@ class LessonViewModal extends React.Component{
       let text = '';
       switch (course_label){
         case '1':
-          ava_color = '#f56a00';
-          ava_background = '#fde3cf';
+          ava_color = '#28b6b6';
+          ava_background = '#98ebe2';
           text = '数';
           break;
         case '2':
-          ava_color = '#f56a00';
-          ava_background = '#fde3cf';
-          text = '物';
+          ava_color = '#fef001';
+          ava_background = '#fcffa1';
+          text = '音';
           break;
         case '3':
           ava_color = '#f56a00';
           ava_background = '#fde3cf';
           text = '英';
+          break;
+        case '4':
+          ava_color = '#0ebec4';
+          ava_background = '#99fff5';
+          text = '物';
+          break;
+        case '5':
+          ava_color = '#3162e5';
+          ava_background = '#b0cdff';
+          text = '化';
+          break;
+        case '6':
+          ava_color = '#eece2e';
+          ava_background = '#fff9ab';
+          text = '地';
           break;
         default:
           break;
@@ -679,7 +693,7 @@ class LessonViewModal extends React.Component{
             }
           </Col>
         </Row>
-        <Row style={{marginTop: 20}} gutter={2}>
+        <Row style={{marginTop: 20}} gutter={2} align="middle">
           <Col style={{color: '#a6a6a6'}} span={6}>
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="tags" theme="outlined" />课程标签</div>
           </Col>
@@ -689,11 +703,11 @@ class LessonViewModal extends React.Component{
             </div>
           </Col>
         </Row>
-        <Row style={{marginTop: 20}} gutter={2}>
+        <Row style={{marginTop: 20}} gutter={2} align="middle">
           <Col span={6}>
             <div style={{color: '#a6a6a6'}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="calendar" theme="outlined" />上课时间</div>
           </Col>
-          <Col className="gutter-row" span={16}>
+          <Col span={16}>
             {
               lesson_edit.range_edit ?
               <div>
@@ -715,12 +729,12 @@ class LessonViewModal extends React.Component{
                     this.props.editLesson('range_edit', true);
                     this.setState({start_time: moment(start_time), end_time: moment(end_time)});
                   }}>
-                {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("YYYY-MM-DD HH:mm")}
+                {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div>
             }  
           </Col>
         </Row>
-        <Row style={{marginTop: 20}} gutter={2}>
+        <Row style={{marginTop: 20}} gutter={2} align="middle">
           <Col style={{color: '#a6a6a6'}} span={6}>
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="idcard" theme="outlined" />课室</div>
           </Col>
@@ -728,7 +742,7 @@ class LessonViewModal extends React.Component{
             <Tag style={{marginRight: 10}} color="#2db7f5">{room_name}</Tag>
           </Col>
         </Row>
-        <Row style={{marginTop: 20}} gutter={2}>
+        <Row style={{marginTop: 20}} gutter={2} align="middle">
           <Col span={6}>
             <div style={{color: '#a6a6a6'}}>
               <Icon style={{color: '#a6a6a6', marginRight: 10}} type="user-add" theme="outlined" />任课老师
@@ -758,7 +772,7 @@ class LessonViewModal extends React.Component{
             }
           </Col>
         </Row>
-        <Row style={{marginTop: 20}} gutter={2}>
+        <Row style={{marginTop: 20}} gutter={2} align="middle">
           <Col span={6}>
             <div style={{color: '#a6a6a6'}}>
               <Icon style={{color: '#a6a6a6', marginRight: 10}} type="usergroup-add" theme="outlined" />助教

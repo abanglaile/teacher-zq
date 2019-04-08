@@ -1005,7 +1005,7 @@ export const deleteLessonKpComment = (comment_id, lesson_id) => {
         .then(function (response) {
             dispatch({
                 type : 'EDIT_LESSON_KPCOMMENT',
-                pf_comment: response.data, 
+                kp_comment: response.data, 
             });
         })
         .catch(function (error) {
@@ -1144,8 +1144,8 @@ export const getStuTestSurvey = (student_id, test_id) => {
             
             let data=JSON.parse(per_data);
             dispatch({
-                type: 'GET_MY_TEST_DATA',
-                json: data
+                type: 'GET_STU_TEST_SURVEY',
+                json: response.data,
             })
         })
         .catch(function (error) {

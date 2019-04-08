@@ -25,10 +25,8 @@ class TestCenter extends React.Component{
             render: (text, record,index) => {
               // let urlstr = "/AuthJWT/testresult/"+record.key;
               return(
-                <div 
-                  onClick={() => this.props.router.push("/teacher-zq/testresult/"+record.key)}
-                >
-                  {text}
+                <div>
+                  <a  onClick={() => this.props.router.push("/teacher-zq/testresult/"+record.key)}>{text}</a>
                 </div>
               );
             },
