@@ -186,6 +186,9 @@ class OneExerciseView extends React.Component {
 			);
         	return(
 				<div className="exercise_frame">
+					<div className="exercise_id_div">
+						{exercise_id}
+					</div>
 					<div className="exercise_body_frame">
 						<Tex content={title} sample={sample}/>
 						<div>
@@ -347,6 +350,9 @@ class OneExercise extends React.Component {
 
         	return(
 				<div className="exercise_frame">
+					<div className="exercise_id_div">
+						{exercise_id}
+					</div>
 					<div className="exercise_body_frame">
 						<Tex content={title} sample={sample}/>
 						<div>

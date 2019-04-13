@@ -276,6 +276,19 @@ export const distributeTest = (keys,test_id,index) => {
     }
 }
 
+//复制试题，生成新的未发布试题
+export const copyTest = (teacher_id, test_id,copy_name) => {
+    let url = target + "/copyTest";
+    return dispatch => {
+        return axios.post(url,{teacher_id, test_id,copy_name})
+        .then(function (response) {
+            dispatch(getTestTable(teacher_id));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 export const getTestDetail = (test_id) => {
     let url = target + "/getTestDetail";
@@ -470,6 +483,26 @@ export const distributeNewHW = (students, task) => {
 
 
 /*---------------------------------------班级管理----------------------------------*/
+//获取老师所在的学校和机构
+export const getSchool = (teacher_id) => {
+    let url = target + "/getSchool";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                teacher_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_SCHOOL_SUCESS',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 //根据教师id获取 下带的班级分组数据
 export const getClassGroup = (teacher_id) => {

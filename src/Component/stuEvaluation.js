@@ -203,7 +203,7 @@ class StuEvaluation extends React.Component {
 					<Breadcrumb.Item><Link to={"/teacher-zq/testresult/"+this.props.location.query.test_id}>{test_log.test_name}</Link></Breadcrumb.Item>
 					<Breadcrumb.Item>{survey_data.student_name}</Breadcrumb.Item>
 				</Breadcrumb>
-				<div style={{ background: '#fff', padding: 24, minHeight: 560 }}>
+				<div style={{ background: '#fff', paddingpadding: 24, minHeight: 560 }}>
 					<div style={{padding: 24}}>
 						<div><h2>概况</h2></div>
 						<Card>

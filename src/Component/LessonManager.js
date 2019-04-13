@@ -52,6 +52,7 @@ class LessonManager extends React.Component{
           query_slabel_id:undefined,
 
           visible:false,
+          view_modal:false,
         };
     }
 
@@ -392,7 +393,7 @@ class LessonManager extends React.Component{
             </div>
             {this.renderQueryOption()}
             {teacher_lesson[0] ?
-              <LessonViewModal visible={this.state.view_modal} onCancel={e => this.setState({view_modal: false})}/>
+              <LessonViewModal visible={this.state.view_modal} onhandleCancel={(value) => this.setState({view_modal:value})}/>
               :
               null
             }

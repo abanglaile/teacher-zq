@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Popconfirm ,Checkbox,TreeSelect,Modal} from 'antd';
+import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Popconfirm ,Checkbox,message,TreeSelect,Modal, Input} from 'antd';
 import Styles from '../styles/testCenter.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -17,7 +17,7 @@ var urlip = config.server_url;
 class TestCenter extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false, tree_value:undefined};
+        this.state={visible:false, copy_visible:false, tree_value:undefined, copy_name:null};
         this.columns = [{
             title: '测试名称',
             dataIndex: 'testname',
@@ -66,7 +66,7 @@ class TestCenter extends React.Component{
                       <a href = "#">删除</a> 
                   </Popconfirm >
                   <span className="ant-divider" />
-                  <a onClick={()=>this.onCopy(index)}>复制</a>
+                  <a onClick={()=>this.onCopy(record.key)}>复制</a>
                 </span>
               );
             },
@@ -83,9 +83,8 @@ class TestCenter extends React.Component{
       this.setState({visible : true, currentid:testid,currentindex:index});
     }
     
-    onCopy(index){
-      // const {data} = this.state;
-
+    onCopy(testid){
+      this.setState({copy_visible : true, currentid:testid});
     }
 
     onChange(value,label,extra){
@@ -123,8 +122,27 @@ class TestCenter extends React.Component{
       });
     }
 
+    handleCopyOk(){
+      const {currentid, copy_name} =this.state;
+      const {teacher_id} = this.props;
+      if(copy_name){
+        this.props.copyTest(teacher_id, currentid, copy_name);
+        this.setState({
+            copy_visible: false,
+        });
+      }else{
+        message.error('试题名称不能为空!!!');
+      }
+    }
+
+    handleCopyCancel(){
+      this.setState({
+        copy_visible: false,
+      });
+    }
+
     render(){
-      const {visible, tree_value} = this.state;
+      const {visible, tree_value, copy_visible, copy_name} = this.state;
       const {tests, stugroups, isFetching} = this.props;
       console.log('stugroups:'+ JSON.stringify(stugroups));
 
@@ -153,6 +171,9 @@ class TestCenter extends React.Component{
             </div>
             <Modal title="试题分发" visible={visible} width={500} style={{height:400}} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()} okText="确定">
                 <TreeSelect {...tProps}/>
+            </Modal>
+            <Modal title="复制试题" visible={copy_visible} width={500} style={{height:400}} onOk={()=>this.handleCopyOk()} onCancel={()=>this.handleCopyCancel()} okText="确定">
+                <Input placeholder="请输入新的试题名称"  onChange={(e) => {this.setState({copy_name:e.target.value})}}/>
             </Modal>
             < Table 
               columns = { this.columns } 

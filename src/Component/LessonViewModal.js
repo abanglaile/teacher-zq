@@ -34,7 +34,8 @@ class LessonViewModal extends React.Component{
           select_student: [],
           remark_page: [],
           task_type: 0,
-          visible:false,
+          // visible:false,
+          visible:this.props.visible,
         };
         this.searchKpLabel = debounce(this.props.searchKpLabel, 500);
         this.searchPfLabel = debounce(this.props.searchPfLabel, 500);
@@ -1019,7 +1020,12 @@ class LessonViewModal extends React.Component{
       let {is_sign} = teacher_lesson[lesson_index];
       return(
       // <Modal title={null} onCancel={this.props.onCancel}  
-      <Modal title={null} onCancel={()=>{this.props.editLesson("new_content_edit", false);this.props.editLesson('new_homework_edit', false);this.setState({visible:false})}}              
+      <Modal title={null} onCancel={()=>{
+        this.props.editLesson("new_content_edit", false);
+        this.props.editLesson('new_homework_edit', false);
+        this.props.onhandleCancel(false);
+        // this.setState({visible:false})
+      }}              
         footer={null}
         visible={this.state.visible} width={700} >
           <Tabs defaultActiveKey="1">

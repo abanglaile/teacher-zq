@@ -47,6 +47,10 @@
 /*.row_loc{
 	margin-top: 10px;
 }*/
+.exercise_id_div{
+	margin-left: 10px;
+	font-size: 16px;
+}
 .choice_loc{
 	float: left;
 	display: inline;

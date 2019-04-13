@@ -95,6 +95,9 @@ class StuTable extends React.Component {
             title: '学号',
             dataIndex: 'student_id',
             width: '30%',
+            render:(text,record, index) => {
+              return '';
+            }
         }, {
             title: '手机号',
             dataIndex: 'phone_num',
@@ -131,19 +134,14 @@ class StuTable extends React.Component {
 class StuManager extends React.Component{
     constructor(props) {
         super(props);
-        this.state={data: data_init,visible:false,gName:null,form_visible:false};
+        this.state={data: data_init,visible:false,gName:null,schoolId:null,form_visible:false};
     }
 
     componentDidMount(){
-      this.loadClassGroup();
-    }
-
-    loadClassGroup(){
       const {teacher_id} = this.props;
-      console.log("teacher_id",teacher_id);
-      if(teacher_id){
-        this.props.getClassGroup(teacher_id);
-      }
+
+      this.props.getClassGroup(teacher_id);
+      // this.props.getSchool(teacher_id);
     }
 
     handleData(stu_group_id){
@@ -206,8 +204,9 @@ class StuManager extends React.Component{
     }
 
     render(){
-      const {groups,isFetching,stus} = this.props;
+      const {groups,isFetching,stus,school_data} = this.props;
       const {visible,form_visible} = this.state;
+      // const schoolOption = school_data.map((item) => <Option value={item.school_id}>{item.school_name}</Option>)
 
       if(groups){
         console.log(JSON.stringify(groups));
@@ -225,7 +224,8 @@ class StuManager extends React.Component{
                 </div>
                 <Row type="flex" justify="space-between" align="middle" className="rowinCollapse">
                   <Col span={6}>
-                    <div><Button onClick={()=>this.handleAddOneStu()}>添加成员</Button></div>
+                    {/* <div><Button onClick={()=>this.handleAddOneStu()}>添加成员</Button></div> */}
+                    <div>班级ID：{item.stu_group_id}</div>
                   </Col>
                   <Col span={6}>
                     <div>
@@ -260,9 +260,16 @@ class StuManager extends React.Component{
                   <div className="p_class">班级分组</div>
                 </Col>
                 <Col span={6}>
-                  <div className="p_button"><Button type="primary" onClick={()=>this.addGroup()}><Icon type="plus"/>添加班级</Button></div>
+                  <div className="p_button"><Button type="primary" onClick={()=>this.addGroup()}><Icon type="plus"/>添加分组</Button></div>
                 </Col>
                 <Modal title="新建班级分组" visible={visible} width={500} style={{height:400}} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()} okText="确定">
+                  {/* {school_data.length > 1 ?
+                    <Select placeholder="选择班组所在学校" style={{ width: 300 }} onChange={(value) => this.setState({schoolId:value})}>
+                      {schoolOption}
+                    </Select>
+                    :
+                    ''
+                  } */}
                   <Input placeholder="输入班组名称" style={{width: 300}} onChange={(e)=>this.onChangeGroupName(e)} />
                 </Modal>
               </Row>  
@@ -281,6 +288,7 @@ export default connect(state => {
   const class_data = state.classGroupData.toJS();
   return {
     groups: class_data.classgroup_data, 
+    school_data: class_data.school_data, 
     stus : class_data.groupstu_data,
     isFetching: class_data.isFetching, 
     username: state.AuthData.get('username'),
