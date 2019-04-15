@@ -132,7 +132,7 @@ export const getUserInfo = (userid) => {
     }
 }
 
-/*---------------------------------------获取目录菜单----------------------------------*/
+/*---------------------------------------获取目录菜单以及知识点对应题目----------------------------------*/
 export const getCourse = () => {
     let url = target + "/getCourse";
     return (dispatch) => {
@@ -187,6 +187,26 @@ export const fetchSelectMenu = (chapter_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_SELECTMENU_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getExerciseByKp = (kpid) => {
+    let url = target + "/getExerciseByKp";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                kpid,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_KP_EXERCISE_SUCESS',
                 json : response.data, 
             });
         })

@@ -648,6 +648,26 @@ class LessonViewModal extends React.Component{
           ava_background = '#fff9ab';
           text = '地';
           break;
+        case '7':
+          ava_color = '#ff9918';
+          ava_background = '#ffda91';
+          text = '语';
+          break;
+        case '8':
+          ava_color = '#ff4640';
+          ava_background = '#ffc3ba';
+          text = '政';
+          break;
+        case '9':
+          ava_color = '#d4b22a';
+          ava_background = '#edde7b';
+          text = '史';
+          break;
+        case '10':
+          ava_color = '#28d900';
+          ava_background = '#c8ffab';
+          text = '生';
+          break;
         default:
           break;
       }
@@ -818,8 +838,25 @@ class LessonViewModal extends React.Component{
     //   this.timeout = setTimeout(this.props.searchKp(input), 300);
       
     // }
-
-    
+    handleKpComment(lesson_id){
+      const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
+      
+      this.props.addLessonKpComment(lesson_id,select_student, {
+          kpname: kpname,
+          kpid: (kpid | 0) === kpid ? kpid : undefined, 
+          kp_comment_content: this.state.kp_comment_content,
+          comment_source: lesson_id,
+          side: side,
+          teacher_id: this.props.teacher_id,
+        }
+      );
+      this.setState({
+        kpid : undefined,
+        side : null,
+        kp_comment_content : null,
+        select_student :{select_id: undefined, select_name: null},
+      });
+    }
 
     renderKpComment(){
       const {teacher_lesson, lesson_index, search_kp_label } = this.props;
@@ -851,8 +888,8 @@ class LessonViewModal extends React.Component{
               {kp_options}  
             </Select>
             <RadioGroup style={{marginLeft: "1rem"}} onChange={e => this.setState({side: e.target.value})} value={side}>
-              <Radio value={1}><Icon style={{color: "#1890ff"}} type="like" /></Radio>
-              <Radio value={0}><Icon style={{color: "#1890ff"}} type="exclamation-circle" /></Radio>
+              <Radio value={1}><Icon style={{color: "#73d13d"}} type="like" /></Radio>
+              <Radio value={0}><Icon style={{color: "#ffc53d"}} type="exclamation-circle" /></Radio>
             </RadioGroup>
           </div>
           <TextArea style={{marginTop: '0.5rem'}} placeholder="填写点评情况" autosize={{ minRows: 2 }}
@@ -875,15 +912,7 @@ class LessonViewModal extends React.Component{
             </Select>
             <Button 
               type="primary"  
-              onClick={() => this.props.addLessonKpComment(lesson_id, this.state.select_student, {
-                  kpname: kpname,
-                  kpid: (kpid | 0) === kpid ? kpid : undefined, 
-                  kp_comment_content: this.state.kp_comment_content,
-                  comment_source: lesson_id,
-                  side: side,
-                  teacher_id: this.props.teacher_id,
-                }
-              )}>点评</Button>                
+              onClick={() => this.handleKpComment(lesson_id)}>点评</Button>                
           </div>
           
             

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Col,Progress,Row,Layout,Card,Breadcrumb,Statistic,Icon,Divider} from 'antd';
+import {Col,Progress,Row,Layout,Card,Breadcrumb,Statistic,Icon,Divider,Button} from 'antd';
 import {Link} from 'react-router';
 import Styles from '../styles/stuEvaluation.css';
 import {Chart,Geom,Axis,Tooltip,Coord,Label,Legend} from "bizcharts";
@@ -10,6 +10,7 @@ import {connect} from 'react-redux';
 import Zq_Header from './ZQ_Header';
 import moment from 'moment';
 const { Header, Footer, Content } = Layout;
+
 
 class StuEvaluation extends React.Component {
 	componentWillMount(){
@@ -187,6 +188,7 @@ class StuEvaluation extends React.Component {
 		return KPstatus;
 	}
 
+
     render () {
 		const {eval_data,survey_data,isFetching} = this.props;
 		const {test_log} = survey_data;
@@ -194,60 +196,63 @@ class StuEvaluation extends React.Component {
 		// console.log("test_log:",JSON.stringify(test_log));
         return (
 			<Layout className="layout">
-			<Header style={{background: '#fff',height:'80px'}}>
-			<Zq_Header/>
-			</Header>
-			<Content style={{ padding: '0 120px' }}>
-				<Breadcrumb style={{ margin: '12px 0' }} separator=">">
-					<Breadcrumb.Item><Link to="/teacher-zq/root/testcenter">测试中心</Link></Breadcrumb.Item>
-					<Breadcrumb.Item><Link to={"/teacher-zq/testresult/"+this.props.location.query.test_id}>{test_log.test_name}</Link></Breadcrumb.Item>
-					<Breadcrumb.Item>{survey_data.student_name}</Breadcrumb.Item>
-				</Breadcrumb>
-				<div style={{ background: '#fff', paddingpadding: 24, minHeight: 560 }}>
-					<div style={{padding: 24}}>
-						<div><h2>概况</h2></div>
-						<Card>
-						<Row type="flex" justify="space-around" align="middle">
-							<Col span={4}>
-								<div>
-									<Progress 
-										strokeLinecap="square"
-										type="circle"
-										width={80}
-										percent={test_log.test_state} 
-										format={(percent) => `${percent}%`} 
-									/>
-								</div>
-							</Col>
-							<Col span={4} >
-								<p style={{fontSize: 28,color:'#0e77ca',marginLeft:8}}>{survey_data.student_rating}</p>
-							</Col>
-							<Col span={4} >
-								<p style={{fontSize: 20,color:'#0e77ca'}}>{elapsed_time >= 60*60 ? 
-									moment(elapsed_time).format('HH时m分ss秒'):moment(elapsed_time).format('m分ss秒')
-								}</p>
-							</Col>
-							<Col span={6}>
-								<p style={{fontSize: 16,color:'#0e77ca'}}>{moment(test_log.finish_time).format("YYYY-M-D H:mm:ss")}</p>
-							</Col>
-						</Row>
-						<Row type="flex" justify="space-around" align="middle">
-							<Col span={4} ><p className="p_row_rate">正确率</p></Col>
-							<Col span={4} ><p className="row_rate_p">天梯分</p></Col>
-							<Col span={4} ><p className="row_rate_p">耗时</p></Col>
-							<Col span={6} ><p className="row_rate_p">提交时间</p></Col>
-						</Row>
-					</Card>
+				<Header className='noprint' style={{background: '#fff',height:'80px'}}>
+					<Zq_Header/>
+				</Header>
+				{/* <div className="header">冠名机构</div> */}
+				<Content  style={{ padding: '0 120px' }}>
+					<div className="print">
+					<Breadcrumb  style={{ margin: '12px 0' }} separator=">">
+						<Breadcrumb.Item><Link to="/teacher-zq/root/testcenter">测试中心</Link></Breadcrumb.Item>
+						<Breadcrumb.Item><Link to={"/teacher-zq/testresult/"+this.props.location.query.test_id}>{test_log.test_name}</Link></Breadcrumb.Item>
+						<Breadcrumb.Item>{survey_data.student_name}</Breadcrumb.Item>
+					</Breadcrumb>
+					<div  style={{ background: '#fff', padding: 24, minHeight: 560 }}>
+						<div style={{padding: 24}}>
+							<div><h2>概况</h2></div>
+							<Card>
+								<Row type="flex" justify="space-around" align="middle">
+									<Col span={4}>
+										<div>
+											<Progress 
+												strokeLinecap="square"
+												type="circle"
+												width={80}
+												percent={test_log.test_state} 
+												format={(percent) => `${percent}%`} 
+											/>
+										</div>
+									</Col>
+									<Col span={4} >
+										<p style={{fontSize: 28,color:'#0e77ca',marginLeft:8}}>{survey_data.student_rating}</p>
+									</Col>
+									<Col span={4} >
+										<p style={{fontSize: 20,color:'#0e77ca'}}>{elapsed_time >= 60*60 ? 
+											moment(elapsed_time).format('HH时m分ss秒'):moment(elapsed_time).format('m分ss秒')
+										}</p>
+									</Col>
+									<Col span={6}>
+										<p style={{fontSize: 16,color:'#0e77ca'}}>{moment(test_log.finish_time).format("YYYY-M-D H:mm:ss")}</p>
+									</Col>
+								</Row>
+								<Row type="flex" justify="space-around" align="middle">
+									<Col span={4} ><p className="p_row_rate">正确率</p></Col>
+									<Col span={4} ><p className="row_rate_p">天梯分</p></Col>
+									<Col span={4} ><p className="row_rate_p">耗时</p></Col>
+									<Col span={6} ><p className="row_rate_p">提交时间</p></Col>
+								</Row>
+							</Card>
+						</div>
+						<div>
+							{this.ProcessKPstatus()}
+						</div>
 					</div>
-                <div>
-					{this.ProcessKPstatus()}
-                </div>
-			</div>
-			</Content>
-				<Footer style={{ textAlign: 'center' }}>
-				Ant Design ©2017 Created by Bourne
+					</div>
+				</Content>
+				<Footer className='noprint' style={{ textAlign: 'center' }}>
+					Ant Design ©2017 Created by Bourne
 				</Footer>
-		</Layout>
+			</Layout>
         )
     }
 }

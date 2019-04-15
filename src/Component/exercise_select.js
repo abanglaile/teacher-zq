@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Layout, Icon, Row, Col, Menu, Select,Modal,Button,Badge,Dropdown,Popconfirm,Checkbox,Form,Input} from 'antd';
-import NetUtil from '../utils/NetUtil';
 import Styles from '../styles/KpExerciseView.css';
 import Tex from './renderer.js';
 import *as action from '../Action/';
@@ -21,7 +20,6 @@ var urlip = config.server_url;
 class OneExercise extends React.Component {
 	constructor(props) {
 		super(props);
-		// this.state={expand:false,display:'none'};
 		this.state = {
         	title_img_width: "auto",
 	        title_img_height: "3rem",
@@ -357,7 +355,7 @@ AddTestForm = Form.create({})(
 class KpExerciseView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state={previsible:false,provisible:false,vicurrent:'',kpid:'',exer_data:[]};
+		this.state={previsible:false,provisible:false,vicurrent:'',kpid:''};
 	}
 
 	componentDidMount(){
@@ -427,20 +425,10 @@ class KpExerciseView extends React.Component {
     }
 
     handleChange(value){
-		const {exer_data , kpid} = this.state;//kpid为当前选中的知识点的id，exer_data是对应知识点的题目
-        this.setState({ kpid: value },()=>{
-            var data = [];
-            var url = urlip+'/getExerciseByKp';
-            NetUtil.get(url, {kpid : value}, (results) => {
-                data = results;
-                console.log("data:"+JSON.stringify(data));
-                this.setState({ exer_data : data}); 
-            })                         
-        });
+		this.props.getExerciseByKp(value);
     }
 
 	handleClick(e){
-		//chapter_id : e.key
 		this.props.fetchSelectMenu(e.key);	
 	}
 
@@ -449,8 +437,8 @@ class KpExerciseView extends React.Component {
 	}
 
 	render(){
-		const {exer_data,previsible,provisible} = this.state;
-		const {course,course_id,menu_data,selmenu,basket_tests} = this.props;
+		const {previsible,provisible} = this.state;
+		const {course,course_id,menu_data,selmenu,basket_tests,exer_data} = this.props;
 		console.log("course_id:",course_id);
 		console.log("menu_data:",JSON.stringify(menu_data));
 		// console.log("basket_tests count:"+basket_tests.length);
@@ -597,8 +585,8 @@ class KpExerciseView extends React.Component {
 }
 
 export default connect(state => {
-  const course_data = state.bookMenuData.toJS();
-  const {course,course_id,bookmenu_data} = course_data;
+  const course_data = state.exerciseData.toJS();
+  const {course,course_id,bookmenu_data,exer_data} = course_data;
   return {
 	teacher_id:state.AuthData.get('userid'),
 	course:course,   //课程类型
@@ -606,6 +594,7 @@ export default connect(state => {
     menu_data: bookmenu_data,   //左侧可选科目栏数据
     selmenu:state.selMenuData.get('selmenu_data').toJS(),       //栏目下的具体知识点
 	basket_tests : state.basketDataMonitor.get('basket_data').toJS(),
+	exer_data : exer_data,
   }
 }, action)(KpExerciseView);
 

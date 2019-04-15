@@ -135,7 +135,6 @@ class LessonManager extends React.Component{
             </Select> 
           </div>
           <div style={{marginTop: 15}}>
-      
             <Select
               showSearch
               style={{ width: 200 }}
@@ -174,7 +173,7 @@ class LessonManager extends React.Component{
               showTime={{ format: 'HH:mm' }}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
-              onChange={(value,dateString) => this.setState({range_time: dateString})}
+              onChange={(value,dateString) => this.setState({range_time : dateString})}
             />
           </div>
         </Modal>
@@ -216,6 +215,26 @@ class LessonManager extends React.Component{
           ava_color = '#eece2e';
           ava_background = '#fff9ab';
           text = '地';
+          break;
+        case '7':
+          ava_color = '#ff9918';
+          ava_background = '#ffda91';
+          text = '语';
+          break;
+        case '8':
+          ava_color = '#ff4640';
+          ava_background = '#ffc3ba';
+          text = '政';
+          break;
+        case '9':
+          ava_color = '#d4b22a';
+          ava_background = '#edde7b';
+          text = '史';
+          break;
+        case '10':
+          ava_color = '#28d900';
+          ava_background = '#c8ffab';
+          text = '生';
           break;
         default:
           break;
@@ -287,7 +306,7 @@ class LessonManager extends React.Component{
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
                   placeholder={"开始时间"}
-                  onChange={(value,dateString) => this.setState({start_time: dateString})}
+                  onChange={(value) => this.setState({start_time: value})}
                 /> 
               </Form.Item>
             </Col>
@@ -301,7 +320,7 @@ class LessonManager extends React.Component{
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
                   placeholder={"结束时间"}
-                  onChange={(value,dateString) => this.setState({end_time: dateString})}
+                  onChange={(value) => this.setState({end_time: value})}
                 /> 
               </Form.Item>
             </Col>            
@@ -432,14 +451,14 @@ class LessonManager extends React.Component{
                   />
                   <div style={{marginLeft:'48px'}}>
                     <Tag style={{marginRight: 10}} color="blue">{item.room_name}</Tag>
-                    <Tag style={{marginRight: 10}} color="green">{item.label_name}</Tag>  
+                    <Tag style={{marginRight: 10}} color={(item.label_id == 'class')? '#36cfc9':'#597ef7'}>{item.label_name}</Tag>  
                   </div>
                 </List.Item>
               )}
             />
          </div>   
       );
-    }primary
+    }
 }
 
 export default connect(state => {

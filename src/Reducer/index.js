@@ -29,11 +29,12 @@ const defaultStudentData = Immutable.fromJS({//学生信息
 	isFetching: false,
 });
 
-const defaultBookMenuData = Immutable.fromJS({//book菜单
+const defaultExerciseData = Immutable.fromJS({//book菜单以及知识点对应的题目信息
         course : [],
         course_id : '3',
         bookmenu_data: [],
         isFetching: false,
+        exer_data: [],
     });
 
 const defaultClassGroupData = Immutable.fromJS({//教师管理的所有班级
@@ -78,7 +79,7 @@ const defaultbasketData = Immutable.fromJS({//试题篮里的信息
         basket_data: [],
     });
 
-const detuEvaluationData = Immutable.fromJS({
+const detuEvaluationData = Immutable.fromJS({//学生测评信息
     eval_data: [],
     survey_data: {
         test_log:[],
@@ -146,7 +147,7 @@ export const TasksData = (state = defaultTasksData , action = {}) => {
     }
 }
 
-export const bookMenuData = (state = defaultBookMenuData, action = {}) => {
+export const exerciseData = (state = defaultExerciseData, action = {}) => {
     switch(action.type){
         case 'GET_COURSE':
             var course = [];
@@ -160,6 +161,8 @@ export const bookMenuData = (state = defaultBookMenuData, action = {}) => {
             return state.set('isFetching', true);
         case 'GET_BOOKMENU_SUCESS':
             return state.set('bookmenu_data', Immutable.fromJS(action.json)).set('isFetching', false);
+        case 'GET_KP_EXERCISE_SUCESS':
+            return state.set('exer_data', Immutable.fromJS(action.json));
         default:
             return state;
     }
