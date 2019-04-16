@@ -34,6 +34,7 @@ class LessonViewModal extends React.Component{
           select_student: [],
           remark_page: [],
           task_type: 0,
+          side : 0,
           // visible:false,
           visible:this.props.visible,
         };
@@ -840,10 +841,9 @@ class LessonViewModal extends React.Component{
     // }
     handleKpComment(lesson_id){
       const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
-      
       this.props.addLessonKpComment(lesson_id,select_student, {
           kpname: kpname,
-          kpid: (kpid | 0) === kpid ? kpid : undefined, 
+          kpid: (kpid | 0) == kpid ? kpid : undefined, 
           kp_comment_content: this.state.kp_comment_content,
           comment_source: lesson_id,
           side: side,
@@ -852,7 +852,7 @@ class LessonViewModal extends React.Component{
       );
       this.setState({
         kpid : undefined,
-        side : null,
+        side : 0,
         kp_comment_content : null,
         select_student :{select_id: undefined, select_name: null},
       });
@@ -964,6 +964,23 @@ class LessonViewModal extends React.Component{
       )
     }
 
+    handlePfComment(lesson_id){
+      const {select_student, label_id, label_name, pf_comment_content} = this.state;
+      this.props.addLessonPfComment(lesson_id, select_student, {
+        label_name: label_name,
+        label_id: (label_id | 0) == label_id ? label_id : undefined, 
+        pf_comment_content: pf_comment_content,
+        comment_source: lesson_id,
+        teacher_id: this.props.teacher_id,
+        }
+      );
+      this.setState({
+        label_id : undefined,
+        pf_comment_content : null,
+        select_student :{select_id: undefined, select_name: null},
+      });
+    }
+
     renderPfComment(){
       const {teacher_lesson, lesson_index, search_pf_label } = this.props;
       let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
@@ -1012,14 +1029,7 @@ class LessonViewModal extends React.Component{
             <Button 
               disabled={!(select_student && select_student.select_id && select_student.select_id.length)}
               type="primary"  
-              onClick={() => this.props.addLessonPfComment(lesson_id, this.state.select_student, {
-                  label_name: label_name,
-                  label_id: (label_id | 0) === label_id ? label_id : undefined, 
-                  pf_comment_content: pf_comment_content,
-                  comment_source: lesson_id,
-                  teacher_id: this.props.teacher_id,
-                }
-              )}>点评</Button>                
+              onClick={() => this.handlePfComment(lesson_id)}>点评</Button>    
           </div>
           <div style={{marginTop: "1rem", padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
             <List
