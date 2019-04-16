@@ -10,7 +10,7 @@
   "dependencies": {
     "@antv/data-set": "^0.10.1",
     "@antv/g2": "^3.4.5",
-    "antd": "^3.15.2",
+    "antd": "^3.16.1",
     "antv": "^0.2.2",
     "axios": "^0.17.1",
     "bizcharts": "^3.5.2",
