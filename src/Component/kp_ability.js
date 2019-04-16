@@ -96,6 +96,6 @@ export default connect(state => {
     const {kp_data} = student_data;	
     return {
       kp_data : kp_data,
-      menu_data: state.bookMenuData.get('bookmenu_data').toJS(), 
+      menu_data: state.exerciseData.get('bookmenu_data').toJS(), 
     }
   }, action)(KpAbility);

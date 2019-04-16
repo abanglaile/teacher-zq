@@ -48,7 +48,7 @@ class StuCapacity extends React.Component {
 						</Header>
 						<Content style={{ padding: '0 250px' }}>
 							<Breadcrumb style={{ margin: '12px 0' }} separator=">">
-								<Breadcrumb.Item><Link to="/teacher-zq/stu_manager">{group_name}</Link></Breadcrumb.Item>
+								<Breadcrumb.Item><Link to="/teacher-zq/root/stu_manager">{group_name}</Link></Breadcrumb.Item>
 								<Breadcrumb.Item>{student_name}</Breadcrumb.Item>
 							</Breadcrumb>
 							<div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
