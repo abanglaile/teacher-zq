@@ -892,7 +892,7 @@ export const deleteHomework = (lesson_id, task_id, users) => {
                 type : 'EDIT_HOMEWORK',
                 homework: response.data, 
             });
-            dispatch(editLesson('new_homework_edit', false));
+            // dispatch(editLesson('new_homework_edit', false));
         })
         .catch(function (error) {
             console.log(error);
@@ -917,22 +917,6 @@ export const addLessonContent = (lesson_content) => {
     }
 }
 
-export const updateLessonContent = (lesson_content, i) => {
-    let url = target + "/updateLessonContent";
-    return dispatch => {
-        return axios.post(url, {lesson_content})
-        .then(function (response) {
-            dispatch({
-                type : 'EDIT_LESSON_CONTENT',
-                lesson_content: response.data, 
-            });
-            dispatch(editLessonContent(i, false));
-        })
-        .catch(function (error) {
-            console.log(error);});
-    }
-}
-
 export const deleteLessonContent = (lesson_content, i) => {
     let url = target + "/deleteLessonContent";
     return dispatch => {
@@ -950,15 +934,68 @@ export const deleteLessonContent = (lesson_content, i) => {
     }
 }
 
-export const addLessonKpComment = (lesson_id, select_student, kp_comment) => {
-    let url = target + "/addLessonKpComment";
+export const getLessonPfComment = (lesson_id) => {
+    let url = target + "/getLessonPfComment";
     return dispatch => {
-        return axios.post(url, {lesson_id, select_student, kp_comment})
+        return axios.post(url, {lesson_id})
+        .then(function (response) {
+            dispatch({
+                type : 'EDIT_LESSON_PFCOMMENT',
+                pf_comment: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);});
+    }
+}
+
+export const getLessonKpComment = (lesson_id) => {
+    let url = target + "/getLessonKpComment";
+    return dispatch => {
+        return axios.post(url, {lesson_id})
         .then(function (response) {
             dispatch({
                 type : 'EDIT_LESSON_KPCOMMENT',
                 kp_comment: response.data, 
             });
+        })
+        .catch(function (error) {
+            console.log(error);});
+    }
+}
+
+export const updatePfComment = (pf_comment, i) => {
+    let url = target + "/updatePfComment";
+    return dispatch => {
+        return axios.post(url, {pf_comment})
+        .then(function (response) {
+            dispatch(getLessonPfComment(lesson_id));
+            dispatch(editPfComment(i, false));
+        })
+        .catch(function (error) {
+            console.log(error);});
+    }
+}
+
+export const updateKpComment = (kp_comment, i, lesson_id) => {
+    let url = target + "/updateKpComment";
+    return dispatch => {
+        return axios.post(url, {kp_comment})
+        .then(function (response) {
+            dispatch(getLessonKpComment(lesson_id));
+            dispatch(editKpComment(i, false));
+        })
+        .catch(function (error) {
+            console.log(error);});
+    }
+}
+
+export const addLessonKpComment = (lesson_id, select_student, kp_comment) => {
+    let url = target + "/addLessonKpComment";
+    return dispatch => {
+        return axios.post(url, {lesson_id, select_student, kp_comment})
+        .then(function (response) {
+            dispatch(getLessonKpComment(lesson_id));
         })
         .catch(function (error) {
             console.log(error);
@@ -971,10 +1008,7 @@ export const addLessonPfComment = (lesson_id, select_student, pf_comment) => {
     return dispatch => {
         return axios.post(url, {lesson_id, select_student, pf_comment})
         .then(function (response) {
-            dispatch({
-                type : 'EDIT_LESSON_PFCOMMENT',
-                pf_comment: response.data, 
-            });
+            dispatch(getLessonPfComment(lesson_id));
         })
         .catch(function (error) {
             console.log(error);
@@ -987,10 +1021,7 @@ export const deleteLessonPfComment = (comment_id, lesson_id) => {
     return dispatch => {
         return axios.post(url, {comment_id, lesson_id})
         .then(function (response) {
-            dispatch({
-                type : 'EDIT_LESSON_PFCOMMENT',
-                pf_comment: response.data, 
-            });
+            dispatch(getLessonPfComment(lesson_id));
         })
         .catch(function (error) {
             console.log(error);
@@ -1003,10 +1034,7 @@ export const deleteLessonKpComment = (comment_id, lesson_id) => {
     return dispatch => {
         return axios.post(url, {comment_id, lesson_id})
         .then(function (response) {
-            dispatch({
-                type : 'EDIT_LESSON_KPCOMMENT',
-                pf_comment: response.data, 
-            });
+            dispatch(getLessonKpComment(lesson_id));
         })
         .catch(function (error) {
             console.log(error);
@@ -1351,17 +1379,17 @@ export function editLesson(key, value) {
   }
 }
 
-export function editLessonContent(index, value) {
+export function editPfComment(index, value) {
   return {
-    type: 'LESSON_CONTENT_EDITABLE',
+    type: 'PF_COMMENT_EDITABLE',
     index,
     value,
   }
 }
 
-export function editLessonHomework(index, value) {
+export function editKpComment(index, value) {
   return {
-    type: 'LESSON_HOMEWORK_EDITABLE',
+    type: 'KP_COMMENT_EDITABLE',
     index,
     value,
   }

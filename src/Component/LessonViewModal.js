@@ -807,14 +807,54 @@ class LessonViewModal extends React.Component{
     
 
     renderKpComment(){
-      const {teacher_lesson, lesson_index, search_kp_label } = this.props;
+      const {teacher_lesson, lesson_index, search_kp_label, lesson_edit } = this.props;
       let {kp_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
+      let {kp_comment_edit} = lesson_edit;
       const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
       
-      kp_comment = kp_comment ? kp_comment : [];
-      let p_comment = kp_comment.filter(item => item.side);
-      let n_comment = kp_comment.filter(item => !item.side);
+      const [p_comment, n_comment] = (kp_comment || []).reduce(
+        ([p_comment, n_comment], item, index) => {
+          const itemDom = kp_comment_edit[index] ?
+            <Item>
+              <Item.Meta
+                title={
+                  <div>
+                    <a onClick={e => this.props.updateKpComment({
+                        pf_comment_content: this.state.edit_comment_content,
+                    }, item.comment_id)} style={{marginRight: '0.5rem'}}>保存</a>
+                    <a onClick={e => this.props.editKpComment(index, false)}>取消</a>
+                  </div>
+                }
+                description={
+                  <TextArea autosize={{ minRows: 2 }}
+                    onChange={(e) => this.setState({edit_comment_content: e.target.value})} 
+                    value={this.state.edit_comment_content}
+                />
+              }
+              />
+            </Item>
+            :
+            <List.Item actions={[<Icon type="edit" onClick={e => {
+              this.props.editKpComment(index, true);
+              this.setState({edit_comment_content: item.kp_comment_content});
+            }} />,<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
+              <Item.Meta
+                title={
+                  <div>
+                    <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.kpname}#</span>
+                    <a>{item.student_list}</a>
+                  </div>
+                }
+                description={item.kp_comment_content}
+              /> 
+            </List.Item>
+
+            return item.side ? [[...p_comment, itemDom], n_comment] : [p_comment, [...n_comment, itemDom]]
+        }, [[], []])
+
+      // let p_comment = kp_comment.filter(item => item.side);
+      // let n_comment = kp_comment.filter(item => !item.side);
 
       return(
         <div>
@@ -874,46 +914,18 @@ class LessonViewModal extends React.Component{
             
           <Alert message="表扬进步" type="success" style={{background: "#FFF", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
             showIcon description={
-            <List
-              itemLayout="horizontal"
-              dataSource={p_comment}
-              renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
-                  <Item.Meta
-                    title={
-                      <div>
-                        <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.kpname}#</span>
-                        <a>{item.student_list}</a>
-                      </div>
-                    }
-                    description={item.kp_comment_content}
-                  /> 
-                </List.Item>
-                
-              )}
-            />
+            <List itemLayout="horizontal">
+              {p_comment}
+            </List>            
           } />
 
           <Alert message="存在问题" style={{background: "#FFF"}} type="warning" showIcon 
             description={
             <List
               itemLayout="horizontal"
-              dataSource={n_comment}
-              renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
-                  <Item.Meta
-                    title={
-                      <div>
-                        <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.kpname}#</span>
-                        <a>{item.student_list}</a>
-                      </div>
-                    }
-                    description={item.kp_comment_content}
-                  /> 
-                </List.Item>
-                
-              )}
-            />
+            >
+              {n_comment}
+            </List>
           } />
             
         </div>
@@ -921,8 +933,9 @@ class LessonViewModal extends React.Component{
     }
 
     renderPfComment(){
-      const {teacher_lesson, lesson_index, search_pf_label } = this.props;
+      const {teacher_lesson, lesson_index, search_pf_label, lesson_edit } = this.props;
       let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
+      let {pf_comment_edit} = lesson_edit;
       const {select_student, label_id, label_name, pf_comment_content} = this.state;
       const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.label_id}>{d.label_name}</Option>) : null;
       pf_comment = pf_comment ? pf_comment : [];
@@ -981,8 +994,31 @@ class LessonViewModal extends React.Component{
             <List
               itemLayout="horizontal"
               dataSource={pf_comment}
-              renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonPfComment(item.comment_id, lesson_id)}/>]}>
+              renderItem={(item, index) => (
+                pf_comment_edit[index] ?
+                <Item>
+                  <Item.Meta
+                    title={
+                      <div>
+                        <a onClick={e => this.props.updateLessonPfComment({
+                            pf_comment_content: this.state.edit_comment_content,
+                        }, item.comment_id)} style={{marginRight: '0.5rem'}}>保存</a>
+                        <a onClick={e => this.props.editPfComment(index, false)}>取消</a>
+                      </div>
+                    }
+                    description={
+                      <TextArea autosize={{ minRows: 2 }}
+                        onChange={(e) => this.setState({edit_comment_content: e.target.value})} 
+                        value={this.state.edit_comment_content}
+                    />
+                  }
+                  />
+                </Item>
+                :
+                <List.Item actions={[<Icon type="edit" onClick={e => {
+                  this.props.editPfComment(index, true);
+                  this.setState({edit_comment_content: item.pf_comment_content});
+                }} />, <Icon type="delete" onClick={e => this.props.deleteLessonPfComment(item.comment_id, lesson_id)}/>]}>
                   <Item.Meta
                     title={<div>
                         <span style={{fontWeight: "bold"}}>{item.label_name}</span>
