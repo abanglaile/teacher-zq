@@ -50,123 +50,127 @@ class LessonViewModal extends React.Component{
       }
     }
 
-    renderContentItem(item, index){
-      const {lesson_edit, search_teacher_task, search_kp_label} = this.props;
-      const {content_edit} = lesson_edit;
-      let {kp_input_visible, kp_tags} = this.state;
-      let item_title = ["课堂学习", "知识讲解", "课堂练习"];
-      let edit_dom = [];
-      let icon_dom = [
-        <Icon onClick={e => {
-          this.props.editLessonContent(index, true);
-          this.setState({
-            content_type: item.content_type, 
-            content: item.content, 
-            resource: item.resource,
-            kp_tags: item.kpids ? JSON.parse(item.kpids) : []
-          });
-        }} type="edit" theme="outlined" />,
-        <Icon onClick={e => this.props.deleteLessonContent({
-                lesson_id: item.lesson_id,
-                lesson_content_id: item.lesson_content_id,
-              }, index)} type="delete" theme="outlined" />
-      ] 
-      const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
-      switch(item.content_type){
-        case 0:
-          edit_dom = 
-            <div style={{width: 500}}>
-              <Input placeholder="新建课堂内容" value={this.state.content} onChange={e => this.setState({content: e.target.value})} />
-            </div>
-          break;
-        case 1:
-          edit_dom = 
-            <div>
-              {kp_tags.map((tag, index) => 
-                  <Tag key={tag.kpid} closable afterClose={(removedTag) => {
-                    kp_tags = this.state.kp_tags.filter(item => item.kpid !== removedTag);
-                    this.setState({ kp_tags, content: kp_tags.map(x => x.kpname).join("，")});
-                  }}>
-                    {tag.kpname}
-                  </Tag>
-                )
-              }
-              {kp_input_visible ? 
-                <Select
-                  style={{ width: 300 }}
-                  showSearch
-                  placeholder={"知识点"}
-                  defaultActiveFirstOption={false}
-                  showArrow={false}
-                  filterOption={false}
-                  onSearch={(input) => this.searchKpLabel(input)}
-                  onSelect={(value, option) => {
-                    let new_tag = {kpid: value, kpname: option.props.children};
-                    const kp_tags = this.state.kp_tags
-                    if(kp_tags.indexOf(value) === -1){
-                      kp_tags.push(new_Tag);
-                      this.setState({kp_tags, content: kp_tags.map(x => x.kpname).join("，")})
-                    }
-                    this.setState({kp_input_visible: false});
-                  }}
-                >
-                  {kp_options}
-                </Select>
-                :
-                <Tag
-                  onClick={e => this.setState({kp_input_visible: true})}
-                  style={{ background: '#fff', borderStyle: 'dashed' }}
-                >
-                  <Icon type="plus" /> 添加知识点
-                </Tag>
-              }
-            </div>
+    // renderContentItem(item, index){
+    //   const {lesson_edit, search_teacher_task, search_kp_label} = this.props;
+    //   const {content_edit} = lesson_edit;
+    //   let {kp_input_visible, kp_tags} = this.state;
+    //   let item_title = ["课堂学习", "知识讲解", "课堂练习"];
+    //   let edit_dom = [];
+    //   let icon_dom = [
+    //     <Icon onClick={e => {
+    //       this.props.editLessonContent(index, true);
+    //       this.setState({
+    //         content_type: item.content_type, 
+    //         content: item.content, 
+    //         resource: item.resource,
+    //         kp_tags: item.kpids ? JSON.parse(item.kpids) : []
+    //       });
+    //     }} type="edit" theme="outlined" />,
+    //     <Icon onClick={e => this.props.deleteLessonContent({
+    //             lesson_id: item.lesson_id,
+    //             lesson_content_id: item.lesson_content_id,
+    //           }, index)} type="delete" theme="outlined" />
+    //   ] 
+    //   const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid} group="kpid">{d.kpname}</Option>) : null;
+    //   // switch(item.content_type){
+    //   //   case 0:
+    //   //     edit_dom = 
+    //   //       <div style={{width: 500}}>
+    //   //         <Input placeholder="新建课堂内容" value={this.state.content} onChange={e => this.setState({content: e.target.value})} />
+    //   //       </div>
+    //   //     break;
+    //   //   case 1:
+    //   //     edit_dom = 
+    //   //       <div>
+    //   //         {kp_tags.map((tag, index) => 
+    //   //             <Tag key={tag.kpid} closable afterClose={(removedTag) => {
+    //   //               kp_tags = this.state.kp_tags.filter(item => item.kpid !== removedTag);
+    //   //               this.setState({ kp_tags, content: kp_tags.map(x => x.kpname).join("，")});
+    //   //             }}>
+    //   //               {tag.kpname}
+    //   //             </Tag>
+    //   //           )
+    //   //         }
+    //   //         {kp_input_visible ? 
+    //   //           <Select
+    //   //             style={{ width: 300 }}
+    //   //             showSearch
+    //   //             placeholder={"知识点"}
+    //   //             defaultActiveFirstOption={false}
+    //   //             showArrow={false}
+    //   //             filterOption={false}
+    //   //             onSearch={(input) => this.searchKpLabel(input)}
+    //   //             onSelect={(value, option) => {
+    //   //               let new_tag = {kpid: value, kpname: option.props.children};
+    //   //               const kp_tags = this.state.kp_tags
+    //   //               if(kp_tags.indexOf(value) === -1){
+    //   //                 kp_tags.push(new_Tag);
+    //   //                 this.setState({kp_tags, content: kp_tags.map(x => x.kpname).join("，")})
+    //   //               }
+    //   //               this.setState({kp_input_visible: false});
+    //   //             }}
+    //   //           >
+    //   //             {kp_options}
+    //   //           </Select>
+    //   //           :
+    //   //           <Tag
+    //   //             onClick={e => this.setState({kp_input_visible: true})}
+    //   //             style={{ background: '#fff', borderStyle: 'dashed' }}
+    //   //           >
+    //   //             <Icon type="plus" /> 添加知识点
+    //   //           </Tag>
+    //   //         }
+    //   //       </div>
 
-            break;
-        case 2:
-            icon_dom.splice(0, 1);
-            break;
+    //   //       break;
+    //   //   case 2:
+    //   //       icon_dom.splice(0, 1);
+    //   //       break;
         
-      }
-      return (
-      content_edit[index] ?
-        <Item>
-          <div>
-          <div style={{marginBottom: '0.5rem'}}>
-            <span style={{
-              width: "5rem", 
-              fontWeight: "bold",
-              textAlign: "right", 
-              marginRight: "1rem", 
-              paddingRight: "1rem", 
-              borderRight: "2px solid #D3D3D3"
-            }}>{item_title[item.content_type]}</span> 
-            <a onClick={e => this.props.updateLessonContent({
-                lesson_id: item.lesson_id,
-                content: this.state.content,
-                resource: this.state.resource,
-                kpids: JSON.stringify(this.state.kp_tags),
-                lesson_content_id: item.lesson_content_id,
-            }, index)} style={{marginLeft: '0.5rem', marginRight: '0.5rem'}}>保存</a>
-            <a onClick={e => this.props.editLessonContent(index, false)}>取消</a>
-          </div>
-          {edit_dom}
-          </div>
-        </Item>
-        :
-        <Item actions={icon_dom}>
-          <span style={{
-            width: "5rem", 
-            fontWeight: "bold",
-            textAlign: "right", 
-            marginRight: "1rem", 
-            paddingRight: "1rem", 
-            borderRight: "2px solid #D3D3D3"
-          }}>{item_title[item.content_type]}</span>
-          <span style={{width: "25rem"}}>{item.content}</span>
-        </Item>
-      )
-    }
+    //   // }
+    //   //return (
+    //   // content_edit[index] ?
+    //   //   <Item>
+    //   //     <div>
+    //   //     <div style={{marginBottom: '0.5rem'}}>
+    //   //       <span style={{
+    //   //         width: "5rem", 
+    //   //         fontWeight: "bold",
+    //   //         textAlign: "right", 
+    //   //         marginRight: "1rem", 
+    //   //         paddingRight: "1rem", 
+    //   //         borderRight: "2px solid #D3D3D3"
+    //   //       }}>{item_title[item.content_type]}</span> 
+    //   //       <a onClick={e => this.props.updateLessonContent({
+    //   //           lesson_id: item.lesson_id,
+    //   //           content: this.state.content,
+    //   //           resource: this.state.resource,
+    //   //           kpids: JSON.stringify(this.state.kp_tags),
+    //   //           lesson_content_id: item.lesson_content_id,
+    //   //       }, index)} style={{marginLeft: '0.5rem', marginRight: '0.5rem'}}>保存</a>
+    //   //       <a onClick={e => this.props.editLessonContent(index, false)}>取消</a>
+    //   //     </div>
+    //   //     {edit_dom}
+    //   //     </div>
+    //   //   </Item>
+    //   //   :
+    //   return (
+    //     <Item actions={[<Icon onClick={e => this.props.deleteLessonContent({
+    //             lesson_id: item.lesson_id,
+    //             lesson_content_id: item.lesson_content_id,
+    //           }, index)} type="delete" theme="outlined" />]}>
+    //       <span style={{
+    //         width: "5rem", 
+    //         fontWeight: "bold",
+    //         textAlign: "right", 
+    //         marginRight: "1rem", 
+    //         paddingRight: "1rem", 
+    //         borderRight: "2px solid #D3D3D3"
+    //       }}>{item_title[item.content_type]}</span>
+    //       <span style={{width: "25rem"}}>{item.content}</span>
+    //     </Item>
+    //   )
+    // }
 
     contentIsEmpty(){
       const {content_type, content, resource, kp_tags} = this.state;
@@ -347,7 +351,8 @@ class LessonViewModal extends React.Component{
     renderLessonContent(){
       const {teacher_lesson, lesson_index} = this.props;
       let {lesson_content, homework, is_sign} = teacher_lesson[lesson_index];
-      let content_list = lesson_content ? lesson_content.map((item, i) => this.renderContentItem(item, i)) : [];
+      //let content_list = lesson_content ? lesson_content.map((item, i) => this.renderContentItem(item, i)) : [];
+      let item_title = ["课堂学习", "知识讲解", "课堂练习"];
       return(
         <div>
           <div style={{marginBottom: "1rem"}}>
@@ -356,7 +361,25 @@ class LessonViewModal extends React.Component{
           </div>
           <div style={{padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
             <List split={false} size={"small"}>
-              {content_list}
+              {(lesson_content || []).map((item, i) => 
+                <Item actions={[<Icon onClick={e => this.props.deleteLessonContent({
+                      lesson_id: item.lesson_id,
+                      lesson_content_id: item.lesson_content_id,
+                    }, i)} type="delete" theme="outlined" />]}>
+                  <List.Item.Meta
+                    description={<div style={{color: "rgba(0, 0, 0, 0.65)"}}><span style={{
+                      width: "5rem", 
+                      fontWeight: "bold",
+                      textAlign: "right", 
+                      marginRight: "1rem", 
+                      paddingRight: "1rem", 
+                      borderRight: "2px solid #D3D3D3"
+                    }}>{item_title[item.content_type]}</span>
+                    <span>{item.content}</span></div>}
+                  />
+                  
+                </Item>
+              )}
               {this.renderNewContent()}
             </List>
           </div>
@@ -837,32 +860,81 @@ class LessonViewModal extends React.Component{
     // }
     handleKpComment(lesson_id){
       const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
-      this.props.addLessonKpComment(lesson_id,select_student, {
+      this.props.addLessonKpComment(lesson_id, select_student, {
           kpname: kpname,
           kpid: (kpid | 0) == kpid ? kpid : undefined, 
           kp_comment_content: this.state.kp_comment_content,
           comment_source: lesson_id,
           side: side,
           teacher_id: this.props.teacher_id,
+        }, () => {
+          this.setState({
+            kpid: undefined,
+            side: 0,
+            kp_comment_content: null,
+            select_student: {select_id: undefined, select_name: null},
+          });
         }
       );
-      this.setState({
-        kpid : undefined,
-        side : 0,
-        kp_comment_content : null,
-        select_student :{select_id: undefined, select_name: null},
-      });
+      
     }
 
     renderKpComment(){
-      const {teacher_lesson, lesson_index, search_kp_label } = this.props;
+      const {teacher_lesson, lesson_index, search_kp_label, lesson_edit } = this.props;
       let {kp_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
-      const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
+      let {kp_comment_edit} = lesson_edit;
+      let {select_student, kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
       
-      kp_comment = kp_comment ? kp_comment : [];
-      let p_comment = kp_comment.filter(item => item.side);
-      let n_comment = kp_comment.filter(item => !item.side);
+      console.log(kp_comment);
+      if((lesson_student || []).length == 1){
+        select_student = {select_id: lesson_student[0].student_id, select_name: lesson_student[0].realname};
+      }
+      const [p_comment, n_comment] = (kp_comment || []).reduce(
+        ([p_comment, n_comment], item, index) => {
+          const itemDom = kp_comment_edit[index] ?
+            <Item>
+              <Item.Meta
+                title={
+                  <div>
+                    <a onClick={e => this.props.updateKpComment({
+                        kp_comment_content: this.state.edit_comment_content,
+                    }, item.comment_id, () => {
+                        this.props.getLessonKpComment(lesson_id);
+                        this.props.editKpComment(index, false);
+                    })} style={{marginRight: '0.5rem'}}>保存</a>
+                    <a onClick={e => this.props.editKpComment(index, false)}>取消</a>
+                  </div>
+                }
+                description={
+                  <TextArea autosize={{ minRows: 2 }}
+                    onChange={(e) => this.setState({edit_comment_content: e.target.value})} 
+                    value={this.state.edit_comment_content}
+                />
+              }
+              />
+            </Item>
+            :
+            <List.Item actions={[<Icon type="edit" onClick={e => {
+              this.props.editKpComment(index, true);
+              this.setState({edit_comment_content: item.kp_comment_content});
+            }} />,<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
+              <Item.Meta
+                title={
+                  <div>
+                    <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.kpname}#</span>
+                    <a>{item.student_list}</a>
+                  </div>
+                }
+                description={item.kp_comment_content}
+              /> 
+            </List.Item>
+
+            return item.side ? [[...p_comment, itemDom], n_comment] : [p_comment, [...n_comment, itemDom]]
+        }, [[], []])
+
+      // let p_comment = kp_comment.filter(item => item.side);
+      // let n_comment = kp_comment.filter(item => !item.side);
 
       return(
         <div>
@@ -902,58 +974,30 @@ class LessonViewModal extends React.Component{
               style={{ width: '12rem', marginRight: '1rem' }}
             >
               {
-                lesson_student ? 
-                lesson_student.map(item => <Option key={item.student_id}>{item.realname}</Option>) : []
+                (lesson_student || []).map(item => <Option key={item.student_id}>{item.realname}</Option>)
               }
             </Select>
             <Button 
-              type="primary"  
+              type="primary"
+              disabled = {!(select_student.select_id && kp_comment_content && kpid)}
               onClick={() => this.handleKpComment(lesson_id)}>点评</Button>                
           </div>
           
             
           <Alert message="表扬进步" type="success" style={{background: "#FFF", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
             showIcon description={
-            <List
-              itemLayout="horizontal"
-              dataSource={p_comment}
-              renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
-                  <Item.Meta
-                    title={
-                      <div>
-                        <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.kpname}#</span>
-                        <a>{item.student_list}</a>
-                      </div>
-                    }
-                    description={item.kp_comment_content}
-                  /> 
-                </List.Item>
-                
-              )}
-            />
+            <List itemLayout="horizontal">
+              {p_comment}
+            </List>            
           } />
 
           <Alert message="存在问题" style={{background: "#FFF"}} type="warning" showIcon 
             description={
             <List
               itemLayout="horizontal"
-              dataSource={n_comment}
-              renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonKpComment(item.comment_id, lesson_id)}/>]}>
-                  <Item.Meta
-                    title={
-                      <div>
-                        <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.kpname}#</span>
-                        <a>{item.student_list}</a>
-                      </div>
-                    }
-                    description={item.kp_comment_content}
-                  /> 
-                </List.Item>
-                
-              )}
-            />
+            >
+              {n_comment}
+            </List>
           } />
             
         </div>
@@ -963,27 +1007,67 @@ class LessonViewModal extends React.Component{
     handlePfComment(lesson_id){
       const {select_student, label_id, label_name, pf_comment_content} = this.state;
       this.props.addLessonPfComment(lesson_id, select_student, {
-        label_name: label_name,
-        label_id: (label_id | 0) == label_id ? label_id : undefined, 
-        pf_comment_content: pf_comment_content,
-        comment_source: lesson_id,
-        teacher_id: this.props.teacher_id,
-        }
-      );
-      this.setState({
-        label_id : undefined,
-        pf_comment_content : null,
-        select_student :{select_id: undefined, select_name: null},
-      });
+          label_name: label_name,
+          label_id: (label_id | 0) == label_id ? label_id : undefined, 
+          pf_comment_content: pf_comment_content,
+          comment_source: lesson_id,
+          teacher_id: this.props.teacher_id,
+        }, () => this.setState({
+            label_id : undefined,
+            pf_comment_content : null,
+            select_student :{select_id: undefined, select_name: null},
+          })
+      );      
     }
 
     renderPfComment(){
-      const {teacher_lesson, lesson_index, search_pf_label } = this.props;
+      const {teacher_lesson, lesson_index, search_pf_label, lesson_edit } = this.props;
       let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
+      let {pf_comment_edit} = lesson_edit;
       const {select_student, label_id, label_name, pf_comment_content} = this.state;
       const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.label_id}>{d.label_name}</Option>) : null;
       pf_comment = pf_comment ? pf_comment : [];
 
+      const pf_comment_dom = (pf_comment || []).map((item, index) => (
+          pf_comment_edit[index] ?
+            <Item>
+              <Item.Meta
+                title={
+                  <div>
+                    <a onClick={e => this.props.updatePfComment({
+                        pf_comment_content: this.state.edit_comment_content,
+                    }, item.comment_id,
+                    () => {
+                        this.props.getLessonPfComment(lesson_id);
+                        this.props.editPfComment(index, false);
+                    })} style={{marginRight: '0.5rem'}}>保存</a>
+                    <a onClick={e => this.props.editPfComment(index, false)}>取消</a>
+                  </div>
+                }
+                description={
+                  <TextArea autosize={{ minRows: 2 }}
+                    onChange={(e) => this.setState({edit_comment_content: e.target.value})} 
+                    value={this.state.edit_comment_content}
+                />
+              }
+              />
+            </Item>
+            :
+            <List.Item actions={[<Icon type="edit" onClick={e => {
+              this.props.editPfComment(index, true);
+              this.setState({edit_comment_content: item.pf_comment_content});
+            }} />,<Icon type="delete" onClick={e => this.props.deleteLessonPfComment(item.comment_id, lesson_id)}/>]}>
+              <Item.Meta
+                title={
+                  <div>
+                    <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.label_name}#</span>
+                    <a>{item.student_list}</a>
+                  </div>
+                }
+                description={item.pf_comment_content}
+              /> 
+            </List.Item>
+          ))
       return(
         <div>
           <div>
@@ -1027,24 +1111,11 @@ class LessonViewModal extends React.Component{
               type="primary"  
               onClick={() => this.handlePfComment(lesson_id)}>点评</Button>    
           </div>
-          <div style={{marginTop: "1rem", padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
-            <List
-              itemLayout="horizontal"
-              dataSource={pf_comment}
-              renderItem={item => (
-                <List.Item actions={[<Icon type="delete" onClick={e => this.props.deleteLessonPfComment(item.comment_id, lesson_id)}/>]}>
-                  <Item.Meta
-                    title={<div>
-                        <span style={{fontWeight: "bold"}}>{item.label_name}</span>
-                        <Icon style={{color: "#87d068", marginLeft: "0.3rem", marginRight: "0.7rem"}} type="like" />
-                        <a>{item.student_list}</a>
-                      </div>}
-                    description={item.pf_comment_content}
-                  /> 
-                </List.Item>
-                
-              )}
-            />
+          <div style={{display: (pf_comment || []).length ? 'block' :'none', 
+              marginTop: "1rem", padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
+            <List itemLayout="horizontal">
+              {pf_comment_dom}  
+            </List>             
           </div>
         </div>
       )
@@ -1056,11 +1127,16 @@ class LessonViewModal extends React.Component{
       return(
       // <Modal title={null} onCancel={this.props.onCancel}  
       <Modal title={null} onCancel={()=>{
-        this.props.editLesson("new_content_edit", false);
-        this.props.editLesson('new_homework_edit', false);
-        this.props.onhandleCancel(false);
-        // this.setState({visible:false})
-      }}              
+          this.props.editLesson("new_content_edit", false);
+          this.props.editLesson('new_homework_edit', false);
+          this.props.onhandleCancel(false);
+          this.setState({
+              kpid: undefined,
+              side: 0,
+              kp_comment_content: null,
+              select_student: {select_id: undefined, select_name: null}
+          })
+        }}              
         footer={null}
         visible={this.state.visible} width={700} >
           <Tabs defaultActiveKey="1">

@@ -54,7 +54,7 @@ const defaultLessonData = Immutable.fromJS({//课程管理
             lesson_content: [{content: "abc"}]
         }],
         lesson_index: 0,
-        lesson_edit: {content_edit: [], homework_edit: [], sub_view: 0},
+        lesson_edit: {pf_comment_edit: [], kp_comment_edit: [], content_edit: [], homework_edit: [], sub_view: 0},
         isFetching: false,
     });
 
@@ -271,8 +271,8 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.set('lesson_index', action.index);
         case 'ADD_LESSON':
             return state.set('feedback_success', true);
-        case 'EDIT_LESSON_CONTENT':            
-            return state.setIn(['teacher_lesson', index, 'lesson_content'], Immutable.fromJS(action.lesson_content));
+        case 'EDIT_LESSON_CONTENT':
+            return state.setIn(['teacher_lesson', index, 'lesson_content'], Immutable.fromJS(action.lesson_content))
         case 'EDIT_HOMEWORK':
             return state.setIn(['teacher_lesson', index, 'homework'], Immutable.fromJS(action.homework));
         case 'EDIT_LESSON_KPCOMMENT':
@@ -301,10 +301,10 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
                 .setIn(['lesson','end_time'], Immutable.fromJS(action.end_time));
         case 'LESSON_EDITABLE':
             return state.setIn(['lesson_edit', action.key], action.value);
-        case 'LESSON_CONTENT_EDITABLE':
-            return state.setIn(['lesson_edit', 'content_edit', action.index], action.value);
-        case 'LESSON_HOMEWORK_EDITABLE':
-            return state.setIn(['lesson_edit', 'homework_edit', action.index], action.value);
+        case 'PF_COMMENT_EDITABLE':
+            return state.setIn(['lesson_edit', 'pf_comment_edit', action.index], action.value);
+        case 'KP_COMMENT_EDITABLE':
+            return state.setIn(['lesson_edit', 'kp_comment_edit', action.index], action.value);
         default:
             return state;
     }
