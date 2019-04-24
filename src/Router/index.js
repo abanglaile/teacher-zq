@@ -26,12 +26,13 @@ const component = (component) => {
 //独立编译
 //        <Route path="Question" {...component(Question)} />
       /*<Route path="root" component={requireAuthentication(App)}>*/
+      // <Route path="root" component={requireAuthentication(App)}>
 export default (
     <Route path='teacher-zq'>
 
 
-      <Route path="root" component={requireAuthentication(App)}>
-      {/* <Route path="root" component={App}> */}
+      
+      <Route path="root" component={App}>
         <IndexRoute component={TestCenter} />
         
         <Route path="testcenter" component={TestCenter}/>

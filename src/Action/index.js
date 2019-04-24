@@ -132,7 +132,7 @@ export const getUserInfo = (userid) => {
     }
 }
 
-/*---------------------------------------获取目录菜单----------------------------------*/
+/*---------------------------------------获取目录菜单以及知识点对应题目----------------------------------*/
 export const getCourse = () => {
     let url = target + "/getCourse";
     return (dispatch) => {
@@ -187,6 +187,26 @@ export const fetchSelectMenu = (chapter_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_SELECTMENU_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getExerciseByKp = (kpid) => {
+    let url = target + "/getExerciseByKp";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                kpid,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_KP_EXERCISE_SUCESS',
                 json : response.data, 
             });
         })
@@ -276,6 +296,19 @@ export const distributeTest = (keys,test_id,index) => {
     }
 }
 
+//复制试题，生成新的未发布试题
+export const copyTest = (teacher_id, test_id,copy_name) => {
+    let url = target + "/copyTest";
+    return dispatch => {
+        return axios.post(url,{teacher_id, test_id,copy_name})
+        .then(function (response) {
+            dispatch(getTestTable(teacher_id));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 export const getTestDetail = (test_id) => {
     let url = target + "/getTestDetail";
@@ -470,6 +503,26 @@ export const distributeNewHW = (students, task) => {
 
 
 /*---------------------------------------班级管理----------------------------------*/
+//获取老师所在的学校和机构
+export const getSchool = (teacher_id) => {
+    let url = target + "/getSchool";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                teacher_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_SCHOOL_SUCESS',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 //根据教师id获取 下带的班级分组数据
 export const getClassGroup = (teacher_id) => {
@@ -964,37 +1017,36 @@ export const getLessonKpComment = (lesson_id) => {
     }
 }
 
-export const updatePfComment = (pf_comment, i) => {
+export const updatePfComment = (pf_comment, comment_id, callback) => {
     let url = target + "/updatePfComment";
     return dispatch => {
-        return axios.post(url, {pf_comment})
+        return axios.post(url, {pf_comment, comment_id})
         .then(function (response) {
-            dispatch(getLessonPfComment(lesson_id));
-            dispatch(editPfComment(i, false));
+            callback();
         })
         .catch(function (error) {
             console.log(error);});
     }
 }
 
-export const updateKpComment = (kp_comment, i, lesson_id) => {
+export const updateKpComment = (kp_comment, comment_id, callback) => {
     let url = target + "/updateKpComment";
     return dispatch => {
-        return axios.post(url, {kp_comment})
+        return axios.post(url, {kp_comment, comment_id})
         .then(function (response) {
-            dispatch(getLessonKpComment(lesson_id));
-            dispatch(editKpComment(i, false));
+            callback();
         })
         .catch(function (error) {
             console.log(error);});
     }
 }
 
-export const addLessonKpComment = (lesson_id, select_student, kp_comment) => {
+export const addLessonKpComment = (lesson_id, select_student, kp_comment, callback) => {
     let url = target + "/addLessonKpComment";
     return dispatch => {
         return axios.post(url, {lesson_id, select_student, kp_comment})
         .then(function (response) {
+            callback();
             dispatch(getLessonKpComment(lesson_id));
         })
         .catch(function (error) {
@@ -1003,11 +1055,12 @@ export const addLessonKpComment = (lesson_id, select_student, kp_comment) => {
     }
 }
 
-export const addLessonPfComment = (lesson_id, select_student, pf_comment) => {
+export const addLessonPfComment = (lesson_id, select_student, pf_comment, callback) => {
     let url = target + "/addLessonPfComment";
     return dispatch => {
         return axios.post(url, {lesson_id, select_student, pf_comment})
         .then(function (response) {
+            callback();
             dispatch(getLessonPfComment(lesson_id));
         })
         .catch(function (error) {
@@ -1172,8 +1225,8 @@ export const getStuTestSurvey = (student_id, test_id) => {
             
             let data=JSON.parse(per_data);
             dispatch({
-                type: 'GET_MY_TEST_DATA',
-                json: data
+                type: 'GET_STU_TEST_SURVEY',
+                json: response.data,
             })
         })
         .catch(function (error) {
