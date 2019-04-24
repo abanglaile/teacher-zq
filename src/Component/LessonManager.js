@@ -397,7 +397,7 @@ class LessonManager extends React.Component{
     render(){
       const {visible, treeData,tree_value} = this.state;
       const {tests,teacher_lesson,isFetching,teacher_id} = this.props;
-      // console.log("teacher_lesson::::::",teacher_lesson);
+      // console.log("teacher_lesson::::::",JSON.stringify(teacher_lesson));
 
       return(
         <div>
@@ -444,6 +444,7 @@ class LessonManager extends React.Component{
                     avatar={this.renderCourseAvatar(item.course_label)}
                     title={<a onClick={e => {
                       this.props.getOneLesson(item.lesson_id, index);
+                      this.props.getLinkageOptionData(item.stu_group_id);
                       this.props.setLessonIndexVisible(index);
                       this.setState({view_modal: true});
                     }}>{item.group_name}</a>}

@@ -705,18 +705,14 @@ class LessonViewModal extends React.Component{
     }
 
     renderLessonBasic(){
-      const {teacher_group, course_option, label_option, teacher_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
+      const {teacher_option, teacher_link_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
       // console.log("teacher_lesson:",JSON.stringify(teacher_lesson));
       // console.log("lesson_index:",lesson_index);
       const {teacher_edit, assistant_edit} = lesson_edit;
       const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
       const {select_teacher, select_assistant} = this.state;
-      const group_option = teacher_group.map((item) => <Option value={item.stu_group_id}>{item.group_name}</Option>)
-      const courseOption = course_option.map((item) => <Option value={item.course_label}>{item.course_label_name}</Option>)
-      const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
-      const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
+      const teacherOption = teacher_link_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       
-
       return(
         <div>
         <Row  gutter={2} type="flex" justify="space-between" align="middle">
@@ -834,7 +830,7 @@ class LessonViewModal extends React.Component{
                 >
                   {teacherOption}
                 </Select>
-                <a onClick={e => this.props.updateLessonAssistant(lesson.lesson_id, select_assistant)} style={{marginLeft: 10}}>确定</a>
+                <a onClick={e => this.props.updateLessonAssistant(lesson_id, select_assistant)} style={{marginLeft: 10}}>确定</a>
                 <a onClick={e => this.props.editLesson('assistant_edit', false)} style={{marginLeft: 10}}>取消</a>
               </div>
               :
@@ -1162,7 +1158,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson_index, lesson_edit, teacher_lesson } = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, course_option, label_option, search_teacher_task, search_kp_label, search_pf_label, search_task_source } = personal_data;
+  const {teacher_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
   const default_teacher_lesson = [{
     lesson_teacher: [],
     lesson_student: [],
@@ -1177,10 +1173,8 @@ export default connect(state => {
     teacher_lesson: teacher_lesson[0] ? teacher_lesson : default_teacher_lesson,
     lesson_index: lesson_index,
     lesson_edit: lesson_edit,
-    teacher_group: classgroup_data,
     teacher_option: teacher_option,
-    course_option: course_option,
-    label_option: label_option,
+    teacher_link_option: teacher_link_option,
     search_teacher_task: search_teacher_task,
     search_kp_label: search_kp_label,
     search_pf_label: search_pf_label,
