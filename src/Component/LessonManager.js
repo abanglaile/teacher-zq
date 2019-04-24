@@ -424,7 +424,7 @@ class LessonManager extends React.Component{
                 onChange: (page) => {
                   console.log(page);
                 },
-                pageSize: 3,
+                pageSize: 8,
               }}
               dataSource={teacher_lesson}
               renderItem={(item, index) => (
