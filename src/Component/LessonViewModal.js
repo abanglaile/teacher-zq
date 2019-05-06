@@ -858,8 +858,9 @@ class LessonViewModal extends React.Component{
     //   this.timeout = setTimeout(this.props.searchKp(input), 300);
       
     // }
-    handleKpComment(lesson_id){
-      const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
+    handleKpComment(lesson_id, select_student){
+      const { kpid, kpname, kp_comment_content, side } = this.state;
+
       this.props.addLessonKpComment(lesson_id, select_student, {
           kpname: kpname,
           kpid: (kpid | 0) == kpid ? kpid : undefined, 
@@ -886,9 +887,8 @@ class LessonViewModal extends React.Component{
       let {select_student, kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
       
-      console.log(kp_comment);
       if((lesson_student || []).length == 1){
-        select_student = {select_id: lesson_student[0].student_id, select_name: lesson_student[0].realname};
+        select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
       }
       const [p_comment, n_comment] = (kp_comment || []).reduce(
         ([p_comment, n_comment], item, index) => {
@@ -980,7 +980,7 @@ class LessonViewModal extends React.Component{
             <Button 
               type="primary"
               disabled = {!(select_student.select_id && kp_comment_content && kpid)}
-              onClick={() => this.handleKpComment(lesson_id)}>点评</Button>                
+              onClick={() => this.handleKpComment(lesson_id, select_student)}>点评</Button>                
           </div>
           
             

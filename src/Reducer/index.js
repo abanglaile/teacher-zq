@@ -53,6 +53,7 @@ const defaultLessonData = Immutable.fromJS({//课程管理
             homework: [],
             lesson_content: [{content: "abc"}]
         }],
+        lesson: {},
         lesson_index: 0,
         lesson_edit: {pf_comment_edit: [], kp_comment_edit: [], content_edit: [], homework_edit: [], sub_view: 0},
         isFetching: false,
@@ -267,6 +268,10 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.set('teacher_lesson', Immutable.fromJS(action.teacher_lesson));
         case 'GET_ONE_LESSON':
             return state.setIn(['teacher_lesson', action.index], Immutable.fromJS(action.lesson));
+        case 'GET_LESSON_STUDENT':
+            return state.setIn(['lesson', 'lesson_student'], Immutable.fromJS(action.lesson_student));
+        case 'GET_STUDENT_ONE_LESSON':
+            return state.set('lesson', Immutable.fromJS(action.lesson));
         case 'SET_LESSON_INDEX':
             return state.set('lesson_index', action.index);
         case 'ADD_LESSON':
