@@ -297,8 +297,8 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         //     return state.setIn(['lesson','label_id'], action.lesson_basic.label_id)
         //         .setIn(['lesson','label_name'], action.lesson_basic.label_name);
         case 'UPDATE_LESSON_RANGE':
-            return state.setIn(['lesson','start_time'], Immutable.fromJS(action.start_time))
-                .setIn(['lesson','end_time'], Immutable.fromJS(action.end_time));
+            return state.setIn(['teacher_lesson', index, , 'start_time'], action.start_time)
+                .setIn(['teacher_lesson', index, 'end_time'], action.end_time);
         case 'LESSON_EDITABLE':
             return state.setIn(['lesson_edit', action.key], action.value);
         case 'PF_COMMENT_EDITABLE':

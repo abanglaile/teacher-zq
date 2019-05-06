@@ -1277,6 +1277,7 @@ export const getMyTestData = (student_id, test_id) => {
 
 export const updateLessonRange = (lesson_id, start_time, end_time) => {
     let url = target + "/updateLessonRange";
+    console.log("start_time end_time:",start_time,end_time);
     return dispatch => {
         return axios.post(url, {lesson_id, start_time, end_time})
         .then(function (response) {
