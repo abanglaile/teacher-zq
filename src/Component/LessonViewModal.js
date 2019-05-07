@@ -31,13 +31,13 @@ class LessonViewModal extends React.Component{
         super(props);
         this.state={
           kp_tags: [],
-          select_student: [],
+          select_student: {},
           remark_page: [],
           task_type: 0,
           side : 0,
-          // visible:false,
           visible:this.props.visible,
         };
+    
         this.searchKpLabel = debounce(this.props.searchKpLabel, 500);
         this.searchPfLabel = debounce(this.props.searchPfLabel, 500);
         this.searchTaskSource = debounce(this.props.searchTaskSource, 500);
@@ -712,6 +712,8 @@ class LessonViewModal extends React.Component{
       const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
       const {select_teacher, select_assistant} = this.state;
       const teacherOption = teacher_link_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
+      // let assistantOption = teacherOption;
+      // assistantOption.push(<Option value={item.teacher_id.toString()}>{item.realname}</Option>);
       
       return(
         <div>
@@ -755,12 +757,12 @@ class LessonViewModal extends React.Component{
                 <RangePicker
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
-                  value={[this.state.start_time, this.state.end_time]}
-                  onChange={(dates) => this.setState({start_time: dates[0], end_time: dates[1]})}
+                  value={[moment(this.state.start_time), moment(this.state.end_time)]}
+                  onChange={(value,dateString) => this.setState({start_time: dateString[0], end_time: dateString[1]})}
                   placeholder={['Start Time', 'End Time']}
                 />
                 <div style={{marginTop: 5}}>
-                  <a onClick={e => this.props.updateLessonRange(lesson_id, this.state.start_time.toDate(), this.state.end_time.toDate())}>确定</a>
+                  <a onClick={e => this.props.updateLessonRange(lesson_id, this.state.start_time, this.state.end_time)}>确定</a>
                   <a onClick={e => this.props.editLesson('range_edit', false)} style={{marginLeft: 10}}>取消</a> 
                 </div>
               </div>
@@ -768,7 +770,7 @@ class LessonViewModal extends React.Component{
               <div style={{fontSize: '1rem', cursor: 'pointer'}} 
                   onClick={e => {
                     this.props.editLesson('range_edit', true);
-                    this.setState({start_time: moment(start_time), end_time: moment(end_time)});
+                    this.setState({start_time: start_time, end_time: end_time});
                   }}>
                 {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div>
@@ -824,6 +826,7 @@ class LessonViewModal extends React.Component{
               <div>
                 <Select
                   placeholder={"选择助教老师"}
+                  allowClear={true}
                   value={select_assistant}
                   onChange={(value) => this.setState({select_assistant: value})}
                   style={{ width: '12rem' }}
@@ -858,8 +861,9 @@ class LessonViewModal extends React.Component{
     //   this.timeout = setTimeout(this.props.searchKp(input), 300);
       
     // }
-    handleKpComment(lesson_id, select_student){
-      const { kpid, kpname, kp_comment_content, side } = this.state;
+
+    handleKpComment(lesson_id){
+      const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
 
       this.props.addLessonKpComment(lesson_id, select_student, {
           kpname: kpname,
@@ -886,9 +890,11 @@ class LessonViewModal extends React.Component{
       let {kp_comment_edit} = lesson_edit;
       let {select_student, kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
-      
-      if((lesson_student || []).length == 1){
+      console.log(select_student);
+
+      if((lesson_student || []).length == 1){       
         select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
+        this.state.select_student = select_student;
       }
       const [p_comment, n_comment] = (kp_comment || []).reduce(
         ([p_comment, n_comment], item, index) => {
@@ -1024,9 +1030,14 @@ class LessonViewModal extends React.Component{
       const {teacher_lesson, lesson_index, search_pf_label, lesson_edit } = this.props;
       let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let {pf_comment_edit} = lesson_edit;
-      const {select_student, label_id, label_name, pf_comment_content} = this.state;
+      let {select_student, label_id, label_name, pf_comment_content} = this.state;
       const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.label_id}>{d.label_name}</Option>) : null;
       pf_comment = pf_comment ? pf_comment : [];
+
+      if((lesson_student || []).length == 1){
+        select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
+        this.state.select_student = select_student;
+      }
 
       const pf_comment_dom = (pf_comment || []).map((item, index) => (
           pf_comment_edit[index] ?
@@ -1134,8 +1145,8 @@ class LessonViewModal extends React.Component{
               kpid: undefined,
               side: 0,
               kp_comment_content: null,
-              select_student: {select_id: undefined, select_name: null}
           })
+          this.state.select_student =  {select_id: [], select_name: []};
         }}              
         footer={null}
         visible={this.state.visible} width={700} >

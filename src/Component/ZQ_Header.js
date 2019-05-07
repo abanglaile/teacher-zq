@@ -60,8 +60,7 @@ class Zq_Header extends React.Component{
 }
 
 export default connect(state => {
-  // console.log(state);
-  console.log('state.AuthData:',JSON.stringify(state.AuthData));
+
   return {
     userid: state.AuthData.get('userid'),
     username: state.AuthData.get('username'),

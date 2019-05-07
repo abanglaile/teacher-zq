@@ -120,7 +120,6 @@ export const getUserInfo = (userid) => {
             }
         })
         .then(function (response) {
-            console.log("response.data:",response.data);
             dispatch({
                 type : 'GET_USERINFO_SUCESS',
                 json : response.data, 
@@ -870,7 +869,7 @@ export const getLessonStudent = (lesson_id) => {
         .then(function (response) {
             dispatch({
                 type : 'GET_LESSON_STUDENT',
-                lesson: response.data,
+                lesson_student: response.data,
             });
         })
         .catch(function (error) {
@@ -881,7 +880,6 @@ export const getLessonStudent = (lesson_id) => {
 
 export const getOneLesson = (lesson_id, index) => {
     let url = target + "/getOneLesson";
-    console.log(lesson_id);
     return dispatch => {
         return axios.get(url, {
             params:{
@@ -1318,6 +1316,7 @@ export const getMyTestData = (student_id, test_id) => {
 
 export const updateLessonRange = (lesson_id, start_time, end_time) => {
     let url = target + "/updateLessonRange";
+    console.log("start_time end_time:",start_time,end_time);
     return dispatch => {
         return axios.post(url, {lesson_id, start_time, end_time})
         .then(function (response) {
