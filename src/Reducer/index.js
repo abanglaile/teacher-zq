@@ -53,6 +53,7 @@ const defaultLessonData = Immutable.fromJS({//课程管理
             homework: [],
             lesson_content: [{content: "abc"}]
         }],
+        reward: [],
         lesson_index: 0,
         lesson_edit: {pf_comment_edit: [], kp_comment_edit: [], content_edit: [], homework_edit: [], sub_view: 0},
         isFetching: false,
@@ -266,7 +267,10 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'GET_TEACHER_LESSON':
             return state.set('teacher_lesson', Immutable.fromJS(action.teacher_lesson));
         case 'GET_ONE_LESSON':
-            return state.setIn(['teacher_lesson', action.index], Immutable.fromJS(action.lesson));
+            return state.setIn(['teacher_lesson', action.index], Immutable.fromJS(action.lesson))
+                .set('reward', Immutable.fromJS(action.lesson.lesson_student));
+        case 'SET_STU_REWARD':
+            return state.setIn(['reward', action.index ,'reward'], action.value);
         case 'SET_LESSON_INDEX':
             return state.set('lesson_index', action.index);
         case 'ADD_LESSON':
@@ -297,7 +301,7 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         //     return state.setIn(['lesson','label_id'], action.lesson_basic.label_id)
         //         .setIn(['lesson','label_name'], action.lesson_basic.label_name);
         case 'UPDATE_LESSON_RANGE':
-            return state.setIn(['teacher_lesson', index, , 'start_time'], action.start_time)
+            return state.setIn(['teacher_lesson', index,'start_time'], action.start_time)
                 .setIn(['teacher_lesson', index, 'end_time'], action.end_time);
         case 'LESSON_EDITABLE':
             return state.setIn(['lesson_edit', action.key], action.value);
