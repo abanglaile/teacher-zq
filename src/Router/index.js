@@ -10,6 +10,7 @@ import KpExerciseView from '../Component/exercise_select.js'
 import TestResult from '../Component/TestResult.js'
 import StuEvaluation from '../Component/stuEvaluation.js'
 import TaskResult from '../Component/TaskResult.js'
+import LessonPrint from '../Component/LessonPrint.js'
 
 import { Route, IndexRoute } from 'react-router';
 import { requireAuthentication } from '../utils';
@@ -39,7 +40,8 @@ export default (
         <Route path="lesson-manager" component={LessonManager}/>
         <Route path="task-manager" component={TaskManager}/>
       </Route>
-      <Route path="stu_evaluation" component={StuEvaluation}/>      
+      <Route path="stu_evaluation" component={StuEvaluation}/>
+      <Route path="lesson_print" component={LessonPrint}/>     
       <Route path="stu_capacity/:id" component={StuCapacity}/>
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>

@@ -864,9 +864,10 @@ class LessonViewModal extends React.Component{
     //   this.timeout = setTimeout(this.props.searchKp(input), 300);
       
     // }
+
     handleKpComment(lesson_id){
       const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
-      console.log("select_student:",JSON.stringify(select_student));
+
       this.props.addLessonKpComment(lesson_id, select_student, {
           kpname: kpname,
           kpid: (kpid | 0) == kpid ? kpid : undefined, 
@@ -892,9 +893,9 @@ class LessonViewModal extends React.Component{
       let {kp_comment_edit} = lesson_edit;
       let {select_student, kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
-      
-      console.log("select_student:",JSON.stringify(select_student));
-      if((lesson_student || []).length == 1){
+      console.log(select_student);
+
+      if((lesson_student || []).length == 1){       
         select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
         this.state.select_student = select_student;
       }
@@ -988,7 +989,7 @@ class LessonViewModal extends React.Component{
             <Button 
               type="primary"
               disabled = {!(select_student.select_id && kp_comment_content && kpid)}
-              onClick={() => this.handleKpComment(lesson_id)}>点评</Button>                
+              onClick={() => this.handleKpComment(lesson_id, select_student)}>点评</Button>                
           </div>
           
             
@@ -1183,8 +1184,8 @@ class LessonViewModal extends React.Component{
               kpid: undefined,
               side: 0,
               kp_comment_content: null,
-              select_student: {select_id: undefined, select_name: null}
           })
+          this.state.select_student =  {select_id: [], select_name: []};
         }}              
         footer={null}
         visible={this.state.visible} width={700} >

@@ -29,19 +29,6 @@
 	color: #0e77ca;
 }
 
-.content{
-	/* padding: '0 120px'; */
-	width: 1075px;
-	height: 1568px;
-	/* border: 1px #000 solid; */
-}
-
-.header {
-    display: none;
-}
-.footer {
-    display: none;
-}
 
 @media print{
 	.noprint{
@@ -50,18 +37,15 @@
 	.print{
 		width: 1075px;
 		height: 1568px;
-		margin-left:-10%;
-		margin-top:5%;
 	}
-	.header {
-        display: block;
-    }
-    .footer {
-        display: block;
-    }
 	
 }
-@page{
-	size:  auto;   /* auto is the initial value */
-	margin: 0mm;  /* this affects the margin in the printer settings */
+
+@page {
+	size: A4;
+	margin-top: 2cm;
+	margin-bottom: 2cm;
+	margin-left: 1cm;
+	margin-right: 1cm;
+
 }

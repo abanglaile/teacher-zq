@@ -32,7 +32,6 @@ class LessonManager extends React.Component{
     constructor(props) {
         super(props);
         let start_time = moment().day(-7);;
-        // console.log("start_time:",start_time);
         this.state={
           kp_tags: [],
           select_teacher: undefined,
@@ -79,7 +78,6 @@ class LessonManager extends React.Component{
         start_time : range_time[0],
         end_time : range_time[1],
       };
-      console.log("new_lesson:",new_lesson);
       if(group_id && room_id && label_id && select_teacher && range_time[0]){
         this.props.addNewLesson(new_lesson, teacher_id);
         this.setState({
@@ -92,7 +90,7 @@ class LessonManager extends React.Component{
     }
 
     onGroupChange(value){
-      console.log("onGroupChange value:",value);
+
       var temp = value.split('-');
       this.setState({group_id: temp[0], course_label : temp[1]});
       this.props.getLinkageOptionData(temp[0]);
@@ -266,7 +264,6 @@ class LessonManager extends React.Component{
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
       const teacherOption = teacher_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       
-      console.log(start_time, end_time);
 
       return(
       <div>
