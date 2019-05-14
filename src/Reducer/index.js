@@ -269,7 +269,7 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'GET_ONE_LESSON':
             return state.setIn(['teacher_lesson', action.index], Immutable.fromJS(action.lesson));
         case 'GET_LESSON_STUDENT':
-            return state.setIn(['lesson', 'lesson_student'], Immutable.fromJS(action.lesson_student));
+            return state.set('lesson_student', Immutable.fromJS(action.lesson_student));
         case 'GET_STUDENT_ONE_LESSON':
             return state.set('lesson', Immutable.fromJS(action.lesson));
         case 'SET_LESSON_INDEX':

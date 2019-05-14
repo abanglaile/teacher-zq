@@ -700,20 +700,12 @@ class LessonViewModal extends React.Component{
       );
     }
 
-    onConfirm(e){
-
-    }
-
     renderLessonBasic(){
       const {teacher_option, teacher_link_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
-      // console.log("teacher_lesson:",JSON.stringify(teacher_lesson));
-      // console.log("lesson_index:",lesson_index);
       const {teacher_edit, assistant_edit} = lesson_edit;
       const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
       const {select_teacher, select_assistant} = this.state;
       const teacherOption = teacher_link_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
-      // let assistantOption = teacherOption;
-      // assistantOption.push(<Option value={item.teacher_id.toString()}>{item.realname}</Option>);
       
       return(
         <div>
@@ -728,7 +720,9 @@ class LessonViewModal extends React.Component{
           </Col>
           <Col span={4}>
             {is_sign ? 
-              <Button type="primary" size={"small"}>已签到</Button>
+              <Button 
+                onClick={(e) => window.open('http://localhost:8000/teacher-zq/lesson_print/' + lesson_id)} 
+                size={"small"}>打印</Button>
               :
               <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id)} title="是否签到课程？" okText="确定" cancelText="取消">
                 <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
@@ -851,17 +845,6 @@ class LessonViewModal extends React.Component{
       )
     }
 
-    // searchKpLabel(input){
-    //   this.props.searchKp(input);
-    //   if (this.timeout) {
-    //     clearTimeout(this.timeout);
-    //     this.timeout = null;
-    //   }
-    //   this.currentValue = input;
-    //   this.timeout = setTimeout(this.props.searchKp(input), 300);
-      
-    // }
-
     handleKpComment(lesson_id){
       const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
 
@@ -939,8 +922,6 @@ class LessonViewModal extends React.Component{
             return item.side ? [[...p_comment, itemDom], n_comment] : [p_comment, [...n_comment, itemDom]]
         }, [[], []])
 
-      // let p_comment = kp_comment.filter(item => item.side);
-      // let n_comment = kp_comment.filter(item => !item.side);
 
       return(
         <div>
@@ -1135,8 +1116,7 @@ class LessonViewModal extends React.Component{
     render(){
       const {teacher_lesson, lesson_index } = this.props;
       let {is_sign} = teacher_lesson[lesson_index];
-      return(
-      // <Modal title={null} onCancel={this.props.onCancel}  
+      return( 
       <Modal title={null} onCancel={()=>{
           this.props.editLesson("new_content_edit", false);
           this.props.editLesson('new_homework_edit', false);
