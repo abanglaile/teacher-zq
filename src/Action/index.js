@@ -1487,3 +1487,12 @@ export function editKpComment(index, value) {
     value,
   }
 }
+
+export function setStuReward(index, value) {
+    return {
+        type: 'SET_STU_REWARD',
+        index,
+        value,
+    }
+}
+  

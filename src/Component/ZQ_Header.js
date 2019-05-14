@@ -60,7 +60,6 @@ class Zq_Header extends React.Component{
 }
 
 export default connect(state => {
-
   return {
     userid: state.AuthData.get('userid'),
     username: state.AuthData.get('username'),

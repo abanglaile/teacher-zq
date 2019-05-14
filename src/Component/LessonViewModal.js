@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Popover, Progress, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
+import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Rate, Popover, Progress, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -8,6 +8,7 @@ import config from '../utils/Config';
 
 import moment from 'moment';
 import debounce from 'lodash/debounce';
+import Immutable from 'immutable';
 
 const { SubMenu } = Menu;
 const {Option, OptGroup}  = Select;
@@ -29,12 +30,14 @@ const IconText = ({ type, text }) => (
 class LessonViewModal extends React.Component{
     constructor(props) {
         super(props);
+
         this.state={
           kp_tags: [],
           select_student: {},
           remark_page: [],
           task_type: 0,
           side : 0,
+          reward_disable : false,
           visible:this.props.visible,
         };
     
@@ -764,7 +767,7 @@ class LessonViewModal extends React.Component{
               <div style={{fontSize: '1rem', cursor: 'pointer'}} 
                   onClick={e => {
                     this.props.editLesson('range_edit', true);
-                    this.setState({start_time: start_time, end_time: end_time});
+                    // this.setState({start_time: start_time, end_time: end_time});
                   }}>
                 {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div>
@@ -1113,6 +1116,42 @@ class LessonViewModal extends React.Component{
       )
     }
 
+    renderGeneralComment(){
+      const {teacher_lesson, lesson_index, reward} = this.props;
+      var { reward_disable } = this.state;
+      let {lesson_student, lesson_id} = teacher_lesson[lesson_index];
+      // console.log("reward:",JSON.stringify(reward));
+
+      var rateDom = (lesson_student || []).map((item, index) => (
+        <Row type="flex" justify="center" align="middle">
+          <Col span={4}>{item.realname}</Col>
+          <Col span={12}>
+            <Rate
+              count = '8'  
+              disabled = {reward_disable}
+              character={<Icon type="heart" />}
+              onChange={(value) => {this.props.setStuReward(index,value)}}
+              defaultValue={0} />
+          </Col>
+        </Row>
+      ));
+
+      return(
+        <div style={{minHeight:'150px'}}>
+          <div style={{marginTop:'20px'}}>
+            {rateDom}
+          </div>
+          <Button 
+            disabled={reward_disable}
+            style={{float:"right",marginRight:'50px',marginTop:'20px'}}
+            type="primary" 
+            // onClick={() => {this.props.submitReward(reward, lesson_id);this.setState({reward_disable:'true'})}}
+            onClick={() => {this.setState({reward_disable:'true'})}}
+          >发布</Button>
+        </div>
+      )
+    }
+
     render(){
       const {teacher_lesson, lesson_index } = this.props;
       let {is_sign} = teacher_lesson[lesson_index];
@@ -1135,6 +1174,7 @@ class LessonViewModal extends React.Component{
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
             <TabPane tab="知识点点评" disabled={!is_sign} key="3">{this.renderKpComment()}</TabPane>
             <TabPane tab="课堂表现" disabled={!is_sign} key="4">{this.renderPfComment()}</TabPane>
+            <TabPane tab="成就奖励" disabled={!is_sign} key="5">{this.renderGeneralComment()}</TabPane>
           </Tabs> 
       </Modal>
       )
@@ -1147,7 +1187,7 @@ export default connect(state => {
   const lesson_data = state.lessonData.toJS();
   const group_data = state.classGroupData.toJS();
   const personal_data = state.personalData.toJS();
-  const {lesson_index, lesson_edit, teacher_lesson } = lesson_data;
+  const {lesson_index, lesson_edit, teacher_lesson, reward} = lesson_data;
   const {classgroup_data} = group_data;
   const {teacher_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
   const default_teacher_lesson = [{
@@ -1162,6 +1202,7 @@ export default connect(state => {
     isFetching: state.fetchTestsData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
     teacher_lesson: teacher_lesson[0] ? teacher_lesson : default_teacher_lesson,
+    reward: reward,
     lesson_index: lesson_index,
     lesson_edit: lesson_edit,
     teacher_option: teacher_option,
