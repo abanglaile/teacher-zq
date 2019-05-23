@@ -34,24 +34,24 @@ class LessonManager extends React.Component{
         let start_time = moment().day(-7);;
         this.state={
           kp_tags: [],
-          select_teacher: undefined,
-          select_assistant:undefined,
-          select_student: [],
+          //select_teacher: undefined,
+          //select_assistant:undefined,
+          //query_select_teacher: props.teacher_id,
           start_time: start_time,
           range_time: [],
-          end_time: null,
-          group_id: undefined,
-          room_id: undefined,
-          course_label: undefined,
-          label_id:undefined,
-          //查询时的输入条件，避免与新建时输入条件混淆
-          query_select_teacher: undefined,
-          query_sgroup_id: undefined,
-          query_scourse_label: undefined,
-          query_slabel_id:undefined,
+          // end_time: null,
+          // group_id: undefined,
+          // room_id: undefined,
+          // course_label: undefined,
+          // label_id:undefined,
+          // //查询时的输入条件，避免与新建时输入条件混淆
+          
+          // query_sgroup_id: undefined,
+          // query_scourse_label: undefined,
+          // query_slabel_id:undefined,
 
-          visible:false,
-          view_modal:false,
+          //visible:false,
+          //view_modal:false,
         };
     }
 
@@ -60,7 +60,7 @@ class LessonManager extends React.Component{
       // console.log("componentDidMount teacher_id:",teacher_id);
       // teacher_id = "3044f0f040ba11e9ad2ca1607a4b5d90";
       this.props.getClassGroup(teacher_id);
-      this.props.getTeacherLesson(teacher_id, {});
+      this.props.getTeacherLesson(teacher_id, {start_time: this.state.start_time});
       this.props.getOptionData(teacher_id);
     }
 
@@ -252,7 +252,7 @@ class LessonManager extends React.Component{
         query_group_id: undefined,
         query_course_label: undefined,
         query_label_id:undefined,
-      },()=>{this.props.getTeacherLesson(teacher_id, {});});
+      });
     }
 
     renderQueryOption(){
