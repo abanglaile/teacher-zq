@@ -856,7 +856,8 @@ class LessonViewModal extends React.Component{
     }
 
     handleKpComment(lesson_id){
-      const {select_student, kpid, kpname, kp_comment_content, side } = this.state;
+      const {kpid, kpname, kp_comment_content, side } = this.state;
+      const {select_student} this.props;
 
       this.props.addLessonKpComment(lesson_id, select_student, {
           kpname: kpname,
@@ -1002,7 +1003,8 @@ class LessonViewModal extends React.Component{
     }
 
     handlePfComment(lesson_id){
-      const {select_student, label_id, label_name, pf_comment_content} = this.state;
+      const {label_id, label_name, pf_comment_content} = this.state;
+      const {select_student} this.props;
       this.props.addLessonPfComment(lesson_id, select_student, {
           label_name: label_name,
           label_id: (label_id | 0) == label_id ? label_id : undefined, 
