@@ -54,6 +54,8 @@ const defaultLessonData = Immutable.fromJS({//课程管理
             lesson_content: [{content: "abc"}]
         }],
         reward: [],
+        lesson: {},
+        select_student: {},
         lesson_index: 0,
         lesson_edit: {pf_comment_edit: [], kp_comment_edit: [], content_edit: [], homework_edit: [], sub_view: 0},
         isFetching: false,
@@ -267,10 +269,13 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'GET_TEACHER_LESSON':
             return state.set('teacher_lesson', Immutable.fromJS(action.teacher_lesson));
         case 'GET_ONE_LESSON':
-            return state.setIn(['teacher_lesson', action.index], Immutable.fromJS(action.lesson))
-                .set('reward', Immutable.fromJS(action.lesson.lesson_student));
-        case 'SET_STU_REWARD':
-            return state.setIn(['reward', action.index ,'reward'], action.value);
+            return state.setIn(['teacher_lesson', index], Immutable.fromJS(action.lesson));
+        case 'GET_LESSON_STUDENT':
+            return state.set('lesson_student', Immutable.fromJS(action.lesson_student));
+        case 'GET_STUDENT_ONE_LESSON':
+            return state.set('lesson', Immutable.fromJS(action.lesson));
+        case 'SET_LESSON_AWARD':
+            return state.setIn(['temp_award', action.index ,'award'], action.value);
         case 'SET_LESSON_INDEX':
             return state.set('lesson_index', action.index);
         case 'ADD_LESSON':
@@ -291,6 +296,10 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
                 .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);
         case 'SIGN_LESSON':
             return state.setIn(['teacher_lesson', index, 'is_sign'], true);
+        case 'SELECT_LESSON_STUDENT': 
+            return state.set("select_student", action.select_student);
+        case 'ACC_LESSON_AWARD':
+            return state.setIn(['teacher_lesson', index, 'acc_award'], action.acc_award);
         // case 'UPDATE_LESSON_GROUP':
         //     return state.setIn(['lesson', 'group_id'], action.lesson_basic.group_id)
         //         .setIn(['lesson', 'group_name'], action.lesson_basic.group_name);

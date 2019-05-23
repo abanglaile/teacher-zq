@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Popover, Progress, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
+import {Icon, Spin, Row, Col, Alert, Select, Button, List} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 
@@ -8,22 +8,12 @@ import Styles from '../styles/stuEvaluation.css';
 import moment from 'moment';
 
 
-const { SubMenu } = Menu;
-const {sel, OptGroup}  = Select;
-const SHOW_PARENT = TreeSelect.SHOW_PARENT;
-const { RangePicker } = DatePicker;
-const TabPane = Tabs.TabPane;
+const {Option, OptGroup}  = Select;
+
 const Item = List.Item;
-const RadioGroup = Radio.Group;
-
-const { TextArea } = Input;
-
-const IconText = ({ type, text }) => (
-  <span>
-    <Icon type={type} style={{ marginRight: 8 }} />
-    {text}
-  </span>
-);
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_1198891_hl08ti6xmbi.js',
+});
 
 class LessonViewModal extends React.Component{
     constructor(props){
@@ -35,11 +25,9 @@ class LessonViewModal extends React.Component{
 
     componentDidMount(){
       let {lesson_id, student_id} = this.state;
-      lesson_id = "2c058d70-64f4-11e9-b050-cd91a2ea";
-      student_id = "54d02180507611e9881259fe263fe740";
-      this.props.getLessonStudent(lesson_id);
-
-      this.props.getStudentOneLesson(lesson_id, student_id);      
+      //lesson_id = "2c058d70-64f4-11e9-b050-cd91a2ea";
+      //student_id = "54d02180507611e9881259fe263fe740"; 
+      this.props.getLessonStudent(lesson_id);           
     }
       
 
@@ -117,24 +105,31 @@ class LessonViewModal extends React.Component{
     }
 
     render(){
-      let {pf_comment, lesson_student, lesson_content, homework, lesson_id, teacher_name, assistant_name, start_time, end_time, group_name, course_label, label_name} = this.props.lesson;
+      const {lesson, lesson_student} = this.props;
+      let {pf_comment, lesson_content, award_count, homework, teacher_name, assistant_name, start_time, end_time, group_name, course_label, label_name} = lesson;
       const item_title = ["课堂学习", "知识讲解", "课堂练习"];
-      console.log(lesson_student);
+      const {student_name, lesson_id} = this.state;
+
       return(
         <div className="print" style={{marginLeft: "60px", marginRight: "60px"}}>           
-          <Select style={{ width: 120 }} 
-            onSelect={(value, option) => this.setState({student_id: value, student_name: option.props.children})}>
-            {(lesson_student || []).map(item => <Option value={item.student_id}>{item.student_name}</Option>)}
-          </Select>          
+          <div className = "noprint">
+            <Select style={{ width: 120, marginBottom: "1rem" }} placeholder="选择学生"
+              onSelect={(value, option) => {
+                this.setState({student_name: option.props.children});
+                this.props.getStudentOneLesson(lesson_id, value);
+              }}>
+              {(lesson_student || []).map(item => <Option value={item.student_id}>{item.realname}</Option>)}
+            </Select> 
+          </div>         
           <div>
-            <span style={{fontSize: "3rem"}}>李承耀 课堂报告</span>
+            <span style={{fontSize: "3rem"}}>{student_name} 课堂报告</span>
             <span style={{marginLeft: "0.5rem", fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}>/喜悦教育 最专业的私人订制课程</span>
           </div>
           <div style={{fontSize: "1.5rem", color: '#a6a6a6'}}>{group_name + ' ' + label_name}</div>
           
           <Row justify="end" type="flex" style={{ marginTop: 20}} gutter={3} align="right">
             <Col span={2} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: "1rem", color: '#a6a6a6'}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="calendar" theme="outlined" />时间</div>
+              <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="calendar" theme="outlined" />时间</div>
             </Col>
             <Col span={6} style={{borderBottom: "1px solid "}}>
               <div style={{fontSize: '1rem'}} >
@@ -145,25 +140,26 @@ class LessonViewModal extends React.Component{
 
           <Row justify="end" type="flex" style={{ marginTop: 20}} gutter={3} align="right">
             <Col span={2} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: "1rem", color: '#a6a6a6'}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="user-add" theme="outlined" />老师</div>
+              <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="user-add" theme="outlined" />老师</div>
             </Col>
             <Col span={6} style={{borderBottom: "1px solid "}}>
               <div style={{fontSize: '1rem'}} >
-                {teacher_name + " " + assistant_name}
+                {teacher_name + " " + (assistant_name || "")}
               </div> 
             </Col>
           </Row>
 
-          <div style={{marginTop: "3rem", fontSize: "1.5rem", textAlign: "center"}}>
+          <div style={{display: award_count ? "inline" : "none", marginTop: "3rem", fontSize: "1.5rem", textAlign: "center"}}>
             <div>
-              <span style={{marginRight: "0.5rem"}}>本节课成就</span>
+              <span style={{marginRight: "0.5rem"}}>本节课奖励成就</span>
+            </div>        
+            <div style={{fontSize: "1.5rem"}}>
+              <IconFont type="icon-zuanshi-copy" />
+              <span style={{marginLeft: "0.5rem"}}>x {award_count}</span>
             </div>
-        
-            <div>
-              <Icon type="star" style={{fontSize: "1.5rem"}}/>
-              <span style={{marginLeft: "0.5rem", fontSize: "1.5rem"}}>x 5</span>
-            </div>
-            <div style={{fontSize: "1rem"}}>领先53.2%的学生</div>
+            <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}>
+              超越53.2%学生
+            </div>            
           </div>
 
           {this.renderKpComment()}
@@ -212,5 +208,6 @@ export default connect(state => {
 
   return { 
     lesson: lesson_data.lesson,
+    lesson_student: lesson_data.lesson_student,
   }
 }, action)(LessonViewModal);
