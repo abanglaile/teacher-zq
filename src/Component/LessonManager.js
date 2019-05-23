@@ -39,7 +39,7 @@ class LessonManager extends React.Component{
           select_student: [],
           start_time: start_time,
           range_time: [],
-          end_time: null,
+          end_time: undefined,
           group_id: undefined,
           room_id: undefined,
           course_label: undefined,
@@ -303,7 +303,7 @@ class LessonManager extends React.Component{
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
                   placeholder={"开始时间"}
-                  onChange={(value) => this.setState({start_time: value})}
+                  onChange={(value,dateString) => {console.log('value:',value);console.log('dateString:',dateString);this.setState({start_time: value})}}
                 /> 
               </Form.Item>
             </Col>
@@ -371,8 +371,8 @@ class LessonManager extends React.Component{
             <Col span={24} style={{ textAlign: 'right' }}>
               <Button type="primary" htmlType="submit" onClick={() => this.props.getTeacherLesson(teacher_id, {
                 select_teacher:query_select_teacher, 
-                start_time:start_time, 
-                end_time:end_time, 
+                start_time:start_time ? start_time.format("YYYY-MM-DD HH:mm") : null, 
+                end_time:end_time ? end_time.format("YYYY-MM-DD HH:mm") : null, 
                 group_id:query_group_id,
                 course_label:query_course_label, 
                 label_id:query_label_id,

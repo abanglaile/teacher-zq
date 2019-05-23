@@ -773,7 +773,7 @@ class LessonViewModal extends React.Component{
               <div style={{fontSize: '1rem', cursor: 'pointer'}} 
                   onClick={e => {
                     this.props.editLesson('range_edit', true);
-                    // this.setState({start_time: start_time, end_time: end_time});
+                    this.setState({start_time: start_time, end_time: end_time});
                   }}>
                 {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div>

@@ -281,7 +281,7 @@ class TaskManager extends React.Component{
                     <Button type="primary" onClick={this.handleSearch(selectedKeys, confirm)}>Search</Button>
                     <Button onClick={this.handleReset(clearFilters)}>Reset</Button>
                 </div>
-                    ),
+            ),
             filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
             onFilter: (value, record) => {
                 var indexs = record.source_name.indexOf(value);
