@@ -857,7 +857,8 @@ class LessonViewModal extends React.Component{
 
     handleKpComment(lesson_id){
       const {kpid, kpname, kp_comment_content, side } = this.state;
-      const {select_student} = this.props;
+      const {teacher_lesson, lesson_index, select_student } = this.props;
+      const {lesson_student} = teacher_lesson[lesson_index];
 
       this.props.addLessonKpComment(lesson_id, select_student, {
           kpname: kpname,
@@ -867,7 +868,8 @@ class LessonViewModal extends React.Component{
           side: side,
           teacher_id: this.props.teacher_id,
         }, () => {
-          this.props.selectLessonStudent({select_id: [], select_name: []})
+          if(lesson_student.length > 1)
+            this.props.selectLessonStudent({select_id: [], select_name: []})
           this.setState({
             kpid: undefined,
             side: 0,
@@ -1003,8 +1005,10 @@ class LessonViewModal extends React.Component{
     }
 
     handlePfComment(lesson_id){
+      const {teacher_lesson, lesson_index, select_student } = this.props;
       const {label_id, label_name, pf_comment_content} = this.state;
-      const {select_student} = this.props;
+      const {lesson_student} = teacher_lesson[lesson_index];
+
       this.props.addLessonPfComment(lesson_id, select_student, {
           label_name: label_name,
           label_id: (label_id | 0) == label_id ? label_id : undefined, 
@@ -1012,7 +1016,8 @@ class LessonViewModal extends React.Component{
           comment_source: lesson_id,
           teacher_id: this.props.teacher_id,
         }, () => {
-          this.props.selectLessonStudent({select_id: [], select_name: []});
+          if(lesson_student.length > 1)
+            this.props.selectLessonStudent({select_id: [], select_name: []});
           this.setState({
             label_id : undefined,
             pf_comment_content : null,
