@@ -20,6 +20,10 @@ const RadioGroup = Radio.Group;
 
 const { TextArea } = Input;
 
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_1198891_hl08ti6xmbi.js',
+});
+
 const IconText = ({ type, text }) => (
   <span>
     <Icon type={type} style={{ marginRight: 8 }} />
@@ -33,7 +37,6 @@ class LessonViewModal extends React.Component{
 
         this.state={
           kp_tags: [],
-          select_student: {},
           remark_page: [],
           task_type: 0,
           side : 0,
@@ -713,7 +716,7 @@ class LessonViewModal extends React.Component{
       return(
         <div>
         <Row  gutter={2} type="flex" justify="space-between" align="middle">
-          <Col span={18}>
+          <Col span={16}>
             <div>        
               <div style={{fontWeight: 'bold', fontSize: '1.3rem'}} >
                 {this.renderCourseAvatar(course_label)}
@@ -721,11 +724,15 @@ class LessonViewModal extends React.Component{
               </div>
             </div>
           </Col>
-          <Col span={4}>
+          <Col span={6}>
             {is_sign ? 
-              <Button 
-                onClick={(e) => window.open('http://localhost:8000/teacher-zq/lesson_print/' + lesson_id)} 
-                size={"small"}>打印</Button>
+              <div>
+                <Button
+                  style={{marginRight: "0.5rem"}} 
+                  onClick={(e) => window.open('http://localhost:8000/teacher-zq/lesson_print/' + lesson_id)} 
+                  size={"small"}>打印</Button>
+                {this.renderLessonAward()}
+              </div>
               :
               <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id)} title="是否签到课程？" okText="确定" cancelText="取消">
                 <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
@@ -859,11 +866,11 @@ class LessonViewModal extends React.Component{
           side: side,
           teacher_id: this.props.teacher_id,
         }, () => {
+          this.props.selectLessonStudent({select_id: [], select_name: []})
           this.setState({
             kpid: undefined,
             side: 0,
             kp_comment_content: null,
-            select_student: {select_id: undefined, select_name: null},
           });
         }
       );
@@ -871,17 +878,17 @@ class LessonViewModal extends React.Component{
     }
 
     renderKpComment(){
-      const {teacher_lesson, lesson_index, search_kp_label, lesson_edit } = this.props;
+      const {teacher_lesson, lesson_index, search_kp_label, lesson_edit, select_student } = this.props;
       let {kp_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let {kp_comment_edit} = lesson_edit;
-      let {select_student, kpid, kpname, kp_comment_content, side } = this.state;
+      let { kpid, kpname, kp_comment_content, side } = this.state;
       const kp_options = search_kp_label ? search_kp_label.map(d => <Option key={d.kpid}>{d.kpname}</Option>) : null;
       console.log(select_student);
 
-      if((lesson_student || []).length == 1){       
-        select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
-        this.state.select_student = select_student;
-      }
+      // if((lesson_student || []).length == 1){       
+      //   select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
+      //   this.state.select_student = select_student;
+      // }
       const [p_comment, n_comment] = (kp_comment || []).reduce(
         ([p_comment, n_comment], item, index) => {
           const itemDom = kp_comment_edit[index] ?
@@ -957,10 +964,10 @@ class LessonViewModal extends React.Component{
               mode="multiple"
               placeholder={"选择点评学生"}
               value={select_student.select_id}
-              onChange={(value, option) => this.setState({select_student: {
+              onChange={(value, option) => this.props.selectLessonStudent({
                 select_id: value, 
                 select_name: option.map(item => item.props.children)
-              }})}
+              })}
               style={{ width: '12rem', marginRight: '1rem' }}
             >
               {
@@ -1002,26 +1009,28 @@ class LessonViewModal extends React.Component{
           pf_comment_content: pf_comment_content,
           comment_source: lesson_id,
           teacher_id: this.props.teacher_id,
-        }, () => this.setState({
+        }, () => {
+          this.props.selectLessonStudent({select_id: [], select_name: []});
+          this.setState({
             label_id : undefined,
             pf_comment_content : null,
-            select_student :{select_id: undefined, select_name: null},
           })
+        }
       );      
     }
 
     renderPfComment(){
-      const {teacher_lesson, lesson_index, search_pf_label, lesson_edit } = this.props;
+      const {teacher_lesson, lesson_index, search_pf_label, lesson_edit, select_student } = this.props;
       let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let {pf_comment_edit} = lesson_edit;
-      let {select_student, label_id, label_name, pf_comment_content} = this.state;
+      let { label_id, label_name, pf_comment_content} = this.state;
       const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.label_id}>{d.label_name}</Option>) : null;
       pf_comment = pf_comment ? pf_comment : [];
 
-      if((lesson_student || []).length == 1){
-        select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
-        this.state.select_student = select_student;
-      }
+      // if((lesson_student || []).length == 1){
+      //   select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
+      //   this.state.select_student = select_student;
+      // }
 
       const pf_comment_dom = (pf_comment || []).map((item, index) => (
           pf_comment_edit[index] ?
@@ -1090,10 +1099,10 @@ class LessonViewModal extends React.Component{
               mode="multiple"
               placeholder={"选择点评学生"}
               value={select_student.select_id}
-              onChange={(value, option) => this.setState({select_student: {
+              onChange={(value, option) => this.props.selectLessonStudent({
                 select_id: value, 
                 select_name: option.map(item => item.props.children)
-              }})}
+              })}
               style={{ width: '12rem', marginRight: '1rem' }}
             >
               {
@@ -1116,39 +1125,41 @@ class LessonViewModal extends React.Component{
       )
     }
 
-    renderGeneralComment(){
-      const {teacher_lesson, lesson_index, reward} = this.props;
-      var { reward_disable } = this.state;
-      let {lesson_student, lesson_id} = teacher_lesson[lesson_index];
-      // console.log("reward:",JSON.stringify(reward));
-
-      var rateDom = (lesson_student || []).map((item, index) => (
-        <Row type="flex" justify="center" align="middle">
-          <Col span={4}>{item.realname}</Col>
-          <Col span={12}>
-            <Rate
-              count = '8'  
-              disabled = {reward_disable}
-              character={<Icon type="heart" />}
-              onChange={(value) => {this.props.setStuReward(index,value)}}
-              defaultValue={0} />
-          </Col>
-        </Row>
-      ));
-
-      return(
-        <div style={{minHeight:'150px'}}>
-          <div style={{marginTop:'20px'}}>
-            {rateDom}
+    renderLessonAward(){
+      let {teacher_lesson, lesson_index} = this.props;
+      let {lesson_id, lesson_award, acc_award, lesson_student} = teacher_lesson[lesson_index];
+      
+      const isAward = lesson_award && lesson_award.length ? true : false;
+      const content = ((isAward ? lesson_award : acc_award) || []).map(item => 
+          <div style={{fontSize: "0.9rem"}}>
+            <a style={{marginRight: "1rem"}}>{item.realname}</a>
+            <IconFont type="icon-zuanshi1" />
+            <span style={{marginLeft: "0.2rem"}}>x {item.award_count * 10}</span>
           </div>
-          <Button 
-            disabled={reward_disable}
-            style={{float:"right",marginRight:'50px',marginTop:'20px'}}
-            type="primary" 
-            // onClick={() => {this.props.submitReward(reward, lesson_id);this.setState({reward_disable:'true'})}}
-            onClick={() => {this.setState({reward_disable:'true'})}}
-          >发布</Button>
-        </div>
+      )
+
+      const message = <div><span>每名学生均能获得基础奖励 </span><IconFont type="icon-zuanshi1" />
+              <span style={{marginLeft: "0.2rem"}}>x 5</span></div>
+      
+      return(
+        <Popover trigger="click" 
+          content={
+            <div>              
+              {content}
+              <Alert style={{marginTop: "1rem"}} message={message} type="info" showIcon />
+            </div>
+          } 
+          title={
+            <div style={{marginTop: "0.2rem", marginBottom: "0.2rem"}}>
+              <span style={{fontWeight: "bold"}}>额外奖励</span>
+              <Button type="primary" style={{marginLeft: "0.8rem", display: isAward ? "none" : "inline"}} 
+                size="small" onClick={() => this.props.addLessonAward(lesson_id, acc_award, lesson_student)}>发布</Button>
+            </div>}>
+          <Button size="small" onClick={() => {
+            if(!isAward){ 
+              this.props.accLessonAward(lesson_id);
+            }}}>奖励</Button>
+        </Popover>
       )
     }
 
@@ -1165,7 +1176,7 @@ class LessonViewModal extends React.Component{
               side: 0,
               kp_comment_content: null,
           })
-          this.state.select_student =  {select_id: [], select_name: []};
+          this.props.selectLessonStudent({select_id: [], select_name: []});
         }}              
         footer={null}
         visible={this.state.visible} width={700} >
@@ -1174,7 +1185,6 @@ class LessonViewModal extends React.Component{
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
             <TabPane tab="知识点点评" disabled={!is_sign} key="3">{this.renderKpComment()}</TabPane>
             <TabPane tab="课堂表现" disabled={!is_sign} key="4">{this.renderPfComment()}</TabPane>
-            <TabPane tab="成就奖励" disabled={!is_sign} key="5">{this.renderGeneralComment()}</TabPane>
           </Tabs> 
       </Modal>
       )
@@ -1187,7 +1197,7 @@ export default connect(state => {
   const lesson_data = state.lessonData.toJS();
   const group_data = state.classGroupData.toJS();
   const personal_data = state.personalData.toJS();
-  const {lesson_index, lesson_edit, teacher_lesson, reward} = lesson_data;
+  const {lesson_index, lesson_edit, teacher_lesson, select_student, reward} = lesson_data;
   const {classgroup_data} = group_data;
   const {teacher_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
   const default_teacher_lesson = [{
@@ -1202,9 +1212,9 @@ export default connect(state => {
     isFetching: state.fetchTestsData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
     teacher_lesson: teacher_lesson[0] ? teacher_lesson : default_teacher_lesson,
-    reward: reward,
     lesson_index: lesson_index,
     lesson_edit: lesson_edit,
+    select_student: select_student,
     teacher_option: teacher_option,
     teacher_link_option: teacher_link_option,
     search_teacher_task: search_teacher_task,

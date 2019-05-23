@@ -11,7 +11,9 @@ import moment from 'moment';
 const {Option, OptGroup}  = Select;
 
 const Item = List.Item;
-
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_1198891_hl08ti6xmbi.js',
+});
 
 class LessonViewModal extends React.Component{
     constructor(props){
@@ -104,19 +106,21 @@ class LessonViewModal extends React.Component{
 
     render(){
       const {lesson, lesson_student} = this.props;
-      let {pf_comment, lesson_content, homework, teacher_name, assistant_name, start_time, end_time, group_name, course_label, label_name} = lesson;
+      let {pf_comment, lesson_content, award_count, homework, teacher_name, assistant_name, start_time, end_time, group_name, course_label, label_name} = lesson;
       const item_title = ["课堂学习", "知识讲解", "课堂练习"];
       const {student_name, lesson_id} = this.state;
-      console.log(lesson_student);
+
       return(
         <div className="print" style={{marginLeft: "60px", marginRight: "60px"}}>           
-          <Select className = "noprint" style={{ width: 120, marginBottom: "1rem" }} placeholder="选择学生"
-            onSelect={(value, option) => {
-              this.setState({student_name: option.props.children});
-              this.props.getStudentOneLesson(lesson_id, value);
-            }}>
-            {(lesson_student || []).map(item => <Option value={item.student_id}>{item.realname}</Option>)}
-          </Select>          
+          <div className = "noprint">
+            <Select style={{ width: 120, marginBottom: "1rem" }} placeholder="选择学生"
+              onSelect={(value, option) => {
+                this.setState({student_name: option.props.children});
+                this.props.getStudentOneLesson(lesson_id, value);
+              }}>
+              {(lesson_student || []).map(item => <Option value={item.student_id}>{item.realname}</Option>)}
+            </Select> 
+          </div>         
           <div>
             <span style={{fontSize: "3rem"}}>{student_name} 课堂报告</span>
             <span style={{marginLeft: "0.5rem", fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}>/喜悦教育 最专业的私人订制课程</span>
@@ -145,19 +149,17 @@ class LessonViewModal extends React.Component{
             </Col>
           </Row>
 
-          <div style={{marginTop: "3rem", fontSize: "1.5rem", textAlign: "center"}}>
+          <div style={{display: award_count ? "inline" : "none", marginTop: "3rem", fontSize: "1.5rem", textAlign: "center"}}>
             <div>
               <span style={{marginRight: "0.5rem"}}>本节课奖励成就</span>
-            </div>
-        
-            <div>
-              <Icon type="star" style={{fontSize: "1.5rem"}}/>
-              <span style={{marginLeft: "0.5rem", fontSize: "1.5rem"}}>x 5</span>
+            </div>        
+            <div style={{fontSize: "1.5rem"}}>
+              <IconFont type="icon-zuanshi-copy" />
+              <span style={{marginLeft: "0.5rem"}}>x {award_count}</span>
             </div>
             <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}>
               超越53.2%学生
-            </div>
-            
+            </div>            
           </div>
 
           {this.renderKpComment()}

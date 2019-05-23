@@ -887,15 +887,32 @@ export const getOneLesson = (lesson_id, index) => {
             }
         })
         .then(function (response) {
+            const lesson = response.data;
+            if(lesson.lesson_student && lesson.lesson_student.length == 1){
+                dispatch({
+                    type: 'SELECT_LESSON_STUDENT',
+                    select_student: {
+                        select_id: [lesson.lesson_student[0].student_id], 
+                        select_name: [lesson.lesson_student[0].realname]
+                    },
+                })
+            }
             dispatch({
                 type : 'GET_ONE_LESSON',
-                lesson: response.data,
+                lesson: lesson,
                 index: index,
             });
         })
         .catch(function (error) {
             console.log(error);
         });
+    }
+}
+
+export const selectLessonStudent = (select_student) => {    
+    return {
+        type: 'SELECT_LESSON_STUDENT',
+        select_student: select_student,
     }
 }
 
@@ -1200,6 +1217,42 @@ export const signLesson = (lesson_id) => {
     }
 }
 
+export const accLessonAward = (lesson_id) => {
+    let url = target + "/accLessonAward";
+    return dispatch => {
+        return axios.get(url, {
+            params:{
+               lesson_id
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type: 'ACC_LESSON_AWARD',
+                acc_award: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const addLessonAward = (leeson_id) => {
+    let url = target + "/addLessonAward";
+    return dispatch => {
+        return axios.post(url, {leeson_id})
+        .then(function (response) {
+            dispatch({
+                type: 'ADD_LESSON_AWARD',
+                lesson_award: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 // export const updateLessonCourse = (lesson_id, course_id) => {
 //     let url = target + "/updateLessonCourse";
 //     return dispatch => {
@@ -1486,13 +1539,5 @@ export function editKpComment(index, value) {
     index,
     value,
   }
-}
-
-export function setStuReward(index, value) {
-    return {
-        type: 'SET_STU_REWARD',
-        index,
-        value,
-    }
 }
   
