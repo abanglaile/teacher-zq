@@ -9,7 +9,8 @@ const defaulatAuthData = Immutable.fromJS({
         username: 'fei',
         // userid: '3044f0f040ba11e9ad2ca1607a4b5d90',
         // userid: '1927560040d911e9ad2ca1607a4b5d90',
-        userid: 1,
+        userid:'148d2f00021011e98175d1610e288342',
+        // userid: 1,
         isAuthenticated: false,
         isAuthenticating: false,
         statusText: null
