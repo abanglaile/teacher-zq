@@ -42,10 +42,10 @@ class LessonViewModal extends React.Component{
               <Item.Meta
                 title={
                   <div>
-                    <span style={{marginRight: "0.7rem", fontSize: "1rem", fontWeight: "bold"}}>#{item.kpname}#</span>
+                    <span style={{fontSize: "18px", fontWeight: "bold"}}>#{item.kpname}#</span>
                   </div>
                 }
-                description={<span style={{fontSize: "1rem"}}>{item.kp_comment_content}</span>}
+                description={<span style={{fontSize: "18px"}}>{item.kp_comment_content}</span>}
               /> 
             </List.Item>
 
@@ -55,15 +55,15 @@ class LessonViewModal extends React.Component{
 
       return(
         <div>
-          <div style={{marginTop: "4rem", fontSize: "1.8rem", fontWeight: "blod", borderBottom: "2px solid "}}>知识点点评</div>
-          <Alert message={<span style={{fontSize: "1.2rem"}}>表扬进步</span>} type="success" style={{background: "#FFF", width: "90%", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
+          <div style={{marginTop: "72px", fontSize: "32.4px", fontWeight: "blod", borderBottom: "2px solid "}}>知识点点评</div>
+          <Alert message={<span style={{fontSize: "21.6px"}}>表扬进步</span>} type="success" style={{background: "#FFF", width: "94%", marginTop: "18px", marginBottom: "18px"}} icon={<Icon type="like" />} 
             showIcon description={
             <List itemLayout="horizontal">
               {p_comment}
             </List>            
           } />
 
-          <Alert message={<span style={{fontSize: "1.2rem"}}>存在问题</span>} style={{background: "#FFF", width: "95%"}} type="warning" showIcon 
+          <Alert message={<span style={{fontSize: "21.6px"}}>存在问题</span>} style={{background: "#FFF", width: "94%"}} type="warning" showIcon 
             description={
             <List
               itemLayout="horizontal"
@@ -83,18 +83,18 @@ class LessonViewModal extends React.Component{
 
       return(
         <div>          
-          <div style={{marginTop: "4rem", fontSize: "1.8rem", fontWeight: "blod", borderBottom: "2px solid "}}>课堂表现</div>
-          <List style={{width: "90%"}} itemLayout="horizontal">
+          <div style={{marginTop: "72px", fontSize: "32.4px", fontWeight: "blod", borderBottom: "2px solid "}}>课堂表现</div>
+          <List style={{width: "94%"}} itemLayout="horizontal">
             {
               (pf_comment || []).map((item, index) => (
                 <List.Item> 
                   <Item.Meta
                     title={
                       <div>
-                        <span style={{fontSize: "1rem", marginRight: "0.7rem", fontWeight: "bold"}}>#{item.label_name}#</span>
+                        <span style={{fontSize: "18px", fontWeight: "bold"}}>#{item.label_name}#</span>
                       </div>
                     }
-                    description={<span style={{fontSize: "1rem"}}>{item.pf_comment_content}</span>}
+                    description={<span style={{fontSize: "18px"}}>{item.pf_comment_content}</span>}
                   /> 
                 </List.Item>
               ))
@@ -122,17 +122,17 @@ class LessonViewModal extends React.Component{
             </Select> 
           </div>         
           <div>
-            <span style={{fontSize: "3rem"}}>{student_name} 课堂报告</span>
-            <span style={{marginLeft: "0.5rem", fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}>/喜悦教育 最专业的私人订制课程</span>
+            <span style={{fontSize: "54px"}}>{student_name} 课堂报告</span>
+            <span style={{marginLeft: "9px", fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}>/喜悦教育 最专业的私人订制课程</span>
           </div>
-          <div style={{fontSize: "1.5rem", color: '#a6a6a6'}}>{group_name + ' ' + label_name}</div>
+          <div style={{fontSize: "27px", color: '#a6a6a6'}}>{group_name + ' ' + label_name}</div>
           
           <Row justify="end" type="flex" style={{ marginTop: 20}} gutter={3} align="right">
             <Col span={2} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="calendar" theme="outlined" />时间</div>
+              <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="calendar" theme="outlined" />时间</div>
             </Col>
             <Col span={6} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: '1rem'}} >
+              <div style={{fontSize: '18px'}} >
                 {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div> 
             </Col>
@@ -140,56 +140,56 @@ class LessonViewModal extends React.Component{
 
           <Row justify="end" type="flex" style={{ marginTop: 20}} gutter={3} align="right">
             <Col span={2} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="user-add" theme="outlined" />老师</div>
+              <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="user-add" theme="outlined" />老师</div>
             </Col>
             <Col span={6} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: '1rem'}} >
+              <div style={{fontSize: '18px'}} >
                 {teacher_name + " " + (assistant_name || "")}
               </div> 
             </Col>
           </Row>
 
-          <div style={{display: award_count ? "inline" : "none", marginTop: "3rem", fontSize: "1.5rem", textAlign: "center"}}>
+          <div style={{display: award_count ? "inline" : "none", marginTop: "54px", fontSize: "27px", textAlign: "center"}}>
             <div>
-              <span style={{marginRight: "0.5rem"}}>本节课奖励成就</span>
+              <span>本节课成就奖励</span>
             </div>        
-            <div style={{fontSize: "1.5rem"}}>
+            <div style={{fontSize: "27px"}}>
               <IconFont type="icon-zuanshi-copy" />
-              <span style={{marginLeft: "0.5rem"}}>x {award_count}</span>
+              <span style={{marginLeft: "9px"}}>x {award_count}</span>
             </div>
-            <div style={{fontSize: "1rem", color: "rgba(0, 0, 0, 0.45)"}}>
+            <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}>
               超越53.2%学生
             </div>            
           </div>
 
           {this.renderKpComment()}
           {this.renderPfComment()}
-          <div style={{marginTop: "3rem", fontSize: "1.8rem", fontWeight: "blod", borderBottom: "2px solid "}}>课堂内容</div>
+          <div style={{marginTop: "54px", fontSize: "32.4px", fontWeight: "blod", borderBottom: "2px solid "}}>课堂内容</div>
           <List split={false} size={"small"}>
               {(lesson_content || []).map((item, i) => 
                 <Item>
                   <List.Item.Meta
-                    description={<div style={{color: "rgba(0, 0, 0, 0.65)", fontSize: "1rem"}}><span style={{
-                      width: "5rem", 
+                    description={<div style={{color: "rgba(0, 0, 0, 0.65)", fontSize: "18px"}}><span style={{
+                      width: "90px", 
                       fontWeight: "bold",
                       textAlign: "right", 
-                      marginRight: "1rem", 
-                      paddingRight: "1rem", 
-                      borderRight: "2px solid #D3D3D3"
+                      marginRight: "18px", 
+                      paddingRight: "18px", 
+                      borderRight: "1px solid rgba(0, 0, 0, 0.65)"
                     }}>{item_title[item.content_type]}</span>
                     <span>{item.content}</span></div>}
                   />                  
                 </Item>
               )}
           </List>
-          <div style={{marginTop: "3rem", fontSize: "1.8rem", fontWeight: "blod", borderBottom: "2px solid "}}>课后作业</div>
+          <div style={{marginTop: "54px", fontSize: "32.4px", fontWeight: "blod", borderBottom: "2px solid "}}>课后作业</div>
           <List split={false} size={"small"}>
             {(homework || []).map((item, index) => {
               const remark_str = item.type ? item.remark : JSON.parse(item.remark).map(item => 'P' + item).join(', ')
               return(
-                <Item style={{fontSize: "1rem"}}>
+                <Item style={{fontSize: "18px"}}>
                   <span>{index + 1 + "."}</span>
-                  <span style={{ marginLeft: "0.5rem", marginRight: "1rem"}}>{item.source_name}</span>
+                  <span style={{ marginLeft: "9px", marginRight: "9px"}}>{item.source_name}</span>
                   <span>{remark_str}</span>                       
                 </Item>
               )
