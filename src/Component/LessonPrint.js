@@ -56,7 +56,7 @@ class LessonViewModal extends React.Component{
       return(
         <div>
           <div style={{marginTop: "4rem", fontSize: "1.8rem", fontWeight: "blod", borderBottom: "2px solid "}}>知识点点评</div>
-          <Alert message={<span style={{fontSize: "1.2rem"}}>表扬进步</span>} type="success" style={{background: "#FFF", width: "95%", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
+          <Alert message={<span style={{fontSize: "1.2rem"}}>表扬进步</span>} type="success" style={{background: "#FFF", width: "90%", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
             showIcon description={
             <List itemLayout="horizontal">
               {p_comment}
@@ -84,7 +84,7 @@ class LessonViewModal extends React.Component{
       return(
         <div>          
           <div style={{marginTop: "4rem", fontSize: "1.8rem", fontWeight: "blod", borderBottom: "2px solid "}}>课堂表现</div>
-          <List itemLayout="horizontal">
+          <List style={{width: "90%"}} itemLayout="horizontal">
             {
               (pf_comment || []).map((item, index) => (
                 <List.Item> 
