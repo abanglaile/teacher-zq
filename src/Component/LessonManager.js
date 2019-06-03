@@ -159,6 +159,7 @@ class LessonManager extends React.Component{
             <Select
               placeholder="选择助教老师"
               optionFilterProp="children"
+              allowClear={true}
               style={{ width: 200 }}
               onChange={(value) => this.setState({select_assistant: value})}
             >
