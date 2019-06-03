@@ -127,22 +127,22 @@ class LessonViewModal extends React.Component{
           </div>
           <div style={{fontSize: "27px", color: '#a6a6a6'}}>{group_name + ' ' + label_name}</div>
           
-          <Row justify="end" type="flex" style={{ marginTop: 20}} gutter={3} align="right">
+          <Row justify="end" type="flex" style={{ marginTop: 20}} align="right">
             <Col span={2} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="calendar" theme="outlined" />时间</div>
+              <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: "10px"}} type="calendar" theme="outlined" />时间</div>
             </Col>
-            <Col span={6} style={{borderBottom: "1px solid "}}>
+            <Col span={7} style={{borderBottom: "1px solid "}}>
               <div style={{fontSize: '18px'}} >
                 {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div> 
             </Col>
           </Row>
 
-          <Row justify="end" type="flex" style={{ marginTop: 20}} gutter={3} align="right">
+          <Row justify="end" type="flex" style={{ marginTop: 20}} align="right">
             <Col span={2} style={{borderBottom: "1px solid "}}>
-              <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: 10}} type="user-add" theme="outlined" />老师</div>
+              <div style={{fontSize: "18px", color: "rgba(0, 0, 0, 0.45)"}}><Icon style={{color: '#a6a6a6', marginRight: "10px"}} type="user-add" theme="outlined" />老师</div>
             </Col>
-            <Col span={6} style={{borderBottom: "1px solid "}}>
+            <Col span={7} style={{borderBottom: "1px solid "}}>
               <div style={{fontSize: '18px'}} >
                 {teacher_name + " " + (assistant_name || "")}
               </div> 

@@ -31,8 +31,8 @@ const component = (component) => {
 export default (
     <Route path='teacher-zq'>
 
-      {/* <Route path="root" component={requireAuthentication(App)}> */}
-      <Route path="root" component={App}>
+      <Route path="root" component={requireAuthentication(App)}> 
+      
         <IndexRoute component={TestCenter} />
         
         <Route path="testcenter" component={TestCenter}/>
