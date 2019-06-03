@@ -729,7 +729,8 @@ class LessonViewModal extends React.Component{
               <div>
                 <Button
                   style={{marginRight: "0.5rem"}} 
-                  onClick={(e) => window.open('http://localhost:8000/teacher-zq/lesson_print/' + lesson_id)} 
+                  onClick={(e) => window.open('http://www.zhiqiu.pro/teacher-zq/lesson_print/' + lesson_id)} 
+                  // onClick={(e) => window.open('http://localhost:8000/teacher-zq/lesson_print/' + lesson_id)} 
                   size={"small"}>打印</Button>
                 {this.renderLessonAward()}
               </div>
