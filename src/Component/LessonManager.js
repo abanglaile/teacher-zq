@@ -80,14 +80,18 @@ class LessonManager extends React.Component{
         end_time : range_time[1],
       };
       if(group_id && room_id && label_id && select_teacher && range_time[0]){
-        this.props.addNewLesson(new_lesson, teacher_id);
-        this.setState({
-          visible: false,
-        });
+        var ti = moment(range_time[1]).diff(moment(range_time[0]),'minutes');
+        if(ti > 300){
+          message.warning('课程时间设置过长！');
+        }else{
+          this.props.addNewLesson(new_lesson, teacher_id);
+          this.setState({
+            visible: false,
+          });
+        }
       }else{
         message.warning('请确认信息是否填写完整！');
       }
-      
     }
 
     onGroupChange(value){
@@ -169,6 +173,9 @@ class LessonManager extends React.Component{
 
           <div style={{marginTop: 15}}>
             <RangePicker
+              ranges={{
+                Today: [moment(), moment()],
+              }}
               locale={locale}
               showTime={{ format: 'HH:mm' }}
               format="YYYY-MM-DD HH:mm"

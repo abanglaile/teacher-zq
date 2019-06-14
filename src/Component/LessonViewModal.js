@@ -190,6 +190,10 @@ class LessonViewModal extends React.Component{
       }
     }
 
+    handleClose = removedTag => {
+      var kp_tags = this.state.kp_tags.filter(item => item !== removedTag);
+      this.setState({ kp_tags, content: kp_tags.map(x => x.kpname).join("，") },()=>{console.log("kp_tags:",kp_tags)});
+    };
 
     renderNewContent(){
       const {teacher_lesson, lesson_index, lesson_edit, test_option, search_kp_label, teacher_id, search_teacher_task} = this.props;
@@ -237,10 +241,7 @@ class LessonViewModal extends React.Component{
           edit_dom = 
             <div>
               {kp_tags.map((tag, index) => 
-                  <Tag key={tag.kpid} closable afterClose={(removedTag) => {
-                    kp_tags = this.state.kp_tags.filter(item => item.kpid !== removedTag);
-                    this.setState({ kp_tags, content: kp_tags.map(x => x.kpname).join("，") });
-                  }}>
+                  <Tag key={tag.kpid} closable onClose={() => this.handleClose(tag)}>
                     {tag.kpname}
                   </Tag>
                 )
@@ -549,6 +550,11 @@ class LessonViewModal extends React.Component{
       });
     }
 
+    handleSecClose = removedTag => {
+      const tags = remark_page.filter(tag => tag !== removedTag);
+      this.setState({ remark_page: tags });
+    };
+
     renderTaskSub(){
       let {source_type, task_type, remark, remark_page, page_input_visible} = this.state;
       //非教材类
@@ -577,10 +583,7 @@ class LessonViewModal extends React.Component{
             <Col span={22}>
             {
               remark_page.map((tag, index) => 
-                  <Tag key={tag} closable afterClose={(removedTag) => {
-                    const tags = remark_page.filter(tag => tag !== removedTag);
-                    this.setState({ remark_page: tags });
-                  }}>
+                  <Tag key={tag} closable onClose={() => this.handleSecClose(tag)}>
                     {'P ' + tag}
                   </Tag>
                 )
@@ -1220,7 +1223,7 @@ export default connect(state => {
     isFetching: state.fetchTestsData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
     teacher_lesson: teacher_lesson[0] ? teacher_lesson : default_teacher_lesson,
-    lesson_index: lesson_index,
+    lesson_index: teacher_lesson[0] ? lesson_index : 0,
     lesson_edit: lesson_edit,
     select_student: select_student,
     teacher_option: teacher_option,
