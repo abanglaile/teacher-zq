@@ -20,7 +20,9 @@ const defaultTasksData = Immutable.fromJS({
 });
 	
 const defaultStudentData = Immutable.fromJS({//学生信息
-	student_info : {}, //学生基本信息
+    student_info : {}, //学生基本信息
+    course_option: [],//学生所报课程
+    stu_pfcomment_list : [], //学生表现
 	capatity : [], //综合能力数据
 	ladder : [], //天梯分历史数据
 	used_data : [], //常用知识点数据
@@ -173,6 +175,8 @@ export const exerciseData = (state = defaultExerciseData, action = {}) => {
 
 export const classGroupData = (state = defaultClassGroupData, action = {}) => {
     switch(action.type){
+        case 'GET_STUDENT_LIST':
+            return state.set('student_list', Immutable.fromJS(action.student_list));
         case 'GET_CLASSGROUP_START':
             return state.set('isFetching', true);
         case 'GET_SCHOOL_SUCESS':
@@ -247,7 +251,13 @@ export const basketDataMonitor = (state = defaultbasketData, action = {}) => {
 export const studentData = (state = defaultStudentData , action = {}) => {
     switch(action.type){
         case 'GET_STU_INFO_SUCESS':
-			return state.set('student_info', Immutable.fromJS(action.json));
+            return state.set('student_info', Immutable.fromJS(action.json));
+        case 'GET_STU_COURSE':
+            return state.set('course_option', Immutable.fromJS(action.json));
+        case 'GET_STU_PFCOMMENT_LIST':
+            return state.set('stu_pfcomment_list', Immutable.fromJS(action.json));
+        case 'GET_STU_KPCOMMENT_LIST':
+            return state.set('stu_kpcomment_list', Immutable.fromJS(action.json));
 		case 'GET_STU_ABILITY_SUCESS':
 			return state.set('capatity', Immutable.fromJS(action.json));
 		case 'GET_STU_LADDER_SUCESS':

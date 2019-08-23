@@ -797,6 +797,84 @@ export const getKpWithScore = (chapter_id, student_id) => {
         });
     }
 }
+/*---------------------------------------学生管理----------------------------------*/
+//获取老师所带的学生的信息
+export const getStudentList = (teacher_id) => {
+    let url = target + "/getStudentList";
+    return dispatch => {
+        return axios.get(url, { 
+            params:{
+                teacher_id,
+        }})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STUDENT_LIST',
+                student_list: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+//获取老师所带的学生的信息
+export const getStuCourse = (student_id) => {
+    let url = target + "/getStuCourse";
+    return dispatch => {
+        return axios.get(url, { 
+            params:{
+                student_id,
+        }})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_COURSE',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+//获取老学生表现信息
+export const getStuPfCommentList = (student_id) => {
+    let url = target + "/getStuPfCommentList";
+    return dispatch => {
+        return axios.get(url, { 
+            params:{
+                student_id,
+        }})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_PFCOMMENT_LIST',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+//获取老学生表现信息
+export const getStuKpCommentList = (student_id,filter_option) => {
+    let url = target + "/getStuKpCommentList";
+    return dispatch => {
+        return axios.post(url, { student_id, filter_option})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_KPCOMMENT_LIST',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 
 // export const getstuEvaluationData= (student_id,test_id) => {
 //     let path = '/getMyTestStepAnalysis'

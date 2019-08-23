@@ -2,7 +2,7 @@ import React from 'react';
 
 import App from '../Component/index.js'
 import TestCenter from '../Component/TestCenter.js'
-import StuManager from '../Component/StuManager.js'
+import StuManager from '../Component/ClassManager.js'
 import LessonManager from '../Component/LessonManager.js'
 import TaskManager from '../Component/TaskManager.js'
 import StuCapacity from '../Component/stu_capacity.js'
@@ -11,6 +11,8 @@ import TestResult from '../Component/TestResult.js'
 import StuEvaluation from '../Component/stuEvaluation.js'
 import TaskResult from '../Component/TaskResult.js'
 import LessonPrint from '../Component/LessonPrint.js'
+import StudentCenter from '../Component/StudentManager.js'
+import StudentInfo from '../Component/StudentInfo.js'
 
 import { Route, IndexRoute } from 'react-router';
 import { requireAuthentication } from '../utils';
@@ -34,14 +36,15 @@ export default (
       <Route path="root" component={requireAuthentication(App)}> 
       {/* <Route path="root" component={App}>  */}
         <IndexRoute component={TestCenter} />
-        
+        <Route path="stu_manager" component={StudentCenter}/>
         <Route path="testcenter" component={TestCenter}/>
-        <Route path="stu_manager" component={StuManager}/>
+        <Route path="class_manager" component={StuManager}/>
         <Route path="lesson-manager" component={LessonManager}/>
         <Route path="task-manager" component={TaskManager}/>
       </Route>
       <Route path="stu_evaluation" component={StuEvaluation}/>
-      <Route path="lesson_print/:lesson_id" component={LessonPrint}/>     
+      <Route path="lesson_print/:lesson_id" component={LessonPrint}/>
+      <Route path="student_info/:id" component={StudentInfo}/>     
       <Route path="stu_capacity/:id" component={StuCapacity}/>
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>

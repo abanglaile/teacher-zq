@@ -49,11 +49,16 @@ class App extends React.Component{
                         defaultOpenKeys={['sub1']}
                         style={{ height: '100%' }}
                       >
-                        <Menu.Item key="sub1"><span><Icon type="bell" />动态</span></Menu.Item>
-                        <Menu.Item key="sub2">
+                        <Menu.Item key="sub1">
                           <div onClick={() => this.props.router.push("/teacher-zq/root/stu_manager")}
                           >
                             学生管理
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item key="sub2">
+                          <div onClick={() => this.props.router.push("/teacher-zq/root/class_manager")}
+                          >
+                            班组管理
                           </div>
                         </Menu.Item>
                         <Menu.Item key="sub3">
