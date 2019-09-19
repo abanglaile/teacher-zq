@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import *as action from '../Action/';
 import { List, Avatar, Icon, Card, Input, Button, Table } from 'antd'
-// import Highlighter from 'react-highlight-words';
+import Highlighter from 'react-highlight-words';
 const { Meta } = Card;
 const { Search } = Input;
 
@@ -85,12 +85,12 @@ class StudentCenter extends React.Component{
             return(
                 <div>
                     <Link to={urlstr}>
-                        {/* <Highlighter
+                        <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[this.state.searchText]}
                             autoEscape
                             textToHighlight={text.toString()}
-                        /> */}
+                        />
                     </Link>
                 </div>
             );
