@@ -103,10 +103,10 @@ class TestCenter extends React.Component{
       for(var j = 0;j<extra.allCheckedNodes.length;j++){
           if(extra.allCheckedNodes[j].children != null){
               for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
-                  keys.push(extra.allCheckedNodes[j].children[i].node.key);
+                  keys.push((extra.allCheckedNodes[j].children[i].node.key).split('-')[0]);
               }
           }else{
-              keys.push(extra.allCheckedNodes[j].node.key);
+              keys.push((extra.allCheckedNodes[j].node.key).split('-')[0]);
           }
       }
       console.log("keys:",keys);
