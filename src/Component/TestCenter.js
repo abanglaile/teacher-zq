@@ -179,7 +179,7 @@ class TestCenter extends React.Component{
               columns = { this.columns } 
               dataSource = { tests }
             /> 
-         </div>   
+        </div> 
       );
     }
 }

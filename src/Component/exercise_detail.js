@@ -70,7 +70,7 @@ class OneExerciseView extends React.Component {
 		if(this.props.exer_data){
 			var {exercise,exercise_sample} = this.props.exer_data;
 			const {correct_rate,kp_rate,stu_false} = this.props.exer_data;
-			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id} = exercise;
+			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id, answer_assist_url} = exercise;
 			var sample;
 
 			if(exercise_sample){
@@ -129,9 +129,30 @@ class OneExerciseView extends React.Component {
 						})
 					);
 					break;
+				case 3:  
+        			answerDom = (  //解答题答案
+						<div className="step_answer">
+							<p className="step_index">答案：&nbsp;</p>
+							{answer.map((item, i) => {
+		        				return(
+		            				<div>
+										<Tex className="step_content" content={item.value} sample={sample}/>
+		            				</div>
+		            			);
+							})}
+						</div>
+        			);
+        			break;
         	}
 
 			var steps = [];
+			if(answer_assist_url && answer_assist_url.indexOf('cdn') > 0){
+				steps.push(
+					<div className="step_frame">
+						<img src={answer_assist_url}/>
+					</div>
+				);
+			}
 			for(var j = 0; j < breakdown.length; j++) {
 				console.log('breakdown[j].content:'+breakdown[j].content);
             	steps.push(
@@ -270,7 +291,7 @@ class OneExercise extends React.Component {
 		const {expand,display,title_img_width, title_img_height} = this.state;
 		if(this.props.exer_data){
 			var {exercise,exercise_sample} = this.props.exer_data;
-			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id} = exercise;
+			var {title, exercise_type, answer, breakdown, title_img_url, title_audio_url, exercise_id, answer_assist_url} = exercise;
 			var sample;
 
 			if(exercise_sample){
@@ -330,8 +351,29 @@ class OneExercise extends React.Component {
 						})
 					);
 					break;
+				case 3:  
+        			answerDom = (  //解答题答案
+						<div className="step_answer">
+							<p className="step_index">答案：&nbsp;</p>
+							{answer.map((item, i) => {
+		        				return(
+		            				<div>
+										<Tex className="step_content" content={item.value} sample={sample}/>
+		            				</div>
+		            			);
+							})}
+						</div>
+        			);
+        			break;
 			}
 			var steps = [];
+			if(answer_assist_url && answer_assist_url.indexOf('cdn') > 0){
+				steps.push(
+					<div className="step_frame">
+						<img src={answer_assist_url}/>
+					</div>
+				);
+			}
 			for(var j = 0; j < breakdown.length; j++) {
             	steps.push(
             	<div key={j} className="step_frame">

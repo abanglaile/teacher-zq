@@ -33,8 +33,8 @@ const component = (component) => {
 export default (
     <Route path='teacher-zq'>
 
-      <Route path="root" component={requireAuthentication(App)}> 
-      {/* <Route path="root" component={App}>  */}
+      {/* <Route path="root" component={requireAuthentication(App)}>  */}
+      <Route path="root" component={App}> 
         <IndexRoute component={TestCenter} />
         <Route path="stu_manager" component={StudentCenter}/>
         <Route path="testcenter" component={TestCenter}/>
@@ -49,5 +49,7 @@ export default (
       <Route path="exerview" component={KpExerciseView}/>
       <Route path="testresult/:id" component={TestResult}/>
       <Route path="task_result/:id" component={TaskResult}/>
+      
     </Route>
+    
 );

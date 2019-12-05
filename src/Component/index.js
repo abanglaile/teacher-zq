@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Row, Col} from 'antd';
-import { Layout, Icon, Menu, Button ,Checkbox} from 'antd';
+import { Layout, Icon, Menu, Button ,Checkbox, ConfigProvider} from 'antd';
 import Styles from '../styles/testCenter.css';
 import {connect} from 'react-redux';
 import *as action from '../Action/';
 import Zq_Header from './ZQ_Header.js';
 import { relative } from 'path';
+import zhTW from 'antd/es/locale/zh_TW';
+import enUS from 'antd/es/locale/en_US';
+// import {ConfigProvider} from 'antd'
 
 const { Header, Footer, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -27,6 +30,7 @@ class App extends React.Component{
 
     render(){
       return(
+        <ConfigProvider locale={zhTW}>
         <div>
             <Layout>
                 <Header style={{background: '#fff',height:'80px'}}>
@@ -91,6 +95,7 @@ class App extends React.Component{
                 </Footer>
             </Layout>
         </div> 
+        </ConfigProvider>
       );
     }
 } 
