@@ -710,7 +710,8 @@ class LessonViewModal extends React.Component{
     }
 
     renderLessonBasic(){
-      const {teacher_option, teacher_link_option, teacher_lesson, lesson_index, lesson_edit} = this.props;
+      const {teacher_option, teacher_link_option, teacher_lesson, lesson_index, lesson_edit, signing} = this.props;
+      console.log("signing",signing);
       const {teacher_edit, assistant_edit} = lesson_edit;
       const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
       const {select_teacher, select_assistant} = this.state;
@@ -738,8 +739,8 @@ class LessonViewModal extends React.Component{
                 {this.renderLessonAward()}
               </div>
               :
-              <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id)} title="是否签到课程？" okText="确定" cancelText="取消">
-                <Badge dot={true}><Button size={"small"}>未签到</Button></Badge>
+              <Popconfirm placement="bottomRight" onConfirm={(e) => this.props.signLesson(lesson_id,this.props.teacher_id)} title="是否签到课程？" okText="确定" cancelText="取消">
+                <Badge dot={true}><Button loading={signing} size={"small"} >未签到</Button></Badge>
               </Popconfirm>
             }
           </Col>
@@ -1209,7 +1210,7 @@ export default connect(state => {
   const lesson_data = state.lessonData.toJS();
   const group_data = state.classGroupData.toJS();
   const personal_data = state.personalData.toJS();
-  const {lesson_index, lesson_edit, teacher_lesson, select_student, reward} = lesson_data;
+  const {lesson_index, lesson_edit, teacher_lesson, select_student, reward, signing} = lesson_data;
   const {classgroup_data} = group_data;
   const {teacher_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
   const default_teacher_lesson = [{
@@ -1225,6 +1226,7 @@ export default connect(state => {
     teacher_id:state.AuthData.get('userid'),
     teacher_lesson: teacher_lesson[0] ? teacher_lesson : default_teacher_lesson,
     lesson_index: teacher_lesson[0] ? lesson_index : 0,
+    signing: signing,
     lesson_edit: lesson_edit,
     select_student: select_student,
     teacher_option: teacher_option,

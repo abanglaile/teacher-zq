@@ -55,6 +55,7 @@ const defaultLessonData = Immutable.fromJS({//课程管理
             homework: [],
             lesson_content: [{content: "abc"}]
         }],
+        signing: false,
         reward: [],
         lesson: {},
         select_student: {},
@@ -306,6 +307,8 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
                 .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);
         case 'SIGN_LESSON':
             return state.setIn(['teacher_lesson', index, 'is_sign'], true);
+        case 'CHANGE_IS_SIGNING':
+            return state.set('signing', action.res);
         case 'SELECT_LESSON_STUDENT': 
             return state.set("select_student", action.select_student);
         case 'ACC_LESSON_AWARD':

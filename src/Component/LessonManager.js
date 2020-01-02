@@ -31,7 +31,7 @@ const IconText = ({ type, text }) => (
 class LessonManager extends React.Component{
     constructor(props) {
         super(props);
-        let start_time = moment().day(-7);;
+        let start_time = moment().day(-7);
         this.state={
           kp_tags: [],
           //select_teacher: undefined,

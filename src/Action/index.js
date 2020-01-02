@@ -1280,16 +1280,29 @@ export const updateLessonAssistant = (lesson_id, assistant_id) => {
     }
 }
 
-export const signLesson = (lesson_id) => {
+export const signLesson = (lesson_id, teacher_id) => {
     let url = target + "/signLesson";
     return dispatch => {
+        dispatch({
+            type: 'CHANGE_IS_SIGNING',
+            res: true,
+        });
         return axios.post(url, {lesson_id})
         .then(function (response) {
             dispatch({
                 type: 'SIGN_LESSON',
             });
+            dispatch(getTeacherLesson(teacher_id,{}));
+            dispatch({
+                type: 'CHANGE_IS_SIGNING',
+                res: false,
+            });
         })
         .catch(function (error) {
+            dispatch({
+                type: 'CHANGE_IS_SIGNING',
+                res: false,
+            });
             console.log(error);
         });
     }

@@ -30,7 +30,7 @@ class App extends React.Component{
 
     render(){
       return(
-        <ConfigProvider locale={zhTW}>
+        // <ConfigProvider locale={zhTW}>
         <div>
             <Layout>
                 <Header style={{background: '#fff',height:'80px'}}>
@@ -95,7 +95,7 @@ class App extends React.Component{
                 </Footer>
             </Layout>
         </div> 
-        </ConfigProvider>
+        // </ConfigProvider>
       );
     }
 } 
