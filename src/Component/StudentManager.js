@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import *as action from '../Action/';
-import { List, Avatar, Icon, Card, Input, Button, Table } from 'antd'
+import { List, Avatar, Icon, Card, Input, Button, Table, Popover } from 'antd'
 import Highlighter from 'react-highlight-words';
 const { Meta } = Card;
 const { Search } = Input;
@@ -39,7 +39,14 @@ class StudentCenter extends React.Component{
         width: '15%',
         render: (text, record, index) => {
             return(
-                <Avatar src={text} />
+                // <Avatar src={text} />
+                <div>
+                    <Popover content={this.props.code} title="邀请码" trigger="click">
+                        <a onClick={() => this.props.getCodeByStudentid(record.student_id)}>
+                            <Avatar src={text} />
+                        </a>
+                    </Popover>
+                </div>
             );
         },
     },  {
@@ -127,6 +134,7 @@ export default connect(state => {
     const class_data = state.classGroupData.toJS();
     return {
         student_list : class_data.student_list,
+        code : class_data.code,
         teacher_id: state.AuthData.get('userid'),
     }
 }, action)(StudentCenter);

@@ -60,24 +60,30 @@ class App extends React.Component{
                           </div>
                         </Menu.Item>
                         <Menu.Item key="sub2">
+                          <div onClick={() => this.props.router.push("/teacher-zq/root/classhour_manager")}
+                          >
+                            课时管理
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item key="sub3">
                           <div onClick={() => this.props.router.push("/teacher-zq/root/class_manager")}
                           >
                             班组管理
                           </div>
                         </Menu.Item>
-                        <Menu.Item key="sub3">
+                        <Menu.Item key="sub4">
                           <div onClick={() => this.props.router.push("/teacher-zq/root/testcenter")}
                           >
                             测试中心
                           </div>
                         </Menu.Item>
-                        <Menu.Item key="sub4">
+                        <Menu.Item key="sub5">
                           <div onClick={() => this.props.router.push("/teacher-zq/root/lesson-manager")}
                           >
                             课堂管理
                           </div>
                         </Menu.Item>
-                        <Menu.Item key="sub5">
+                        <Menu.Item key="sub6">
                           <div onClick={() => this.props.router.push("/teacher-zq/root/task-manager")}
                           >
                             作业管理

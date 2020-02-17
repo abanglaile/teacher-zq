@@ -41,6 +41,9 @@ const defaultExerciseData = Immutable.fromJS({//book菜单以及知识点对应�
 
 const defaultClassGroupData = Immutable.fromJS({//教师管理的所有班级
         school_data: [],
+        student_list: [],
+        code : null,
+        class_hour : [],
         classgroup_data: [],
         groupstu_data: [],
         stugroups_data : [],
@@ -178,6 +181,10 @@ export const classGroupData = (state = defaultClassGroupData, action = {}) => {
     switch(action.type){
         case 'GET_STUDENT_LIST':
             return state.set('student_list', Immutable.fromJS(action.student_list));
+        case 'GET_CLASS_HOUR':
+            return state.set('class_hour', Immutable.fromJS(action.class_hour));
+        case 'GET_STUDENT_CODE':
+            return state.set('code',action.code);
         case 'GET_CLASSGROUP_START':
             return state.set('isFetching', true);
         case 'GET_SCHOOL_SUCESS':
@@ -303,10 +310,12 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.setIn(['teacher_lesson', index, 'teacher_id'], action.lesson_basic.teacher_id)
                 .setIn(['teacher_lesson', index, 'teacher_name'], action.lesson_basic.teacher_name);
         case 'UPDATE_LESSON_ASSISTANT':
-            return state.setIn(['teacher_lesson', index, , 'assistant_id'], action.lesson_basic.assistant_id)
+            return state.setIn(['teacher_lesson', index, 'assistant_id'], action.lesson_basic.assistant_id)
                 .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);
         case 'SIGN_LESSON':
             return state.setIn(['teacher_lesson', index, 'is_sign'], true);
+        case 'UNDO_SIGN_LESSON':
+            return state.setIn(['teacher_lesson', action.index, 'is_sign'], false);
         case 'CHANGE_IS_SIGNING':
             return state.set('signing', action.res);
         case 'SELECT_LESSON_STUDENT': 

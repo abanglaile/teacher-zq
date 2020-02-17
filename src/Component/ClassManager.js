@@ -229,14 +229,14 @@ class StuManager extends React.Component{
                   </Col>
                   <Col span={6}>
                     <div>
-                      <Popconfirm 
+                      {/* <Popconfirm 
                         title="确定删除整个分组?" 
                         onConfirm={()=>this.onDelGroup(item.stu_group_id)}
                         okText="确定" 
                         cancelText="取消"
-                      >
-                        <Button className="btn_delall">删除全部</Button>
-                      </Popconfirm>
+                      > */}
+                        <Button className="btn_delall" disabled>删除全部</Button>
+                      {/* </Popconfirm> */}
                     </div>
                   </Col>
                 </Row>

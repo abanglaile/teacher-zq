@@ -818,6 +818,20 @@ export const getStudentList = (teacher_id) => {
     }
 }
 
+//获取学生邀请码
+export const getCodeByStudentid = (student_id) => {
+    let url = target + '/getCodeByUserid'
+    return (dispatch) => {
+      return axios.get(url, { params: { student_id } })
+      .then((response) => {
+        dispatch({
+          type: 'GET_STUDENT_CODE',
+          code: response.data
+        })
+      })
+    }
+  }
+
 //获取老师所带的学生的信息
 export const getStuCourse = (student_id) => {
     let url = target + "/getStuCourse";
@@ -897,6 +911,27 @@ export const getStuKpCommentList = (student_id,filter_option) => {
 //         });
 //     }
 // }
+/*---------------------------------------课时管理----------------------------------*/
+//获取老师所带的学生课时信息
+export const getClassHourTable = (teacher_id) => {
+    let url = target + "/getClassHourTable";
+    return dispatch => {
+        return axios.get(url, { 
+            params:{
+                teacher_id,
+        }})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_CLASS_HOUR',
+                class_hour: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 /*---------------------------------------课程管理----------------------------------*/
 export const getTeacherLesson = (teacher_id, filter_option) => {
     let url = target + "/getTeacherLesson";
@@ -1292,7 +1327,36 @@ export const signLesson = (lesson_id, teacher_id) => {
             dispatch({
                 type: 'SIGN_LESSON',
             });
-            dispatch(getTeacherLesson(teacher_id,{}));
+            // dispatch(getTeacherLesson(teacher_id,{}));
+            dispatch({
+                type: 'CHANGE_IS_SIGNING',
+                res: false,
+            });
+        })
+        .catch(function (error) {
+            dispatch({
+                type: 'CHANGE_IS_SIGNING',
+                res: false,
+            });
+            console.log(error);
+        });
+    }
+}
+
+export const undoSignLesson = (lesson_id, index) => {
+    let url = target + "/undoSignLesson";
+    return dispatch => {
+        dispatch({
+            type: 'CHANGE_IS_SIGNING',
+            res: true,
+        });
+        return axios.post(url, {lesson_id})
+        .then(function (response) {
+            dispatch({
+                type: 'UNDO_SIGN_LESSON',
+                index: index,
+            });
+            // dispatch(getTeacherLesson(teacher_id,{}));
             dispatch({
                 type: 'CHANGE_IS_SIGNING',
                 res: false,

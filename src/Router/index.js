@@ -3,6 +3,7 @@ import React from 'react';
 import App from '../Component/index.js'
 import TestCenter from '../Component/TestCenter.js'
 import StuManager from '../Component/ClassManager.js'
+import ClasshourManager from '../Component/ClasshourManager.js'
 import LessonManager from '../Component/LessonManager.js'
 import TaskManager from '../Component/TaskManager.js'
 import StuCapacity from '../Component/stu_capacity.js'
@@ -38,6 +39,7 @@ export default (
         <IndexRoute component={TestCenter} />
         <Route path="stu_manager" component={StudentCenter}/>
         <Route path="testcenter" component={TestCenter}/>
+        <Route path="classhour_manager" component={ClasshourManager}/>
         <Route path="class_manager" component={StuManager}/>
         <Route path="lesson-manager" component={LessonManager}/>
         <Route path="task-manager" component={TaskManager}/>
