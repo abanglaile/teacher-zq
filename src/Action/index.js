@@ -546,8 +546,8 @@ export const getClassGroup = (teacher_id) => {
 }
 
 //根据教师id获取 下带的班级分组及分组内学生的数据
-export const getStudentGroup = (teacher_id) => {
-    let url = target + "/getStudentGroup";
+export const getTeacherGroup = (teacher_id) => {
+    let url = target + "/getTeacherGroup";
     return dispatch => {
         dispatch(getClassgroupStart());
         return axios.get(url,{

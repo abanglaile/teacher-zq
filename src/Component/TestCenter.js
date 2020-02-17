@@ -76,7 +76,7 @@ class TestCenter extends React.Component{
     componentDidMount(){
       const {teacher_id} = this.props;
       this.props.getTestTable(teacher_id);
-      this.props.getStudentGroup(teacher_id);
+      this.props.getTeacherGroup(teacher_id);
     }
 
     onTest(testid,index){

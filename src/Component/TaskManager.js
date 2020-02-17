@@ -26,7 +26,7 @@ class TaskManager extends React.Component{
     componentDidMount(){
       const {teacher_id} = this.props;
       this.props.getTaskTable(teacher_id);
-      this.props.getStudentGroup(teacher_id);
+      this.props.getTeacherGroup(teacher_id);
     }
 
     handleSearch = (selectedKeys, confirm) => () => {
