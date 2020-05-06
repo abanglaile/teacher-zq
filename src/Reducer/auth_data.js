@@ -7,11 +7,11 @@ const defaulatAuthData = Immutable.fromJS({
         imgurl:null,
         realname:null,
         username: 'fei',
-        // userid: 'e4c172f040a711e9b42ee18904137ca3',
-        // userid: '1927560040d911e9ad2ca1607a4b5d90',
-        // userid:'867db93002c511e9b965fd02f0885d74',
+        // userid: 'aeb58cd002c411e98175d1610e288342',//欧老师
+        userid: '1927560040d911e9ad2ca1607a4b5d90',//Erica
+        // userid:'33525d00037a11e9b965fd02f0885d74',//雪颖
         // userid:'3044f0f040ba11e9ad2ca1607a4b5d90',
-        userid:'c5f0744040e111e9b42ee18904137ca3',
+        // userid:'59c6b18020d811ea9c37df76154ba416',
         // userid: 1,
         isAuthenticated: false,
         isAuthenticating: false,

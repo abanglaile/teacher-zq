@@ -9,6 +9,7 @@ import TaskManager from '../Component/TaskManager.js'
 import StuCapacity from '../Component/stu_capacity.js'
 import KpExerciseView from '../Component/exercise_select.js'
 import TestResult from '../Component/TestResult.js'
+import TestCorrect from '../Component/TestCorrect.js'
 import StuEvaluation from '../Component/stuEvaluation.js'
 import TaskResult from '../Component/TaskResult.js'
 import LessonPrint from '../Component/LessonPrint.js'
@@ -34,8 +35,8 @@ const component = (component) => {
 export default (
     <Route path='teacher-zq'>
 
-      <Route path="root" component={requireAuthentication(App)}> 
-      {/* <Route path="root" component={App}>  */}
+      {/* <Route path="root" component={requireAuthentication(App)}>  */}
+      <Route path="root" component={App}> 
         <IndexRoute component={TestCenter} />
         <Route path="stu_manager" component={StudentCenter}/>
         <Route path="testcenter" component={TestCenter}/>
@@ -45,6 +46,7 @@ export default (
         <Route path="task-manager" component={TaskManager}/>
       </Route>
       <Route path="stu_evaluation" component={StuEvaluation}/>
+      <Route path="test_correct/:id" component={TestCorrect}/>
       <Route path="lesson_print/:lesson_id" component={LessonPrint}/>
       <Route path="student_info/:id" component={StudentInfo}/>     
       <Route path="stu_capacity/:id" component={StuCapacity}/>

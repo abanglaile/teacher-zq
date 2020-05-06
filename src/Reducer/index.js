@@ -10,6 +10,8 @@ const defaultTestsData = Immutable.fromJS({//教师创建的所有测试
         test_res : {},//测试基本情况，各学生完成情况
         test_kp: {},
         isFetching: false,
+        unchecked_exers: [],
+        checked_exers: [],
     });
     
 const defaultTasksData = Immutable.fromJS({
@@ -120,6 +122,10 @@ export const fetchTestsData = (state = defaultTestsData , action = {}) => {
 			return state.set('kp_data', Immutable.fromJS(action.json));
 		case 'GET_TEST_RES_TABLE':
             return state.set('test_res', Immutable.fromJS(action.json)); 
+        case 'GET_UNCHECKED_EXERS_SUCESS':
+            return state.set('unchecked_exers', Immutable.fromJS(action.json)); 
+        case 'GET_CHECKED_EXERS_SUCESS':
+            return state.set('checked_exers', Immutable.fromJS(action.json)); 
         // case 'GET_MY_TEST_DATA':
         //     return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
         default:
@@ -309,6 +315,9 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
         case 'UPDATE_LESSON_TEACHER':
             return state.setIn(['teacher_lesson', index, 'teacher_id'], action.lesson_basic.teacher_id)
                 .setIn(['teacher_lesson', index, 'teacher_name'], action.lesson_basic.teacher_name);
+        case 'UPDATE_LESSON_LABEL':
+            return state.setIn(['teacher_lesson', index, 'label_id'], action.lesson_basic.label_id)
+                .setIn(['teacher_lesson', index, 'label_name'], action.lesson_basic.label_name);
         case 'UPDATE_LESSON_ASSISTANT':
             return state.setIn(['teacher_lesson', index, 'assistant_id'], action.lesson_basic.assistant_id)
                 .setIn(['teacher_lesson', index, 'assistant_name'], action.lesson_basic.assistant_name);

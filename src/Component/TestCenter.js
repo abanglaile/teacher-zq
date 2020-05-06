@@ -52,7 +52,7 @@ class TestCenter extends React.Component{
       },{
             title: '操作',
             dataIndex: 'action',
-            render: (text, record,index) => {
+            render: (text,record,index) => {
               return(
                 <span>
                   {
@@ -62,11 +62,18 @@ class TestCenter extends React.Component{
                     <a className="a_action">发布</a>
                   }
                   <span className="ant-divider" />
-                  < Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.key,index)} >
+                  {
+                    !record.teststate?
+                    < Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.key,index)} >
                       <a href = "#">删除</a> 
-                  </Popconfirm >
+                    </Popconfirm >
+                    :
+                    <a className="a_action">删除</a>
+                  }
                   <span className="ant-divider" />
                   <a onClick={()=>this.onCopy(record.key)}>复制</a>
+                  <span className="ant-divider" />
+                  <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+"310")}>批改</a>
                 </span>
               );
             },

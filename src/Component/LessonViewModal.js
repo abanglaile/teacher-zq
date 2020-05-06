@@ -710,13 +710,16 @@ class LessonViewModal extends React.Component{
     }
 
     renderLessonBasic(){
-      const {teacher_option, teacher_link_option, teacher_lesson, lesson_index, lesson_edit, signing} = this.props;
+      const {teacher_option, label_option, teacher_link_option, teacher_lesson, lesson_index, lesson_edit, signing} = this.props;
       console.log("signing",signing);
-      const {teacher_edit, assistant_edit} = lesson_edit;
-      const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
-      const {select_teacher, select_assistant} = this.state;
+      const {teacher_edit, assistant_edit, label_edit, range_edit} = lesson_edit;
+      const {teacher_name, assistant_name, room_name, teacher_id, start_time, end_time, group_name, course_label, label_id, label_name, is_sign, lesson_id} = teacher_lesson[lesson_index];
+      const {select_teacher, select_assistant, select_label} = this.state;
       const teacherOption = teacher_link_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
-      
+      const labelOption = label_option.map((item) => <Option value={item.label_id.toString()}>{item.label_name}</Option>)
+      console.log("lesson_id:",lesson_id);
+      console.log("label_id:",label_id);
+      console.log("label_name:",label_name);
       return(
         <div>
         <Row  gutter={2} type="flex" justify="space-between" align="middle">
@@ -750,9 +753,27 @@ class LessonViewModal extends React.Component{
             <div><Icon style={{color: '#a6a6a6', marginRight: 10}} type="tags" theme="outlined" />课程标签</div>
           </Col>
           <Col span={16}>
-            <div style={{fontSize: '1rem'}}>
-              <Tag style={{marginRight: 10}} color="green">{label_name}</Tag>  
-            </div>
+            {label_edit && !is_sign ? 
+              <div>
+                <Select
+                  placeholder={"选择课程类别"}
+                  value={select_label}
+                  onChange={(value) => this.setState({select_label: value})}
+                  style={{ width: '12rem' }}
+                >
+                  {labelOption}
+                </Select>
+                <a onClick={e => this.props.updateLessonLabel(lesson_id, select_label)} style={{marginLeft: 10}}>确定</a>
+                <a onClick={e => this.props.editLesson('label_edit', false)} style={{marginLeft: 10}}>取消</a>
+              </div>
+              :
+              <div style={{fontSize: '1rem'}} onClick={e => {
+                    this.props.editLesson('label_edit', true);
+                    this.setState({select_label: label_id});
+                  }}>
+                <Tag style={{marginRight: 10}} color="green">{label_name}</Tag>  
+              </div>
+            }
           </Col>
         </Row>
         <Row style={{marginTop: 20}} gutter={2} align="middle">
@@ -761,7 +782,7 @@ class LessonViewModal extends React.Component{
           </Col>
           <Col span={16}>
             {
-              lesson_edit.range_edit ?
+              range_edit && !is_sign ? 
               <div>
                 <RangePicker
                   showTime={{ format: 'HH:mm' }}
@@ -777,10 +798,10 @@ class LessonViewModal extends React.Component{
               </div>
               :
               <div style={{fontSize: '1rem', cursor: 'pointer'}} 
-                  // onClick={e => {
-                  //   this.props.editLesson('range_edit', true);
-                  //   this.setState({start_time: start_time, end_time: end_time});
-                  // }}
+                   onClick={e => {
+                     this.props.editLesson('range_edit', true);
+                     this.setState({start_time: start_time, end_time: end_time});
+                   }}
               >
                 {moment(start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(end_time).format("HH:mm")}
               </div>
@@ -1212,7 +1233,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson_index, lesson_edit, teacher_lesson, select_student, reward, signing} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
+  const {teacher_option, label_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
   const default_teacher_lesson = [{
     lesson_teacher: [],
     lesson_student: [],
@@ -1230,6 +1251,7 @@ export default connect(state => {
     lesson_edit: lesson_edit,
     select_student: select_student,
     teacher_option: teacher_option,
+    label_option: label_option,
     teacher_link_option: teacher_link_option,
     search_teacher_task: search_teacher_task,
     search_kp_label: search_kp_label,

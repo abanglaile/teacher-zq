@@ -797,6 +797,61 @@ export const getKpWithScore = (chapter_id, student_id) => {
         });
     }
 }
+/*---------------------------------------作业批改----------------------------------*/
+export const getUncheckedExers = (test_id) => {
+    let url = target + "/getUncheckedExers";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_UNCHECKED_EXERS_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getCheckedExers = (test_id) => {
+    let url = target + "/getCheckedExers";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                test_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_CHECKED_EXERS_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const submitCheckAnswer = (testid, exercise_log, breakdown_sn) => {
+    console.log("action submitCheckAnswer");
+    let url = target + "/submitCheckAnswer";
+    return dispatch => {
+        return axios.post(url, { exercise_log, breakdown_sn})
+        .then(function (response) {
+            dispatch(getUncheckedExers(testid));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 /*---------------------------------------学生管理----------------------------------*/
 //获取老师所带的学生的信息
 export const getStudentList = (teacher_id) => {
@@ -1280,6 +1335,22 @@ export const deleteLessonKpComment = (comment_id, lesson_id) => {
 //         });
 //     }
 // }
+export const updateLessonLabel = (lesson_id, label_id) => {
+    let url = target + "/updateLessonLabel";
+    return dispatch => {
+        return axios.post(url, {lesson_id, label_id})
+        .then(function (response) {
+            dispatch({
+                type: 'UPDATE_LESSON_LABEL',
+                lesson_basic: response.data,
+            });
+            dispatch(editLesson('label_edit', false));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
 
 export const updateLessonTeacher = (lesson_id, teacher_id) => {
     let url = target + "/updateLessonTeacher";

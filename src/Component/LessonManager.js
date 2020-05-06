@@ -34,15 +34,15 @@ class LessonManager extends React.Component{
         let start_time = moment().day(-7);
         this.state={
           kp_tags: [],
-          //select_teacher: undefined,
-          //select_assistant:undefined,
+          select_teacher: this.props.teacher_id.toString(),
+          // select_assistant:[],
           //query_select_teacher: props.teacher_id,
           start_time: start_time,
           range_time: [],
 
           // end_time: null,
           // group_id: undefined,
-          // room_id: undefined,
+          room_id: undefined,
           // course_label: undefined,
           // label_id:undefined,
           // //查询时的输入条件，避免与新建时输入条件混淆
@@ -87,6 +87,8 @@ class LessonManager extends React.Component{
           this.props.addNewLesson(new_lesson, teacher_id);
           this.setState({
             visible: false,
+            room_id: undefined,
+            select_teacher: teacher_id.toString(),
           });
         }
       }else{
@@ -102,15 +104,16 @@ class LessonManager extends React.Component{
     }
 
     renderNewModal(){
-      const {teacher_group, label_option, teacher_link_option, room_link_option} = this.props;
+      const {teacher_group, label_option, teacher_link_option, room_link_option, teacher_id} = this.props;
       const {select_teacher, select_assistant, group_id, room_id, course_label, label_id} = this.state;
       const group_option = teacher_group.map((item) => <Option value={item.stu_group_id+'-'+item.course_label}>{item.group_name}</Option>)
       const labelOption = label_option.map((item) => <Option value={item.label_id}>{item.label_name}</Option>)
       const teacherOption = teacher_link_option.map((item) => <Option value={item.teacher_id.toString()}>{item.realname}</Option>)
       const roomOption = room_link_option.map((item) => <Option value={item.room_id}>{item.room_name}</Option>)
+      console.log('teacherOption:',teacherOption);
       return (
         <Modal title="新建课堂" onOk={(e) => this.createNewLesson()}
-          onCancel={e => this.setState({visible: false})}
+          onCancel={e => this.setState({visible: false, room_id: undefined, select_teacher: teacher_id.toString()})}
           okText="新建"
           cancelText="取消"
           visible={this.state.visible} width={500} style={{height:400} }>
@@ -131,6 +134,7 @@ class LessonManager extends React.Component{
               style={{ marginLeft: 20, width: 200 }}
               placeholder="选择课室"
               optionFilterProp="children"
+              value={room_id}
               onChange={(value) => this.setState({room_id: value})}
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
@@ -152,6 +156,7 @@ class LessonManager extends React.Component{
             <Select
               placeholder={"选择任课老师"}
               optionFilterProp="children"
+              value={teacherOption.length ? select_teacher : []}
               onChange={(value) => this.setState({select_teacher: value})}
               style={{ marginLeft: 20, width: 200 }}
             >

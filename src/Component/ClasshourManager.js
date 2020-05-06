@@ -148,10 +148,11 @@ class ClasshourManager extends React.Component{
             title: '导学(剩余)',
             dataIndex: 'remain_guide_min',
             width: '5%',
+            sorter: (a, b) => a.remain_guide_min - b.remain_guide_min,
             render: (text, record, index) => {
                 return(
                     <div style={{color:text >= 0? 'green' : 'red'}}>
-                        <span>{text >= 0 ? (text/60).toFixed(1) : -1}h</span>
+                        <span>{(text/60).toFixed(1)}</span>
                     </div>
                 );
             },
@@ -159,10 +160,11 @@ class ClasshourManager extends React.Component{
             title: '函授(剩余)',
             dataIndex: 'remain_class_min',
             width: '5%',
+            sorter: (a, b) => a.remain_class_min - b.remain_class_min,
             render: (text, record, index) => {
                 return(
                     <div style={{color:text >= 0? 'green' : 'red'}}>
-                        <span>{text >= 0 ? (text/60).toFixed(1) : -1}h</span>
+                        <span>{(text/60).toFixed(1)}</span>
                     </div>
                 );
             },

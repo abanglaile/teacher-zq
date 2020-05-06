@@ -79,8 +79,14 @@ class StudentCenter extends React.Component{
         ),
         filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
         onFilter: (value, record) => {
-            var indexs = record.realname.indexOf(value);
-            return (indexs >= 0 ? true : false);
+            // console.log('record.realname:',record,record.realname);
+            if(record.realname){
+                var indexs = record.realname.indexOf(value);
+                return (indexs >= 0 ? true : false);
+            }else{
+                return false;
+            }
+            
         },
         onFilterDropdownVisibleChange: (visible) => {
             if (visible) {
