@@ -1,5 +1,6 @@
 node_modules/**
 dist/**
+lib/**
 math-input/**
 src/styles/vendor/**
 package-lock.json
