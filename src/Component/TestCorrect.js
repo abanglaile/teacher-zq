@@ -94,9 +94,10 @@ class OneUncheckedExer extends React.Component {
 		const {title_img_width, title_img_height,answer_img_width,answer_img_height,checked_kp, isShow} = this.state;
 		if(this.props.exer_data){
 			var {realname,exercise_id,exercise_type,submit_time,submit_answer,title,answer,title_img_url,title_audio_url,answer_assist_url,breakdown} = this.props.exer_data;
+			// console.log("title_audio_url:",title_audio_url);
+			console.log("submit_answer:",JSON.stringify(submit_answer));
 			var answerDom = [];
 			if(answer){
-				// console.log('answer = ', answer);
 				answerDom = (  //解答题答案
 					<div>
 						<p style={{marginBottom:'0.5rem',marginTop:'0.5rem'}}>参考答案：&nbsp;</p>
@@ -148,7 +149,8 @@ class OneUncheckedExer extends React.Component {
 								</div>
 								:
 								<div>
-									<audio src={submit_answer.url} controls="controls">
+									<audio src={submit_answer.url} type="audio/mpeg" controls="controls">
+									{/* <audio src={"http://cdn.zhiqiu.pro/FoJn2OL0q9oiq2qZRfLItVm-zCDK"}  controls="controls"> */}
 										Your browser does not support the audio element.
 									</audio>
 								</div>
