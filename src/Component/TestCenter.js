@@ -59,7 +59,7 @@ class TestCenter extends React.Component{
                     !record.teststate?
                     <a onClick={()=>this.onTest(record.key,index)}>发布</a>
                     :
-                    <a className="a_action">发布</a>
+                    <span style={{color:'#d9d9d9'}}>发布</span>
                   }
                   <span className="ant-divider" />
                   {
@@ -68,7 +68,7 @@ class TestCenter extends React.Component{
                       <a href = "#">删除</a> 
                     </Popconfirm >
                     :
-                    <a className="a_action">删除</a>
+                    <span style={{color:'#d9d9d9'}}>删除</span>
                   }
                   <span className="ant-divider" />
                   <a onClick={()=>this.onCopy(record.key)}>复制</a>
