@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Popconfirm ,Checkbox,message,TreeSelect,Modal, Input} from 'antd';
+import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Popconfirm,Radio,Checkbox,message,TreeSelect,Modal, Input} from 'antd';
 import Styles from '../styles/testCenter.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -17,7 +17,10 @@ var urlip = config.server_url;
 class TestCenter extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false, copy_visible:false, tree_value:undefined, copy_name:null};
+        this.state={visible:false, copy_visible:false, 
+          tree_value:undefined, copy_name:null,
+          test_type:1,
+        };
         this.columns = [{
             title: '测试名称',
             dataIndex: 'testname',
@@ -73,7 +76,8 @@ class TestCenter extends React.Component{
                   <span className="ant-divider" />
                   <a onClick={()=>this.onCopy(record.key)}>复制</a>
                   <span className="ant-divider" />
-                  <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+"310")}>批改</a>
+                  {/* <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+record.key)}>批改</a> */}
+                  <span style={{color:'#d9d9d9'}}>批改</span>
                 </span>
               );
             },
@@ -94,7 +98,7 @@ class TestCenter extends React.Component{
       this.setState({copy_visible : true, currentid:testid});
     }
 
-    onChange(value,label,extra){
+    onTreeDataChange(value,label,extra){
       console.log(extra);
       console.log("value,label:"+value+" "+label);
       this.setState({ tree_value : value , extra : extra});
@@ -104,28 +108,42 @@ class TestCenter extends React.Component{
       this.props.delOneTest(testid,index);
     }
 
-    handleOk(){
-      const {extra,currentid,currentindex} =this.state;
+    onDistributeTest(){
+      const {extra,currentid,currentindex,test_type} =this.state;
       var keys = [];
-      for(var j = 0;j<extra.allCheckedNodes.length;j++){
-          if(extra.allCheckedNodes[j].children != null){
-              for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
-                  keys.push((extra.allCheckedNodes[j].children[i].node.key).split('-')[0]);
-              }
-          }else{
-              keys.push((extra.allCheckedNodes[j].node.key).split('-')[0]);
+      console.log("extra:",extra);
+      if(test_type == 1){//为班组测试
+        if(extra){//有分发对象
+          for(var j = 0;j<extra.allCheckedNodes.length;j++){
+            if(extra.allCheckedNodes[j].children != null){
+                for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
+                    keys.push((extra.allCheckedNodes[j].children[i].node.key).split('-')[0]);
+                }
+            }else{
+                keys.push((extra.allCheckedNodes[j].node.key).split('-')[0]);
+            }
           }
-      }
-      console.log("keys:",keys);
-      this.props.distributeTest(keys,currentid,currentindex);
-      this.setState({
+          this.props.distributeTest(keys,currentid,test_type,currentindex);
+          this.setState({
+            test_type:1,
+            visible: false,
+          });
+        }else{
+          message.warning ('请先选择发布对象！');
+        }
+      }else{//为公开测试
+        this.props.distributeTest(keys,currentid,test_type,currentindex);
+        this.setState({
+          test_type:1,
           visible: false,
-      });
+        });
+      }
     }
 
     handleCancel(){
       this.setState({
         visible: false,
+        test_type:1,
       });
     }
 
@@ -148,6 +166,13 @@ class TestCenter extends React.Component{
       });
     }
 
+    onChangeTestType(e){
+      console.log('radio checked', e.target.value);
+      this.setState({
+        test_type: e.target.value,
+      });
+    }
+
     render(){
       const {visible, tree_value, copy_visible, copy_name} = this.state;
       const {tests, stugroups, isFetching} = this.props;
@@ -156,7 +181,7 @@ class TestCenter extends React.Component{
       const tProps = {
         treeData: stugroups,
         value: tree_value,
-        onChange: (value,label,extra)=>this.onChange(value,label,extra),
+        onChange: (value,label,extra)=>this.onTreeDataChange(value,label,extra),
         multiple: true,
         treeCheckable: true,
         showCheckedStrategy: SHOW_PARENT,
@@ -176,8 +201,25 @@ class TestCenter extends React.Component{
                 <Icon type="plus" />添加测试
               </Button>
             </div>
-            <Modal title="试题分发" visible={visible} width={500} style={{height:400}} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()} okText="确定">
-                <TreeSelect {...tProps}/>
+            <Modal title="试题发布" 
+              visible={visible} 
+              width={500} 
+              style={{height:400}} 
+              onOk={()=>this.onDistributeTest()} 
+              onCancel={()=>this.handleCancel()} 
+              okText="确定">
+                <Radio.Group onChange={(e) => this.onChangeTestType(e)} value={this.state.test_type}>
+                  <Radio value={1}>班组发布</Radio>
+                  <Radio value={3}>公开发布</Radio>
+                </Radio.Group>
+                {
+                  this.state.test_type == 1 ?
+                  <div style={{marginTop:'1rem'}}>
+                    <TreeSelect {...tProps}/>
+                  </div>
+                  :
+                  null
+                }
             </Modal>
             <Modal title="复制试题" visible={copy_visible} width={500} style={{height:400}} onOk={()=>this.handleCopyOk()} onCancel={()=>this.handleCopyCancel()} okText="确定">
                 <Input placeholder="请输入新的试题名称"  onChange={(e) => {this.setState({copy_name:e.target.value})}}/>

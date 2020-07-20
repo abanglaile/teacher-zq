@@ -278,10 +278,10 @@ export const delOneTest = (test_id,index) => {
 
 
 //将试题要分发的班级和个人 传递到后台
-export const distributeTest = (keys,test_id,index) => {
+export const distributeTest = (keys,test_id,test_type,index) => {
     let url = target + "/distributeTest";
     return dispatch => {
-        return axios.post(url,{keys,test_id})
+        return axios.post(url,{keys,test_id,test_type})
         .then(function (response) {
             dispatch({
                 type : 'CHANGE_TEST_STATE',
