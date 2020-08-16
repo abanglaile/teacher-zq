@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Popconfirm,Radio,Checkbox,message,TreeSelect,Modal, Input} from 'antd';
+import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Badge, Popconfirm,Radio,Checkbox,message,TreeSelect,Modal, Input} from 'antd';
 import Styles from '../styles/testCenter.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -76,8 +76,15 @@ class TestCenter extends React.Component{
                   <span className="ant-divider" />
                   <a onClick={()=>this.onCopy(record.key)}>复制</a>
                   <span className="ant-divider" />
-                  {/* <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+record.key)}>批改</a> */}
-                  <span style={{color:'#d9d9d9'}}>批改</span>
+                  {
+                    record.is_check? //是否存在需要批改的题目
+                    <Badge count={record.uncheck_num} offset={[10, 5]} showZero>
+                      <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+record.key)}>批改</a>
+                    </Badge>
+                    :
+                    <span style={{color:'#d9d9d9'}}>批改</span>
+                    /* <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+310)}>批改</a> */
+                  }
                 </span>
               );
             },
@@ -176,7 +183,7 @@ class TestCenter extends React.Component{
     render(){
       const {visible, tree_value, copy_visible, copy_name} = this.state;
       const {tests, stugroups, isFetching} = this.props;
-      console.log('stugroups:'+ JSON.stringify(stugroups));
+      console.log('tests:'+ JSON.stringify(tests));
 
       const tProps = {
         treeData: stugroups,
