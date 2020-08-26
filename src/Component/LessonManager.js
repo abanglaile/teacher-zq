@@ -99,7 +99,7 @@ class LessonManager extends React.Component{
     onGroupChange(value){
 
       var temp = value.split('-');
-      this.setState({group_id: temp[0], course_label : temp[1]});
+      this.setState({group_id: temp[0], course_label : temp[1],room_id: undefined});
       this.props.getLinkageOptionData(temp[0]);
     }
 

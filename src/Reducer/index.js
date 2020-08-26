@@ -12,6 +12,8 @@ const defaultTestsData = Immutable.fromJS({//教师创建的所有测试
         isFetching: false,
         unchecked_exers: [],
         checked_exers: [],
+        xcx_code: '',
+        isXcxcodeFetching:false,
     });
     
 const defaultTasksData = Immutable.fromJS({
@@ -104,6 +106,8 @@ export const fetchTestsData = (state = defaultTestsData , action = {}) => {
     switch(action.type){
         case 'GET_TESTS_START':
             return state.set('isFetching', true);
+        case 'GET_XCXCODE_START':
+            return state.set('isXcxcodeFetching', true);
         case 'GET_TESTS_SUCESS':
             return state.set('test_data', Immutable.fromJS(action.json)).set('isFetching', false);
         case 'ADD_NEW_TEST':
@@ -126,6 +130,9 @@ export const fetchTestsData = (state = defaultTestsData , action = {}) => {
             return state.set('unchecked_exers', Immutable.fromJS(action.json)); 
         case 'GET_CHECKED_EXERS_SUCESS':
             return state.set('checked_exers', Immutable.fromJS(action.json)); 
+        case 'GET_XCX_CODE':
+            // console.log("action.data:",action.data);
+            return state.set('xcx_code', action.data).set('isXcxcodeFetching', false);
         // case 'GET_MY_TEST_DATA':
         //     return state.set('test_kp', Immutable.fromJS(action.json)).set('isFetching', false);
         default:

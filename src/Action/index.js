@@ -38,6 +38,13 @@ const getTestsStart = () => {
     }
 }
 
+//开始获取小程序码数据
+const getXcxCodeStart = () => {
+    return {
+      type: 'GET_XCXCODE_START',
+    }
+}
+
 //开始获取数据
 const getClassgroupStart = () => {
     return {
@@ -259,7 +266,6 @@ export const saveNewTest = (test_name,teacher_id,test_exercise,course_id) => {
 }
 
 
-
 export const delOneTest = (test_id,index) => {
     let url = target + "/deleteOneTest";
     return dispatch => {
@@ -308,6 +314,29 @@ export const copyTest = (teacher_id, test_id,copy_name) => {
         });
     }
 }
+
+//获取公开测试 testid 所对应的小程序码
+export const getXcxCode = (test_id) => {
+    let url = target + "/getXcxCode";
+    return dispatch => {
+        dispatch(getXcxCodeStart());
+        return axios.get(url,{
+            params:{
+                test_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_XCX_CODE',
+                data : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 
 export const getTestDetail = (test_id) => {
     let url = target + "/getTestDetail";

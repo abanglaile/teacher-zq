@@ -17,14 +17,14 @@ var urlip = config.server_url;
 class TestCenter extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false, copy_visible:false, 
+        this.state={visible:false, copy_visible:false, xcxCode_visible:false,
           tree_value:undefined, copy_name:null,
           test_type:1,
         };
         this.columns = [{
             title: '测试名称',
             dataIndex: 'testname',
-            width: '30%',
+            width: '28%',
             render: (text, record,index) => {
               // let urlstr = "/AuthJWT/testresult/"+record.key;
               return(
@@ -36,7 +36,7 @@ class TestCenter extends React.Component{
         }, {
             title: '状态',
             dataIndex: 'teststate',
-            width: '20%',
+            width: '16%',
             render: (text, record) => {
               return(
                 <span >
@@ -47,7 +47,7 @@ class TestCenter extends React.Component{
         }, {
           title: '测试时间',
           dataIndex: 'time',
-          width: '25%',
+          width: '20%',
           render: (text, record) => {
             if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
             else return '';
@@ -55,6 +55,7 @@ class TestCenter extends React.Component{
       },{
             title: '操作',
             dataIndex: 'action',
+            width: '24%',
             render: (text,record,index) => {
               return(
                 <span>
@@ -88,7 +89,19 @@ class TestCenter extends React.Component{
                 </span>
               );
             },
-        }];
+        },{
+          title: '小程序码',
+          dataIndex: 'test_type',
+          render: (text, record) => {
+            if(text == 3){
+              return (
+                <a onClick={()=>this.getXcxCode(record.key)}>
+                  <Icon type="link" />
+                </a>
+              );
+            }
+          },
+      }];
     }
 
     componentDidMount(){
@@ -103,6 +116,11 @@ class TestCenter extends React.Component{
     
     onCopy(testid){
       this.setState({copy_visible : true, currentid:testid});
+    }
+
+    getXcxCode(testid){
+      this.setState({xcxCode_visible : true});
+      this.props.getXcxCode(testid);
     }
 
     onTreeDataChange(value,label,extra){
@@ -181,9 +199,10 @@ class TestCenter extends React.Component{
     }
 
     render(){
-      const {visible, tree_value, copy_visible, copy_name} = this.state;
-      const {tests, stugroups, isFetching} = this.props;
+      const {visible, tree_value, copy_visible, xcxCode_visible, copy_name} = this.state;
+      const {tests, stugroups, isFetching, xcx_code, isXcxcodeFetching} = this.props;
       console.log('tests:'+ JSON.stringify(tests));
+      console.log('xcx_code:'+ xcx_code);
 
       const tProps = {
         treeData: stugroups,
@@ -231,6 +250,14 @@ class TestCenter extends React.Component{
             <Modal title="复制试题" visible={copy_visible} width={500} style={{height:400}} onOk={()=>this.handleCopyOk()} onCancel={()=>this.handleCopyCancel()} okText="确定">
                 <Input placeholder="请输入新的试题名称"  onChange={(e) => {this.setState({copy_name:e.target.value})}}/>
             </Modal>
+            <Modal title="小程序码" visible={xcxCode_visible} width={350} style={{height:350}} footer={null} onCancel={()=>this.setState({xcxCode_visible:false})}>
+                {
+                  isXcxcodeFetching ? 
+                  <Spin />
+                  :
+                  <img src={"data:image/png;base64,"+xcx_code}/>
+                }
+            </Modal>
             < Table 
               columns = { this.columns } 
               dataSource = { tests }
@@ -241,10 +268,12 @@ class TestCenter extends React.Component{
 }
 
 export default connect(state => {
-  console.log(state);
+  console.log("state.fetchTestsData:",JSON.stringify(state.fetchTestsData));
   return {
     tests : state.fetchTestsData.get('test_data').toJS(), 
+    xcx_code : state.fetchTestsData.get('xcx_code'), 
     isFetching : state.fetchTestsData.get('isFetching'), 
+    isXcxcodeFetching : state.fetchTestsData.get('isXcxcodeFetching'), 
     teacher_id : state.AuthData.get('userid'),
     stugroups : state.classGroupData.get('stugroups_data').toJS(),
   }
