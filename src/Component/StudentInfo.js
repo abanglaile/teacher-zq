@@ -17,7 +17,7 @@ class StudentInfo extends React.Component{
 		this.state = { activeKey : '1',
             student_id : this.props.params.id,
             course_label : null,
-            side_option : [{side:1,side_label:'良好'},{side:0,side_label:'较差'}],
+            side_option : [{side:1,side_label:'表扬进步'},{side:0,side_label:'存在问题'}],
 		};
 	}
 
@@ -146,11 +146,11 @@ class StudentInfo extends React.Component{
                 >
                     <Row type="flex" justify="space-around" align="middle">
                         <Col span={8}>
-                            <Form.Item label={"课程学科"}>
+                            <Form.Item label={"学科"}>
                                 <Select
                                     showSearch
                                     style={{ width: "130" }}
-                                    placeholder="选择课程类型"
+                                    placeholder="选择学科"
                                     optionFilterProp="children"
                                     value={query_course_label}
                                     onChange={(value) => this.setState({query_course_label: value})}
@@ -161,11 +161,11 @@ class StudentInfo extends React.Component{
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label={"知识点掌握情况"}>
+                            <Form.Item label={"知识点表现"}>
                                 <Select
                                     showSearch
                                     style={{ width: "130" }}
-                                    placeholder="选择掌握情况"
+                                    placeholder="选择表现情况"
                                     optionFilterProp="children"
                                     value={query_side}
                                     onChange={(value) => this.setState({query_side: value})}
@@ -250,8 +250,8 @@ class StudentInfo extends React.Component{
                         </Breadcrumb>
                         <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
                         <Tabs size="large" onChange={(key)=>this.onTabChange(key)} activeKey={activeKey}>
-                            <TabPane tab="表现" key="1">{this.renderPfComment()}</TabPane>
-                            <TabPane tab="知识点" key="2">{this.renderKpComment()}</TabPane>
+                            <TabPane tab="课堂表现" key="1">{this.renderPfComment()}</TabPane>
+                            <TabPane tab="知识点点评" key="2">{this.renderKpComment()}</TabPane>
                         </Tabs>
                         </div>
                     </Content>

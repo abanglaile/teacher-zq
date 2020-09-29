@@ -961,6 +961,7 @@ export const getStuPfCommentList = (student_id) => {
 //获取老学生表现信息
 export const getStuKpCommentList = (student_id,filter_option) => {
     let url = target + "/getStuKpCommentList";
+    console.log("filter_option:",JSON.stringify(filter_option));
     return dispatch => {
         return axios.post(url, { student_id, filter_option})
         .then(function (response) {

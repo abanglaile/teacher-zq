@@ -4,6 +4,7 @@ import {Icon,Spin,Table, Menu, Select, Button,Breadcrumb, Badge, Popconfirm,Radi
 import Styles from '../styles/testCenter.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
+import Highlighter from 'react-highlight-words';
 // import {Link} from 'react-router';
 import config from '../utils/Config';
 import moment from 'moment';
@@ -21,87 +22,7 @@ class TestCenter extends React.Component{
           tree_value:undefined, copy_name:null,
           test_type:1,
         };
-        this.columns = [{
-            title: '测试名称',
-            dataIndex: 'testname',
-            width: '28%',
-            render: (text, record,index) => {
-              // let urlstr = "/AuthJWT/testresult/"+record.key;
-              return(
-                <div>
-                  <a  onClick={() => this.props.router.push("/teacher-zq/testresult/"+record.key)}>{text}</a>
-                </div>
-              );
-            },
-        }, {
-            title: '状态',
-            dataIndex: 'teststate',
-            width: '16%',
-            render: (text, record) => {
-              return(
-                <span >
-                  <font color={record.teststate? "00a854" : "red"}>{record.teststate? "已发布" : "未发布"}</font>
-                </span>
-              );
-            },
-        }, {
-          title: '测试时间',
-          dataIndex: 'time',
-          width: '20%',
-          render: (text, record) => {
-            if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
-            else return '';
-          },
-      },{
-            title: '操作',
-            dataIndex: 'action',
-            width: '24%',
-            render: (text,record,index) => {
-              return(
-                <span>
-                  {
-                    !record.teststate?
-                    <a onClick={()=>this.onTest(record.key,index)}>发布</a>
-                    :
-                    <span style={{color:'#d9d9d9'}}>发布</span>
-                  }
-                  <span className="ant-divider" />
-                  {
-                    !record.teststate?
-                    < Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.key,index)} >
-                      <a href = "#">删除</a> 
-                    </Popconfirm >
-                    :
-                    <span style={{color:'#d9d9d9'}}>删除</span>
-                  }
-                  <span className="ant-divider" />
-                  <a onClick={()=>this.onCopy(record.key)}>复制</a>
-                  <span className="ant-divider" />
-                  {
-                    record.is_check? //是否存在需要批改的题目
-                    <Badge count={record.uncheck_num} offset={[10, 5]} showZero>
-                      <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+record.key)}>批改</a>
-                    </Badge>
-                    :
-                    <span style={{color:'#d9d9d9'}}>批改</span>
-                    /* <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+310)}>批改</a> */
-                  }
-                </span>
-              );
-            },
-        },{
-          title: '小程序码',
-          dataIndex: 'test_type',
-          render: (text, record) => {
-            if(text == 3){
-              return (
-                <a onClick={()=>this.getXcxCode(record.key)}>
-                  <Icon type="link" />
-                </a>
-              );
-            }
-          },
-      }];
+        
     }
 
     componentDidMount(){
@@ -109,6 +30,66 @@ class TestCenter extends React.Component{
       this.props.getTestTable(teacher_id);
       this.props.getTeacherGroup(teacher_id);
     }
+
+    handleSearch(selectedKeys, confirm){
+      confirm();
+      this.setState({ searchText: selectedKeys[0] });
+      }
+      
+    handleReset(clearFilters){
+        clearFilters();
+        this.setState({ searchText: '' });
+    }
+
+    getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+          <div style={{ padding: 8 }}>
+            <Input
+              ref={ele => this.searchInput = ele}
+              placeholder="输入关键字"
+              value={selectedKeys[0]}
+              onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+              onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
+              style={{ width: 188, marginBottom: 8, display: 'block' }}
+            />
+            <Button
+              type="primary"
+              onClick={() => this.handleSearch(selectedKeys, confirm)}
+              icon="search"
+              size="small"
+              style={{ width: 90, marginRight: 8 }}
+            >
+              Search
+            </Button>
+            <Button onClick={() => this.handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+              Reset
+            </Button>
+          </div>
+        ),
+        filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
+        onFilter: (value, record) => {
+            // console.log('record:',record);
+            if(record[dataIndex]){
+                var indexs = record[dataIndex].indexOf(value);
+                return (indexs >= 0 ? true : false);
+            }else{
+                return false;
+            }
+        },
+        onFilterDropdownVisibleChange: (visible) => {
+            if (visible) {
+                setTimeout(() => {this.searchInput.focus();});
+            }
+        },
+        render: text => (
+          <Highlighter
+            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+            searchWords={[this.state.searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ),
+    });
 
     onTest(testid,index){
       this.setState({visible : true, currentid:testid,currentindex:index});
@@ -203,6 +184,102 @@ class TestCenter extends React.Component{
       const {tests, stugroups, isFetching, xcx_code, isXcxcodeFetching} = this.props;
       console.log('tests:'+ JSON.stringify(tests));
       console.log('xcx_code:'+ xcx_code);
+
+      this.columns = [{
+            title: '测试名称',
+            dataIndex: 'testname',
+            width: '28%',
+            ...this.getColumnSearchProps('testname'),
+            render: (text, record,index) => {
+              // let urlstr = "/AuthJWT/testresult/"+record.key;
+              return(
+                <div>
+                  <a  onClick={() => this.props.router.push("/teacher-zq/testresult/"+record.key)}>{text}</a>
+                </div>
+              );
+            },
+        }, {
+            title: '状态',
+            dataIndex: 'teststate',
+            width: '16%',
+            filters: [{
+							text: '已发布',
+							value: '已发布',
+						}, {
+							text: '未发布',
+							value: '未发布',
+            }],
+            filterMultiple: false,
+            onFilter: (value, record) => {
+							var res = record.teststate? '已发布' : '未发布';
+							return (res === value);
+						},
+            render: (text, record) => {
+              return(
+                <span >
+                  <font color={record.teststate? "00a854" : "red"}>{record.teststate? "已发布" : "未发布"}</font>
+                </span>
+              );
+            },
+        }, {
+          title: '测试时间',
+          dataIndex: 'time',
+          width: '20%',
+          sorter: (a, b) => (moment(a.time)-moment(b.time)),
+          render: (text, record) => {
+            if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
+            else return '';
+          },
+      },{
+            title: '操作',
+            dataIndex: 'action',
+            width: '24%',
+            render: (text,record,index) => {
+              return(
+                <span>
+                  {
+                    !record.teststate?
+                    <a onClick={()=>this.onTest(record.key,index)}>发布</a>
+                    :
+                    <span style={{color:'#d9d9d9'}}>发布</span>
+                  }
+                  <span className="ant-divider" />
+                  {
+                    !record.teststate?
+                    < Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.key,index)} >
+                      <a href = "#">删除</a> 
+                    </Popconfirm >
+                    :
+                    <span style={{color:'#d9d9d9'}}>删除</span>
+                  }
+                  <span className="ant-divider" />
+                  <a onClick={()=>this.onCopy(record.key)}>复制</a>
+                  <span className="ant-divider" />
+                  {
+                    record.is_check? //是否存在需要批改的题目
+                    <Badge count={record.uncheck_num} offset={[10, 5]} showZero>
+                      <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+record.key)}>批改</a>
+                    </Badge>
+                    :
+                    <span style={{color:'#d9d9d9'}}>批改</span>
+                    /* <a  onClick={() => this.props.router.push("/teacher-zq/test_correct/"+310)}>批改</a> */
+                  }
+                </span>
+              );
+            },
+        },{
+          title: '小程序码',
+          dataIndex: 'test_type',
+          render: (text, record) => {
+            if(text == 3){
+              return (
+                <a onClick={()=>this.getXcxCode(record.key)}>
+                  <Icon type="link" />
+                </a>
+              );
+            }
+          },
+      }];
 
       const tProps = {
         treeData: stugroups,

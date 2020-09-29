@@ -1058,7 +1058,8 @@ class LessonViewModal extends React.Component{
       let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
       let {pf_comment_edit} = lesson_edit;
       let { label_id, label_name, pf_comment_content} = this.state;
-      const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.label_id}>{d.label_name}</Option>) : null;
+      // console.log("search_pf_label:",JSON.stringify(search_pf_label));
+      const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.pf_label_id}>{d.label_name}</Option>) : null;
       pf_comment = pf_comment ? pf_comment : [];
 
       // if((lesson_student || []).length == 1){
