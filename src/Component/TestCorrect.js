@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Layout,Tabs,Breadcrumb,Checkbox,Row,Col,Button,Modal} from 'antd';
+import { Layout,Tabs,Breadcrumb,Checkbox,Row,Col,Button,Modal,message} from 'antd';
 import Styles from '../styles/TestResult.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -94,7 +94,7 @@ class OneUncheckedExer extends React.Component {
 		const {title_img_width, title_img_height,answer_img_width,answer_img_height,checked_kp, isShow} = this.state;
 		if(this.props.exer_data){
 			var {realname,exercise_id,exercise_type,submit_time,submit_answer,title,answer,title_img_url,title_audio_url,answer_assist_url,breakdown} = this.props.exer_data;
-			// console.log("title_audio_url:",title_audio_url);
+			console.log("pp_breakdown:",JSON.stringify(breakdown));
 			console.log("submit_answer:",JSON.stringify(submit_answer));
 			var answerDom = [];
 			if(answer){

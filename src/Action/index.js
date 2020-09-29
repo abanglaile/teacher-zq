@@ -1,6 +1,7 @@
 import { checkHttpStatus, parseJSON } from '../utils';
 import { push } from 'react-router-redux'
 import config from '../utils/Config';
+import { message } from 'antd';
 import moment from 'moment';
 import axios from 'axios';
 
@@ -873,6 +874,7 @@ export const submitCheckAnswer = (testid, exercise_log, breakdown_sn) => {
     return dispatch => {
         return axios.post(url, { exercise_log, breakdown_sn})
         .then(function (response) {
+            message.success('批改提交成功!');
             dispatch(getUncheckedExers(testid));
         })
         .catch(function (error) {
