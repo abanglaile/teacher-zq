@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Input, Row, Col, Steps, Menu, Select, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
+import {Icon,Spin,Table,Input, Row, Col, Steps, Menu, Select, message, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 import config from '../utils/Config';
@@ -53,23 +53,31 @@ class TaskManager extends React.Component{
         const { teacher_id, search_task_source} = this.props;
         const {task_type, task_count, source_id, remark, extra, remark_page} = this.state;
         var keys = [];
-        for(var j = 0;j<extra.allCheckedNodes.length;j++){
-            if(extra.allCheckedNodes[j].children != null){
-                for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
-                    keys.push({student_id :extra.allCheckedNodes[j].children[i].node.key});
+        if(extra){
+            for(var j = 0;j<extra.allCheckedNodes.length;j++){
+                if(extra.allCheckedNodes[j].children != null){
+                    for(var i=0;i<extra.allCheckedNodes[j].children.length;i++){
+                        keys.push({student_id :extra.allCheckedNodes[j].children[i].node.key});
+                    }
+                }else{
+                    keys.push({student_id : extra.allCheckedNodes[j].node.key});
                 }
-            }else{
-                keys.push({student_id : extra.allCheckedNodes[j].node.key});
             }
         }
-        console.log("keys:",keys);
-        this.props.distributeNewHW(keys,{
-            source_id: source_id,
-            create_user: teacher_id, 
-            task_type: task_type,
-            remark: task_type ? remark : JSON.stringify(remark_page),
-            task_count: task_count,
-        });
+        // console.log("keys:",keys);
+        var remark_res = task_type ? remark : JSON.stringify(remark_page);
+        if(keys.length > 0 && source_id && remark_res){
+            this.props.distributeNewHW(keys,{
+                source_id: source_id,
+                create_user: teacher_id, 
+                task_type: task_type,//0：页码（教材），1：数量（试卷），2：自定义，3：知秋测试
+                remark: remark_res,
+                task_count: task_count,
+            });
+        }else{
+            message.warning('信息未填写完整！');
+        }
+        
         this.setState({
             visible: false,
             source_id: null,
@@ -83,9 +91,16 @@ class TaskManager extends React.Component{
     }
 
     handleCancel(){
-      this.setState({
-        visible: false,
-      });
+        this.setState({
+            visible: false,
+            source_id: null,
+            source_type: null,
+            task_count : null,
+            remark : [],
+            remark_page : [],
+            task_type : 0,
+            tree_value : [],
+        });
     }
 
     renderNewHomework(){
@@ -265,7 +280,7 @@ class TaskManager extends React.Component{
     render(){
         this.columns = [{
             title: '作业名',
-            dataIndex: 'source_name',
+            dataIndex: 'source_id',
             width: '30%',
             filterDropdown: ({
                 setSelectedKeys, selectedKeys, confirm, clearFilters,
@@ -284,7 +299,8 @@ class TaskManager extends React.Component{
             ),
             filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
             onFilter: (value, record) => {
-                var indexs = record.source_name.indexOf(value);
+                var name = record.sub_name ? record.source_name + ' ' + record.sub_name : record.source_name;
+                var indexs = name.indexOf(value);
                 return (indexs >= 0 ? true : false);
             },
             onFilterDropdownVisibleChange: (visible) => {
@@ -294,14 +310,15 @@ class TaskManager extends React.Component{
             },
             render: (text,record) => {
                 const { searchText } = this.state;
+                var name = record.sub_name ? record.source_name + ' ' + record.sub_name : record.source_name;
                 const textDom = searchText ? (
                     <span>
-                        {text.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
+                        {name.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
                             fragment.toLowerCase() === searchText.toLowerCase()
                                 ? <span key={i} className="highlight">{fragment}</span> : fragment // eslint-disable-line
                         ))}
                     </span>
-                ) : text;
+                ) : name;
                 return(
                     <div onClick={() => this.props.router.push("/teacher-zq/task_result/"+record.task_id)}>
                       <a>{textDom}</a>
@@ -311,7 +328,7 @@ class TaskManager extends React.Component{
         }, {
             title: '作业描述',
             dataIndex: 'remark',
-            width: '30%',
+            width: '20%',
             render: (text, record) => {
                 var obj = null;
                 if(record.task_type == '0'){
@@ -330,16 +347,89 @@ class TaskManager extends React.Component{
                 );
             },
         }, {
+            title: '布置对象',
+            dataIndex: 'task_id',
+            ellipsis: true,
+            width: '12%',
+            render: (text, record) => {
+                var stu_name = '';
+                for(var i=0;i<record.stu.length;i++){
+                    stu_name += record.stu[i].realname + ' ';
+                }
+                return(
+                    <div>
+                        {stu_name}
+                    </div>
+                );
+            },
+        }, {
             title: '布置时间',
             dataIndex: 'create_time',
-            width: '20%',
+            width: '16%',
             sorter: (a, b) => (moment(a.create_time)-moment(b.create_time)),
             render: (text, record) => {
                 if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
                 else return '';
                 return (text);
             },
-        },{
+        },
+        // {
+        //     title: '作业状态',
+        //     dataIndex: 'task_id',
+        //     width: '10%',
+        //     render: (text, record) => {
+        //         var sta = 0;
+        //         var flag = 1;//1：未提交
+        //         var num = 0;
+        //         for(var i=0;i<record.stu.length;i++){
+        //             if(record.stu[i].read != null){
+        //                 flag = 2;//已审核
+        //                 if(record.stu[i].read == 1){
+        //                     num++;
+        //                 }
+        //             }
+        //         }
+        //         if(num){
+        //             flag = 3;//待审核
+        //         }
+        //         return(
+        //             <div>
+        //                 {stu_name}
+        //             </div>
+        //         );
+        //     },
+        //     render: (text, record) => {
+        //       return(
+        //         record.verify_time ? 
+        //         <span>已审核</span>
+        //         :
+        //         (
+        //             text ?
+        //             <span onClick={() => this.showModal(record.student_id)}>
+        //                 <a><font color={"#69c0ff"}>待审核</font></a>
+        //             </span>
+        //             :
+        //             ""
+        //         )
+        //       );
+        //     },
+        //     filters: [{
+        //                 text: '已审核',
+        //                 value: '已审核',
+        //             },{
+        //                 text: '待审核',
+        //                 value: '待审核',
+        //             },{
+        //                 text: '',
+        //                 value: '空',
+        //             }],
+        //     onFilter: (value, record) => {
+        //         console.log("value:",value);
+        //         var res = record.submit_time? (record.verify_time ? '已审核' : '待审核') : '空';
+        //         return (res === value);
+        //     },
+        // },
+        {
             title: '操作',
             dataIndex: 'action',
             render: (text, record,index) => {
@@ -354,7 +444,7 @@ class TaskManager extends React.Component{
         }];
         const {visible} = this.state;
         const {tasks,isFetching} = this.props;
-       
+        console.log('tasks:',JSON.stringify(tasks));
         return(
             <div>
                 <Spin spinning={isFetching} />
