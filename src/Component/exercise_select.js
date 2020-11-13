@@ -500,10 +500,12 @@ class KpExerciseView extends React.Component {
 		const menu = (
 		  <Menu>
 			<Menu.Item>
-			  <a onClick={()=>this.handlePreView()}>试题预览</a>
+			  {/* <a onClick={()=>this.handlePreView()}>试题预览</a> */}
+			  <Button onClick={()=>this.handlePreView()}>试题预览</Button>
 		    </Menu.Item>
 			<Menu.Item>
-			  <a onClick={()=>this.handleProduce()}>生成试卷</a>
+			  {/* <a onClick={()=>this.handleProduce()}>生成试卷</a> */}
+			  <Button onClick={()=>this.handleProduce()}>生成试卷</Button>
 		    </Menu.Item>
 		  </Menu>
 		);
