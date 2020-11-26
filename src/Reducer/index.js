@@ -18,6 +18,7 @@ const defaultTestsData = Immutable.fromJS({//教师创建的所有测试
     
 const defaultTasksData = Immutable.fromJS({
     task_data: [], 
+    tasklog_data: [],
     task_info : {},
     task_res : [],
     isFetching: false,
@@ -146,6 +147,8 @@ export const TasksData = (state = defaultTasksData , action = {}) => {
             return state.set('isFetching', true);
         case 'GET_TASKS_SUCESS':
             return state.set('task_data', Immutable.fromJS(action.json)).set('isFetching', false);
+        case 'GET_TASK_LOGS_SUCESS':
+            return state.set('tasklog_data', Immutable.fromJS(action.json));
         // case 'ADD_NEW_TEST':
         //     var newtest = {'key':action.testid,'testname':action.testname,'teststate':0,'time':''};
         //     return state.update('test_data', test => test.push(Immutable.fromJS(newtest)));

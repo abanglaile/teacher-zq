@@ -448,6 +448,26 @@ export const getTaskTable = (teacher_id) => {
     }
 }
 
+export const getTaskLogTable = (teacher_id) => {
+    let url = target + "/getTaskLogTable";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                teacher_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_TASK_LOGS_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const delOneTask = (taskid,index) => {
     let url = target + "/deleteOneTask";
     return dispatch => {
