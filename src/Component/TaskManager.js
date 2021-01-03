@@ -37,7 +37,8 @@ class TaskManager extends React.Component{
 		const {teacher_id} = this.props;
 		this.setState({activeKey : key});
 		if(key == 2){
-			this.props.getTaskLogTable(teacher_id);
+            // this.props.getTaskLogTable(teacher_id);
+            this.props.getTaskLogTable('1');
 		}else if(key == 1){
 			this.props.getTaskTable(teacher_id);
 		}
@@ -343,6 +344,7 @@ class TaskManager extends React.Component{
             width: '20%',
             render: (text, record) => {
                 var obj = null;
+                // console.log('作业描述text',text);
                 if(record.task_type == '0'){
                     obj = JSON.parse(text);
                 }
@@ -359,101 +361,50 @@ class TaskManager extends React.Component{
                 );
             },
         }, {
-            title: '布置对象',
-            dataIndex: 'task_id',
-            ellipsis: true,
-            width: '12%',
-            render: (text, record) => {
-                var stu_name = '';
-                for(var i=0;i<record.stu.length;i++){
-                    stu_name += record.stu[i].realname + ' ';
-                }
-                return(
-                    <div>
-                        {stu_name}
-                    </div>
-                );
-            },
-        }, {
             title: '布置时间',
-            dataIndex: 'create_time',
+            dataIndex: 'update_time',
             width: '16%',
-            sorter: (a, b) => (moment(a.create_time)-moment(b.create_time)),
+            sorter: (a, b) => (moment(a.update_time)-moment(b.update_time)),
             render: (text, record) => {
                 if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
                 else return '';
                 return (text);
             },
         },
-        // {
-        //     title: '作业状态',
-        //     dataIndex: 'task_id',
-        //     width: '10%',
-        //     render: (text, record) => {
-        //         var sta = 0;
-        //         var flag = 1;//1：未提交
-        //         var num = 0;
-        //         for(var i=0;i<record.stu.length;i++){
-        //             if(record.stu[i].read != null){
-        //                 flag = 2;//已审核
-        //                 if(record.stu[i].read == 1){
-        //                     num++;
-        //                 }
-        //             }
-        //         }
-        //         if(num){
-        //             flag = 3;//待审核
-        //         }
-        //         return(
-        //             <div>
-        //                 {stu_name}
-        //             </div>
-        //         );
-        //     },
-        //     render: (text, record) => {
-        //       return(
-        //         record.verify_time ? 
-        //         <span>已审核</span>
-        //         :
-        //         (
-        //             text ?
-        //             <span onClick={() => this.showModal(record.student_id)}>
-        //                 <a><font color={"#69c0ff"}>待审核</font></a>
-        //             </span>
-        //             :
-        //             ""
-        //         )
-        //       );
-        //     },
-        //     filters: [{
-        //                 text: '已审核',
-        //                 value: '已审核',
-        //             },{
-        //                 text: '待审核',
-        //                 value: '待审核',
-        //             },{
-        //                 text: '',
-        //                 value: '空',
-        //             }],
-        //     onFilter: (value, record) => {
-        //         console.log("value:",value);
-        //         var res = record.submit_time? (record.verify_time ? '已审核' : '待审核') : '空';
-        //         return (res === value);
-        //     },
-        // },
         {
-            title: '操作',
-            dataIndex: 'action',
-            render: (text, record,index) => {
-                return(
-                <span>
-                    <Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.task_id,index)} >
-                        <Icon type="delete"/>
-                    </Popconfirm >
-                </span>
-                );
+            title: '作业状态',
+            dataIndex: 'taskState',
+            width: '10%',
+            render: (text, record) => {
+              return(
+                text == 'uncheck' ? 
+                <span><font color={"#69c0ff"}>待审核</font></span>
+                :
+                (
+                    text == 'focus'?
+                    <span><font color={"#ffa940"}>待督办</font></span>
+                    :
+                    <span><font color={"#389e0d"}>已审核</font></span>
+                )
+              );
             },
-        }];
+            filters: [{
+                        text: '待审核',
+                        value: '待审核',
+                    },{
+                        text: '待督办',
+                        value: '待督办',
+                    },{
+                        text: '已审核',
+                        value: '已审核',
+                    }],
+            onFilter: (value, record) => {
+                console.log("value:",value);
+                // var res = record.submit_time? (record.verify_time ? '已审核' : '待审核') : '空';
+                var res = record.taskState == 'uncheck'? '待审核' : (record.taskState == 'focus' ? '待督办' : '已审核');
+                return (res === value);
+            },
+        },];
         this.task_columns = [
             {
                 title: '作业名',
@@ -497,8 +448,8 @@ class TaskManager extends React.Component{
                         </span>
                     ) : name;
                     return(
-                        <div onClick={() => this.props.router.push("/teacher-zq/task_result/"+record.task_id)}>
-                          <a>{textDom}</a>
+                        <div>
+                          {textDom}
                         </div>
                       );
                 },
@@ -533,7 +484,19 @@ class TaskManager extends React.Component{
                     else return '';
                     return (text);
                 },
-            },
+            },{
+                title: '操作',
+                dataIndex: 'action',
+                render: (text, record,index) => {
+                    return(
+                    <span>
+                        <Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.task_id,index)} >
+                            <Icon type="delete"/>
+                        </Popconfirm >
+                    </span>
+                    );
+                },
+            }
         ];
         const {visible,activeKey} = this.state;
         const {tasks,task_logs,isFetching} = this.props;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Table, Menu, Select, Button,Breadcrumb, Popconfirm ,Row, Col,Checkbox,Collapse,Input,Modal,Form} from 'antd';
+import {Icon,Table, Menu, Select, Button,Breadcrumb, Popconfirm ,Popover, Row, Col,Checkbox,Collapse,Input,Modal,Form} from 'antd';
 import Styles from '../styles/stu_manager.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -225,7 +225,13 @@ class StuManager extends React.Component{
                 <Row type="flex" justify="space-between" align="middle" className="rowinCollapse">
                   <Col span={6}>
                     {/* <div><Button onClick={()=>this.handleAddOneStu()}>添加成员</Button></div> */}
-                    <div>班级ID：{item.stu_group_id}</div>
+                    <div>
+                        <Popover content={this.props.group_code} title="班级绑定码" trigger="click">
+                            <a onClick={() => this.props.getCodeByGroupid(item.stu_group_id)}>
+                              班级ID：{item.stu_group_id}
+                            </a>
+                        </Popover>
+                    </div>
                   </Col>
                   <Col span={6}>
                     <div>
@@ -290,6 +296,7 @@ export default connect(state => {
     groups: class_data.classgroup_data, 
     school_data: class_data.school_data, 
     stus : class_data.groupstu_data,
+    group_code : class_data.group_code,
     isFetching: class_data.isFetching, 
     username: state.AuthData.get('username'),
     teacher_id: state.AuthData.get('userid'),

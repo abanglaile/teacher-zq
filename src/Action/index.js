@@ -595,6 +595,20 @@ export const getClassGroup = (teacher_id) => {
     }
 }
 
+//获取学生邀请码
+export const getCodeByGroupid = (stu_group_id) => {
+    let url = target + '/getCodeByGroupid'
+    return (dispatch) => {
+      return axios.get(url, { params: { stu_group_id } })
+      .then((response) => {
+        dispatch({
+          type: 'GET_GROUP_CODE',
+          code: response.data
+        })
+      })
+    }
+}
+
 //根据教师id获取 下带的班级分组及分组内学生的数据
 export const getTeacherGroup = (teacher_id) => {
     let url = target + "/getTeacherGroup";

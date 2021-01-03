@@ -48,6 +48,7 @@ const defaultClassGroupData = Immutable.fromJS({//教师管理的所有班级
         school_data: [],
         student_list: [],
         code : null,
+        group_code : null,
         class_hour : [],
         classgroup_data: [],
         groupstu_data: [],
@@ -201,6 +202,8 @@ export const classGroupData = (state = defaultClassGroupData, action = {}) => {
             return state.set('class_hour', Immutable.fromJS(action.class_hour));
         case 'GET_STUDENT_CODE':
             return state.set('code',action.code);
+        case 'GET_GROUP_CODE':
+            return state.set('group_code',action.code);
         case 'GET_CLASSGROUP_START':
             return state.set('isFetching', true);
         case 'GET_SCHOOL_SUCESS':
