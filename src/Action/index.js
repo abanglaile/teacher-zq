@@ -530,6 +530,19 @@ export const distributeNewHW = (students, task) => {
     }
 }
 
+export const addTask = (task) => {
+    let url = target + "/addTask";
+    return dispatch => {
+        return axios.post(url, {task})
+        .then(function (response) {
+            dispatch(getTaskTable(task.create_user));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 
 /*---------------------------------------班级管理----------------------------------*/
 //获取老师所在的学校和机构

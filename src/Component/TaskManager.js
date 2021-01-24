@@ -49,6 +49,29 @@ class TaskManager extends React.Component{
       this.props.delOneTask(taskid,index);
     }
 
+    addTask(){
+        const { teacher_id } = this.props;
+        const { task_type, task_count, source_id, content } = this.state;
+        this.props.addTask({
+            source_id: source_id,
+            create_user: teacher_id, 
+            task_type: task_type,
+            content: content,
+            task_count: task_count,
+        });
+        this.setState({
+            new_task_visible: false,
+            source_id: null,
+            task_count : null,
+            content: null,
+            task_type: 1,
+        });
+    }
+
+    closeNewTask(){
+        this.setState({ new_task_visible: false })
+    }
+
     handleOk(){
         const { teacher_id, search_task_source} = this.props;
         const {task_type, task_count, source_id, remark, extra, remark_page} = this.state;
@@ -103,6 +126,60 @@ class TaskManager extends React.Component{
         });
     }
 
+    renderNewTaskModal(){
+        const { teacher_id, search_task_source } = this.props;
+        const { new_task_visible, task_type, task_count, source_id } = this.state;
+  
+        const source_name_option = search_task_source.map((item) =>  
+            <Option key={item.source_id} type={item.source_type}>{item.source_name}</Option>
+        )
+
+        return (
+        <Modal title="新建任务" visible={new_task_visible} width={600} onOk={()=>this.addTask()} onCancel={()=>this.closeNewTask()}>
+            <div style={{marginBottom: "0.5rem"}}>
+                <span style={{marginRight: "0.5rem"}}>教材：</span>
+                <Select
+                    style={{ width: 350, marginRight: "1rem" }}
+                    value={this.state.source_id}
+                    showSearch
+                    placeholder={"选择教材"}
+                    defaultActiveFirstOption={false}
+                    showArrow={false}
+                    filterOption={false}
+                    autoFocus={true}
+                    onSearch={(input) => this.searchTaskSource(input)}
+                    onSelect={(value, option) => this.setState({
+                        source_id: value,
+                        task_count: 0, 
+                        source_type: option.props.type, 
+                        task_type: option.props.type,
+                    })}
+                    notFoundContent={null}
+                >
+                    {source_name_option}  
+                </Select>
+                            
+                <div style={{padding: "1rem 0"}}>
+                    <span style={{marginRight: "0.5rem"}}>数量：</span>
+                    <InputNumber
+                        style={{marginRight: "1rem"}}
+                        value={this.state.task_count} 
+                        onChange={(value) => this.setState({task_count: value})}
+                    />
+                    <span style={{marginRight: "0.5rem"}}>批改审核方式：</span>
+                    <Select defaultValue="1" style={{ width: 150 }} value={this.state.task_type} onChange={v => this.setState({task_type: v})}>
+                        <Option value={0}>无需审核</Option>
+                        <Option value={1}>自主批改,需提交审核</Option>
+                        <Option value={2}>需提交批改</Option>  
+                    </Select>
+                </div>
+                <Input placeholder="任务描述" value={this.state.content} onChange={e => this.setState({content: e.target.value})} />                
+            </div>
+        </Modal>
+        )
+
+    }
+
     renderNewHomework(){
         const { teacher_id, search_task_source} = this.props;
         let edit_dom = [];
@@ -147,11 +224,15 @@ class TaskManager extends React.Component{
     }
 
     renderSelectSource(){
-        const { teacher_id, search_task_source} = this.props;
+        const { teacher_id, search_task_source, search_source_sub } = this.props;
         const {task_type, task_count, source_id, remark} = this.state;
   
-        const source_option = search_task_source.map((item) =>  
-            <Option key={item.source_id} type={item.source_type}>{item.source_name}</Option>)
+        const source_name_option = search_task_source.map((item) =>  
+            <Option key={item.source_name} type={item.source_type}>{item.source_name}</Option>
+        )
+        const source_sub_option = search_source_sub.map((item) =>  
+            <Option key={item.source_id} type={item.source_type}>{item.source_name}</Option>
+        )
         return (
             <div style={{marginBottom: "0.5rem"}}>
                 <Select
@@ -174,18 +255,14 @@ class TaskManager extends React.Component{
                     })}
                     notFoundContent={null}
                 >
-                    {source_option}  
+                    {source_name_option}  
                 </Select>                
                 <span style={{marginRight: "0.5rem"}}>数量：</span>
                 <InputNumber
                     style={{marginRight: "1rem"}}
                     value={this.state.task_count} 
-                    disabled={this.state.task_type != 1}
                     onChange={(value) => this.setState({task_count: value})}
                 />
-                {/* <Switch checkedChildren="自定义" unCheckedChildren="指定" 
-                    onChange={checked => checked ? this.setState({task_type: 2, task_count: 0.5}) : this.setState({task_type: 0, task_count: null})} 
-                    checked={this.state.task_type == 2} /> */}
             </div>
            )
     }
@@ -451,14 +528,15 @@ class TaskManager extends React.Component{
                 <div style={{marginBottom:"10px"}}>
                 <Button 
                     type="primary"  
-                    onClick={() => this.setState({visible: true})}
+                    onClick={() => this.setState({new_task_visible: true})}
                 >
-                    <Icon type="plus" />添加作业
+                    <Icon type="plus" />添加任务
                 </Button>
                 </div>
-                <Modal title="新建作业并发布" visible={visible} width={600} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
+                {this.renderNewTaskModal()}
+                {/* <Modal title="新建作业并发布" visible={visible} width={600} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
                     {this.renderNewHomework()}
-                </Modal>
+                </Modal> */}
                 < Table 
                 columns = { this.columns } 
                 dataSource = { tasks }
