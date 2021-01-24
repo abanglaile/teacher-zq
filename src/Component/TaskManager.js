@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Input, Row, Col, Steps, Menu, Select, message, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
+import {Icon,Spin,Tabs,Table,Input, Row, Col, Steps, Menu, Select, message, Button,Breadcrumb, Popconfirm ,TreeSelect,Modal,Tag,InputNumber,Switch} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 import config from '../utils/Config';
@@ -11,14 +11,18 @@ const { SubMenu } = Menu;
 const Option = Select.Option;
 const Step = Steps.Step;
 const SHOW_PARENT = TreeSelect.SHOW_PARENT;
+const TabPane = Tabs.TabPane;
 
 var urlip = config.server_url;
 
 class TaskManager extends React.Component{
     constructor(props) {
         super(props);
-        this.state={visible:false,tree_value:[],remark: [],task_type: 0, remark_page: [],
-            filterDropdownVisible: false, searchText: '', filtered: false, checked : false
+        this.state={
+            visible:false,tree_value:[],remark: [],task_type: 0, 
+            remark_page: [],activeKey : '1', 
+            filterDropdownVisible: false, searchText: '', 
+            filtered: false, checked : false
         };
         this.searchTaskSource = debounce(this.props.searchTaskSource, 500);
     }
@@ -28,6 +32,17 @@ class TaskManager extends React.Component{
       this.props.getTaskTable(teacher_id);
       this.props.getTeacherGroup(teacher_id);
     }
+
+    onTabChange(key){
+		const {teacher_id} = this.props;
+		this.setState({activeKey : key});
+		if(key == 2){
+            // this.props.getTaskLogTable(teacher_id);
+            this.props.getTaskLogTable('1');
+		}else if(key == 1){
+			this.props.getTaskTable(teacher_id);
+		}
+	}
 
     handleSearch = (selectedKeys, confirm) => () => {
 		confirm();
@@ -352,10 +367,8 @@ class TaskManager extends React.Component{
         );
     }
 
-
-
     render(){
-        this.columns = [{
+        this.task_log_columns = [{
             title: '作业名',
             dataIndex: 'source_id',
             width: '30%',
@@ -408,6 +421,7 @@ class TaskManager extends React.Component{
             width: '20%',
             render: (text, record) => {
                 var obj = null;
+                // console.log('作业描述text',text);
                 if(record.task_type == '0'){
                     obj = JSON.parse(text);
                 }
@@ -424,108 +438,150 @@ class TaskManager extends React.Component{
                 );
             },
         }, {
-            title: '布置对象',
-            dataIndex: 'task_id',
-            ellipsis: true,
-            width: '12%',
-            render: (text, record) => {
-                var stu_name = '';
-                for(var i=0;i<record.stu.length;i++){
-                    stu_name += record.stu[i].realname + ' ';
-                }
-                return(
-                    <div>
-                        {stu_name}
-                    </div>
-                );
-            },
-        }, {
             title: '布置时间',
-            dataIndex: 'create_time',
+            dataIndex: 'update_time',
             width: '16%',
-            sorter: (a, b) => (moment(a.create_time)-moment(b.create_time)),
+            sorter: (a, b) => (moment(a.update_time)-moment(b.update_time)),
             render: (text, record) => {
                 if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
                 else return '';
                 return (text);
             },
         },
-        // {
-        //     title: '作业状态',
-        //     dataIndex: 'task_id',
-        //     width: '10%',
-        //     render: (text, record) => {
-        //         var sta = 0;
-        //         var flag = 1;//1：未提交
-        //         var num = 0;
-        //         for(var i=0;i<record.stu.length;i++){
-        //             if(record.stu[i].read != null){
-        //                 flag = 2;//已审核
-        //                 if(record.stu[i].read == 1){
-        //                     num++;
-        //                 }
-        //             }
-        //         }
-        //         if(num){
-        //             flag = 3;//待审核
-        //         }
-        //         return(
-        //             <div>
-        //                 {stu_name}
-        //             </div>
-        //         );
-        //     },
-        //     render: (text, record) => {
-        //       return(
-        //         record.verify_time ? 
-        //         <span>已审核</span>
-        //         :
-        //         (
-        //             text ?
-        //             <span onClick={() => this.showModal(record.student_id)}>
-        //                 <a><font color={"#69c0ff"}>待审核</font></a>
-        //             </span>
-        //             :
-        //             ""
-        //         )
-        //       );
-        //     },
-        //     filters: [{
-        //                 text: '已审核',
-        //                 value: '已审核',
-        //             },{
-        //                 text: '待审核',
-        //                 value: '待审核',
-        //             },{
-        //                 text: '',
-        //                 value: '空',
-        //             }],
-        //     onFilter: (value, record) => {
-        //         console.log("value:",value);
-        //         var res = record.submit_time? (record.verify_time ? '已审核' : '待审核') : '空';
-        //         return (res === value);
-        //     },
-        // },
         {
-            title: '操作',
-            dataIndex: 'action',
-            render: (text, record,index) => {
-                return(
-                <span>
-                    <Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.task_id,index)} >
-                        <Icon type="delete"/>
-                    </Popconfirm >
-                </span>
-                );
+            title: '作业状态',
+            dataIndex: 'taskState',
+            width: '10%',
+            render: (text, record) => {
+              return(
+                text == 'uncheck' ? 
+                <span><font color={"#69c0ff"}>待审核</font></span>
+                :
+                (
+                    text == 'focus'?
+                    <span><font color={"#ffa940"}>待督办</font></span>
+                    :
+                    <span><font color={"#389e0d"}>已审核</font></span>
+                )
+              );
             },
-        }];
-        const {visible} = this.state;
-        const {tasks,isFetching} = this.props;
+            filters: [{
+                        text: '待审核',
+                        value: '待审核',
+                    },{
+                        text: '待督办',
+                        value: '待督办',
+                    },{
+                        text: '已审核',
+                        value: '已审核',
+                    }],
+            onFilter: (value, record) => {
+                console.log("value:",value);
+                // var res = record.submit_time? (record.verify_time ? '已审核' : '待审核') : '空';
+                var res = record.taskState == 'uncheck'? '待审核' : (record.taskState == 'focus' ? '待督办' : '已审核');
+                return (res === value);
+            },
+        },];
+        this.task_columns = [
+            {
+                title: '作业名',
+                dataIndex: 'source_id',
+                width: '30%',
+                filterDropdown: ({
+                    setSelectedKeys, selectedKeys, confirm, clearFilters,
+                }) => (
+                    <div className="custom-filter-dropdown">
+                        <Input
+                            ref={ele => this.searchInput = ele}
+                            placeholder="输入关键字"
+                            value={selectedKeys[0]}
+                            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                            onPressEnter={this.handleSearch(selectedKeys, confirm)}
+                        />
+                        <Button type="primary" onClick={this.handleSearch(selectedKeys, confirm)}>Search</Button>
+                        <Button onClick={this.handleReset(clearFilters)}>Reset</Button>
+                    </div>
+                ),
+                filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
+                onFilter: (value, record) => {
+                    var name = record.sub_name ? record.source_name + ' ' + record.sub_name : record.source_name;
+                    var indexs = name.indexOf(value);
+                    return (indexs >= 0 ? true : false);
+                },
+                onFilterDropdownVisibleChange: (visible) => {
+                    if (visible) {
+                        setTimeout(() => {this.searchInput.focus();});
+                    }
+                },
+                render: (text,record) => {
+                    const { searchText } = this.state;
+                    var name = record.sub_name ? record.source_name + ' ' + record.sub_name : record.source_name;
+                    const textDom = searchText ? (
+                        <span>
+                            {name.split(new RegExp(`(${searchText})`, 'gi')).map((fragment, i) => (
+                                fragment.toLowerCase() === searchText.toLowerCase()
+                                    ? <span key={i} className="highlight">{fragment}</span> : fragment // eslint-disable-line
+                            ))}
+                        </span>
+                    ) : name;
+                    return(
+                        <div>
+                          {textDom}
+                        </div>
+                      );
+                },
+            }, {
+                title: '作业描述',
+                dataIndex: 'remark',
+                width: '20%',
+                render: (text, record) => {
+                    var obj = null;
+                    if(record.task_type == '0'){
+                        obj = JSON.parse(text);
+                    }
+                    return(
+                        <div>
+                            {obj ?
+                            obj.map(item => {
+                                return <Tag color={'green'} key={item}>第{item}页</Tag>;
+                            })
+                            :
+                            text
+                            }
+                        </div>
+                    );
+                },
+            }, {
+                title: '新建时间',
+                dataIndex: 'create_time',
+                width: '16%',
+                sorter: (a, b) => (moment(a.create_time)-moment(b.create_time)),
+                render: (text, record) => {
+                    if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
+                    else return '';
+                    return (text);
+                },
+            },{
+                title: '操作',
+                dataIndex: 'action',
+                render: (text, record,index) => {
+                    return(
+                    <span>
+                        <Popconfirm title = "确定删除?" onConfirm = {() => this.onDelete(record.task_id,index)} >
+                            <Icon type="delete"/>
+                        </Popconfirm >
+                    </span>
+                    );
+                },
+            }
+        ];
+        const {visible,activeKey} = this.state;
+        const {tasks,task_logs,isFetching} = this.props;
         console.log('tasks:',JSON.stringify(tasks));
         return(
             <div>
-                <Spin spinning={isFetching} />
-                <div style={{marginBottom:"10px"}}>
+                {/* <Spin spinning={isFetching} /> */}
+                {/* <div style={{marginBottom:"10px"}}>
                 <Button 
                     type="primary"  
                     onClick={() => this.setState({new_task_visible: true})}
@@ -537,10 +593,43 @@ class TaskManager extends React.Component{
                 {/* <Modal title="新建作业并发布" visible={visible} width={600} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
                     {this.renderNewHomework()}
                 </Modal> */}
+<<<<<<< HEAD
                 < Table 
                 columns = { this.columns } 
                 dataSource = { tasks }
                 /> 
+=======
+                <div>
+                    <Tabs onChange={(key)=>this.onTabChange(key)} activeKey={activeKey}>
+                        <TabPane tab="作业库" key="1">
+                            <Spin spinning={isFetching} />
+                            <div style={{marginBottom:"10px"}}>
+                                <Button 
+                                    type="primary"  
+                                    onClick={() => this.setState({visible: true})}
+                                >
+                                    <Icon type="plus" />添加作业
+                                </Button>
+                            </div>
+                            <Modal title="新建作业并发布" visible={visible} width={600} 
+                                onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
+                                {this.renderNewHomework()}
+                            </Modal>
+                            < Table 
+                                columns = { this.task_columns } 
+                                dataSource = { tasks }
+                            />     
+                        </TabPane>
+                        <TabPane tab="作业审批" key="2">
+                            < Table 
+                                columns = { this.task_log_columns } 
+                                dataSource = { task_logs }
+                            /> 
+                        </TabPane>
+                    </Tabs>
+                </div>
+               
+>>>>>>> origin/master
             </div>   
         );
     }
@@ -551,6 +640,7 @@ export default connect(state => {
   const { search_task_source } = state.personalData.toJS();;
   return {
     tasks: state.TasksData.get('task_data').toJS(), 
+    task_logs : state.TasksData.get('tasklog_data').toJS(), 
     isFetching: state.TasksData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
     search_task_source: search_task_source,
