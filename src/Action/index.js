@@ -550,6 +550,20 @@ export const distributeNewHW = (students, task) => {
     }
 }
 
+export const distributeTaskLog = (students, tasklog) => {
+    let url = target + "/distributeTaskLog";
+    return dispatch => {
+        return axios.post(url, {students, tasklog})
+        .then(function (response) {
+            message.success('任务分发成功!');
+            dispatch(getTaskLogTable(tasklog.verify_user));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const addTask = (task) => {
     let url = target + "/addTask";
     return dispatch => {
