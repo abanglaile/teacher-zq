@@ -20,7 +20,7 @@ class TaskManager extends React.Component{
         super(props);
         this.state={
             visible:false,tree_value:[],remark: [],task_type: 0, 
-            remark_page: [],activeKey : '1', 
+            remark_page: [],
             filterDropdownVisible: false, searchText: '', 
             filtered: false, checked : false
         };
@@ -35,7 +35,7 @@ class TaskManager extends React.Component{
 
     onTabChange(key){
 		const {teacher_id} = this.props;
-		this.setState({activeKey : key});
+        this.props.setTaskTab(key);
 		if(key == 2){
             // this.props.getTaskLogTable(teacher_id);
             this.props.getTaskLogTable('1');
@@ -234,36 +234,6 @@ class TaskManager extends React.Component{
 
     }
 
-    // renderNewHomework(){
-    //     const { teacher_id, search_task_source} = this.props;
-    //     let edit_dom = [];
-    //     const {task_type, task_count, source_id, remark} = this.state;
-
-    //     edit_dom = (
-    //         <div>
-    //             {this.renderSelectSource()}
-    //             {this.renderTaskSub()}
-    //             {this.renderTreeSelect()}
-    //         </div>
-    //     )
-        
-    //     return (
-    //         <div>
-    //             {/* <div style={{marginBottom: '0.5rem'}}>
-    //             <a onClick={e => this.props.addHomework(lesson_id, {
-    //                 source_id: source_id,
-    //                 create_user: teacher_id, 
-    //                 task_type: task_type,
-    //                 remark: task_type ? remark : JSON.stringify(remark),
-    //                 task_count: task_count,
-    //             }, lesson_student)} style={{marginRight: '0.5rem'}}>发布</a>
-    //             <a onClick={e => this.props.editLesson('new_homework_edit', false)}>取消</a>
-    //             </div> */}
-    //             {edit_dom}
-    //         </div>
-    //        )
-    // }
-
     pageInputConfirm(){
         let {remark_page, page} = this.state;
         if (page && remark_page.indexOf(page) === -1) {
@@ -277,134 +247,6 @@ class TaskManager extends React.Component{
         });
     }
 
-    // renderSelectSource(){
-    //     const { teacher_id, search_task_source, search_source_sub } = this.props;
-    //     const {task_type, task_count, source_id, remark} = this.state;
-  
-    //     const source_name_option = search_task_source.map((item) =>  
-    //         <Option key={item.source_name} type={item.source_type}>{item.source_name}</Option>
-    //     )
-    //     // const source_sub_option = search_source_sub.map((item) =>  
-    //     //     <Option key={item.source_id} type={item.source_type}>{item.source_name}</Option>
-    //     // )
-    //     return (
-    //         <div style={{marginBottom: "0.5rem"}}>
-    //             <Select
-    //                 style={{ width: 300, marginRight: "1rem" }}
-    //                 value={this.state.source_id}
-    //                 showSearch
-    //                 placeholder={"选择教材"}
-    //                 defaultActiveFirstOption={false}
-    //                 showArrow={false}
-    //                 filterOption={false}
-    //                 autoFocus={true}
-    //                 onSearch={(input) => this.searchTaskSource(input)}
-    //                 onSelect={(value, option) => this.setState({
-    //                     source_id: value,
-    //                     task_count: 0,
-    //                     remark: null,
-    //                     remark_page: [],  
-    //                     source_type: option.props.type, 
-    //                     task_type: option.props.type,
-    //                 })}
-    //                 notFoundContent={null}
-    //             >
-    //                 {source_name_option}  
-    //             </Select>                
-    //             <span style={{marginRight: "0.5rem"}}>数量：</span>
-    //             <InputNumber
-    //                 style={{marginRight: "1rem"}}
-    //                 value={this.state.task_count} 
-    //                 onChange={(value) => this.setState({task_count: value})}
-    //             />
-    //         </div>
-    //        )
-    // }
-
-    // renderTaskSub(){
-    //     // let {remark, page_input_visible} = this.state;
-    //     let {source_type, task_type, remark, remark_page, page_input_visible} = this.state;
-
-    //     if(source_type){//非教材类
-    //         return (
-    //           <div style={{width: 500}}>
-    //             <Input placeholder="添加作业描述" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
-    //           </div>
-    //         ) 
-    //     }else if(task_type){
-    //       //自定义
-    //         return(
-    //             <Row type="flex" gutter={2} justify="space-between" align="middle">
-    //             <Col span={20}>
-    //                 <Input placeholder="自定义内容" value={this.state.remark} onChange={e => this.setState({remark: e.target.value})} />
-    //             </Col>
-    //             <Col span={2}>
-    //                 <Icon type="snippets" onClick={e => this.setState({task_type: 0, task_count: remark_page.length})} />
-    //             </Col>
-    //             </Row>
-    //         )
-    //     }else{
-    //       return (
-    //         <div>
-    //             <Row>
-    //                 <Col span={22}>
-    //                     {
-    //                         remark_page.map((tag, index) => 
-    //                             <Tag key={tag} closable afterClose={(removedTag) => {
-    //                                 const tags = remark_page.filter(tag => tag !== removedTag);
-    //                                 this.setState({ remark_page: tags });
-    //                             }}>
-    //                                 {'P ' + tag}
-    //                             </Tag>
-    //                         )
-    //                     }
-    //                     {page_input_visible ? 
-    //                         <InputNumber
-    //                         size="small"
-    //                         onChange={(value) => this.setState({page: value})}
-    //                         onBlur={() => this.pageInputConfirm()}
-    //                         />              
-    //                         :
-    //                         <Tag
-    //                         onClick={e => this.setState({page_input_visible: true})}
-    //                         style={{ background: '#fff', borderStyle: 'dashed' }}
-    //                         >
-    //                         <Icon type="plus" /> 添加页码
-    //                         </Tag>
-    //                     }
-    //                 </Col>
-    //                 <Col span={2}>
-    //                     <Icon type="edit" onClick={e => this.setState({task_type: 2, task_count: 0.5})} />
-    //                 </Col>
-    //             </Row>
-    //         </div>
-    //       )
-    //     }      
-    // }
-    
-    // renderTreeSelect(){
-    //     const {tree_value} = this.state;
-    //     const { stugroups } = this.props;
-    //     console.log('stugroups:'+ JSON.stringify(stugroups));
-
-    //     const tProps = {
-    //         treeData: stugroups,
-    //         value: tree_value,
-    //         onChange: (value,label,extra)=>this.onTreeChange(value,label,extra),
-    //         multiple: true,
-    //         treeCheckable: true,
-    //         showCheckedStrategy: SHOW_PARENT,
-    //         searchPlaceholder: '请选择发布班组',
-    //         style: {
-    //         width: 300,
-    //         },
-    //     };
-    //     return(
-    //         <div style={{marginTop: "1rem"}}>
-    //             <TreeSelect {...tProps}/>
-    //         </div>
-    //     );
-    // }
     onTask(task_id,source_name){
         this.setState({add_tasklog_visible : true, currentid:task_id, currentname:source_name});
     }
@@ -412,7 +254,7 @@ class TaskManager extends React.Component{
     renderAddTaskLogModal(){
         const {tree_value,add_tasklog_visible,currentname} = this.state;
         const { stugroups } = this.props;
-        console.log('stugroups:'+ JSON.stringify(stugroups));
+        // console.log('stugroups:'+ JSON.stringify(stugroups));
 
         const tProps = {
             treeData: stugroups,
@@ -512,7 +354,7 @@ class TaskManager extends React.Component{
             },
         },
         {
-            title: '作业状态',
+            title: '任务状态',
             dataIndex: 'taskState',
             width: '10%',
             render: (text, record) => {
@@ -604,7 +446,7 @@ class TaskManager extends React.Component{
                         </div>
                     );
                 },
-            }, {
+            },{
                 title: '新建时间',
                 dataIndex: 'create_time',
                 width: '16%',
@@ -632,13 +474,13 @@ class TaskManager extends React.Component{
                 },
             }
         ];
-        const {visible,activeKey} = this.state;
-        const {tasks,task_logs,isFetching} = this.props;
-        console.log('tasks:',JSON.stringify(tasks));
+        const {visible} = this.state;
+        const {tasks,task_logs,task_tab,isFetching} = this.props;
+        console.log('task_tab:',task_tab);
         return(
             <div>
                 <div>
-                    <Tabs onChange={(key)=>this.onTabChange(key)} activeKey={activeKey}>
+                    <Tabs onChange={(key)=>this.onTabChange(key)} activeKey={task_tab}>
                         <TabPane tab="任务库" key="1">
                             <Spin spinning={isFetching} />
                             <div style={{marginBottom:"10px"}}>
@@ -680,6 +522,7 @@ export default connect(state => {
   return {
     tasks: state.TasksData.get('task_data').toJS(), 
     task_logs : state.TasksData.get('tasklog_data').toJS(), 
+    task_tab : state.TasksData.get('task_tab'), 
     isFetching: state.TasksData.get('isFetching'), 
     teacher_id:state.AuthData.get('userid'),
     search_task_source: search_task_source,

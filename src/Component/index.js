@@ -89,6 +89,12 @@ class App extends React.Component{
                             任务管理
                           </div>
                         </Menu.Item>
+                        <Menu.Item key="sub7">
+                          <div onClick={() => this.props.router.push("/teacher-zq/root/path-manager")}
+                          >
+                            路径管理
+                          </div>
+                        </Menu.Item>
                       </Menu>
                     </Sider>
                     <Content style={{ padding: '0 24px', minHeight: 350 }}>
