@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon, Row, Col,Table,Button,Input,Dropdown,Progress,Modal,Radio,Form,message,Carousel } from 'antd';
+import {Icon, Row, Col,Table,Button,Input,Dropdown,Upload,Progress,Modal,Radio,Form,message,Carousel } from 'antd';
 import Styles from '../styles/TestResult.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -20,10 +20,13 @@ class StuTaskRes extends React.Component {
             searchText: '', 
             student_id:'',
             submit_url:null,
+            assign_type:null,
             filtered: false, 
             checked : false,
             visible : false,
             value : 1,
+            previewVisible: false,
+            previewImage: '',
         };
     }
 
@@ -44,14 +47,14 @@ class StuTaskRes extends React.Component {
         this.setState({ searchText: '' });
     }
 
-    showModal(student_id,submit_url){
-        this.setState({visible: true, student_id : student_id, submit_url : submit_url});
+    showModal(student_id,submit_url,assign_type){
+        this.setState({visible: true, student_id : student_id, submit_url : submit_url,assign_type : assign_type});
     }
 
     handleOk(e){
         // this.setState({visible: false});
         const {teacher_id, taskid} = this.props;
-        const {student_id} = this.state; 
+        const {student_id,assign_type} = this.state; 
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -62,7 +65,7 @@ class StuTaskRes extends React.Component {
                     message.warning("请选择审核结果！");
                 }else{
                     this.setState({visible: false},()=>{
-                        this.props.setVerifyRes(values.verifyState,values.comment,taskid,teacher_id,student_id);
+                        this.props.setVerifyRes(values.verifyState,values.comment,taskid,teacher_id,student_id,assign_type);
                     });
                 }
             }
@@ -159,11 +162,11 @@ class StuTaskRes extends React.Component {
                       :
                       (
                         text == 1 ?
-                        <span onClick={() => this.showModal(record.student_id,record.submit_url)}>
+                        <span onClick={() => this.showModal(record.student_id,record.submit_url,record.assign_type)}>
                           <a><font color={"#69c0ff"}>待审核</font></a>
                         </span>
                         :
-                        <span onClick={() => this.showModal(record.student_id,record.submit_url)}>
+                        <span onClick={() => this.showModal(record.student_id,record.submit_url,record.assign_type)}>
                           <a><font color={"red"}>未通过</font></a>
                         </span>
                       )
@@ -200,7 +203,7 @@ class StuTaskRes extends React.Component {
             key:'comment',
         },];
         const {task_res} = this.props;
-        const {submit_url} = this.state;
+        const {submit_url,previewVisible,previewImage} = this.state;
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
             labelCol: { span: 4 },
@@ -208,6 +211,14 @@ class StuTaskRes extends React.Component {
         };
         if(submit_url){
             var url_list = submit_url.split(',');
+            var fileList = [];
+            for(var i=0;i<url_list.length;i++){
+                var file = {
+                    uid : i,
+                    url : url_list[i]
+                };
+                fileList.push(file);
+            }
         }
 		if(task_res){
 			return(
@@ -218,21 +229,32 @@ class StuTaskRes extends React.Component {
                     <Modal
                         title="审核"
                         visible={this.state.visible}
-                        width={800}
+                        width={500}
                         onOk={(e) => this.handleOk(e)}
                         onCancel={() => this.handleCancel()}
                     >
                         <div>
                             {submit_url ?
-                                <div style={{marginBottom:'1rem'}}>
-                                    <Carousel dotPosition={'top'}>
-                                        {url_list.map((item) => 
-                                            <div>
-                                                <img src={item} 
-                                                    style={{width: "752px", height: "auto"}}
-                                                />
-                                            </div>)}
-                                    </Carousel>
+                                // <div style={{marginBottom:'1rem'}}>
+                                //     <Carousel dotPosition={'top'}>
+                                //         {url_list.map((item) => 
+                                //             <div>
+                                //                 <img src={item} 
+                                //                     style={{width: "752px", height: "auto"}}
+                                //                 />
+                                //             </div>)}
+                                //     </Carousel>
+                                // </div>
+                                <div>
+                                    <Upload
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        onPreview={(file) => this.setState({previewImage:file.url,previewVisible: true})}
+                                        >
+                                    </Upload>
+                                    <Modal visible={previewVisible} width={660} footer={null} onCancel={() => this.setState({ previewVisible: false })}>
+                                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                                    </Modal>
                                 </div>
                                 :''
                             }

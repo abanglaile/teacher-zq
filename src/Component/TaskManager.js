@@ -29,7 +29,7 @@ class TaskManager extends React.Component{
     
     componentDidMount(){
       const {teacher_id} = this.props;
-      this.props.getTaskTable(teacher_id);
+      this.props.getTaskLogTable(teacher_id);
       this.props.getTeacherGroup(teacher_id);
     }
 
@@ -37,8 +37,8 @@ class TaskManager extends React.Component{
 		const {teacher_id} = this.props;
         this.props.setTaskTab(key);
 		if(key == 2){
-            // this.props.getTaskLogTable(teacher_id);
-            this.props.getTaskLogTable('1');
+            this.props.getTaskLogTable(teacher_id);
+            // this.props.getTaskLogTable('1');
 		}else if(key == 1){
 			this.props.getTaskTable(teacher_id);
 		}
@@ -287,7 +287,7 @@ class TaskManager extends React.Component{
         this.task_log_columns = [{
             title: '任务名',
             dataIndex: 'source_id',
-            width: '30%',
+            width: '20%',
             filterDropdown: ({
                 setSelectedKeys, selectedKeys, confirm, clearFilters,
             }) => (
@@ -334,7 +334,7 @@ class TaskManager extends React.Component{
         }, {
             title: '任务描述',
             dataIndex: 'content',
-            width: '25%',
+            width: '30%',
             render: (text, record) => {
                 return(
                     <div>
@@ -343,9 +343,9 @@ class TaskManager extends React.Component{
                 );
             },
         }, {
-            title: '布置时间',
-            dataIndex: 'update_time',
-            width: '16%',
+            title: '最近开始时间',
+            dataIndex: 'start_time',
+            width: '14%',
             sorter: (a, b) => (moment(a.update_time)-moment(b.update_time)),
             render: (text, record) => {
                 if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 

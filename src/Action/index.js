@@ -531,11 +531,18 @@ export const getTaskResultInfo = (task_id) => {
     }
 }
 
-export const setVerifyRes = (verifyState,comment,taskid,teacher_id,student_id) => {
+export const setVerifyRes = (verifyState,comment,taskid,teacher_id,student_id,assign_type) => {
     let url = target + "/setVerifyRes";
+    // console.log("verifyState:",verifyState);
+    // console.log("comment:",comment);
+    // console.log("taskid:",taskid);
+    // console.log("teacher_id:",teacher_id);
+    // console.log("student_id:",student_id);
+    // console.log("assign_type:",assign_type);
     return dispatch => {
-        return axios.post(url,{verifyState,comment,taskid,teacher_id,student_id})
+        return axios.post(url,{verifyState,comment,taskid,teacher_id,student_id,assign_type})
         .then(function (response) {
+            dispatch(getTaskLogTable(teacher_id));
             dispatch(getTaskResultInfo(taskid));
         })
         .catch(function (error) {

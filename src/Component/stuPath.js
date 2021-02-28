@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Col, Row, Layout, Breadcrumb, Icon, Spin ,Divider,Card,Button, Steps, Progress , Timeline, List, Avatar,Tag,Modal} from 'antd';
+import { Col, Row, Layout, Breadcrumb, Icon,Upload,Spin,Descriptions,Divider,Card,Button, Steps, Progress , Timeline, List, Avatar,Tag,Modal} from 'antd';
 import { Link } from 'react-router';
 import *as action from '../Action/';
 import { connect } from 'react-redux';
 import Zq_Header from './ZQ_Header';
+import moment from 'moment';
 const { Header, Footer, Content } = Layout;
 const { Step } = Steps;
 
@@ -68,6 +69,10 @@ class StuPath extends React.Component {
 			current_ch_index : -1,
 			weak_visible : false,
 			node_res : {chapter_name:'',weak_kp_tags:[],kp_mastery: 0},
+			current_tasklog : {wrong_ex:0,task_desc:'',total_ex:0,task_count:0,correct_rate:0,content:''},
+			task_visible : false,
+			previewVisible: false,
+            previewImage: '',
         };
 	}
 	
@@ -90,9 +95,21 @@ class StuPath extends React.Component {
 
 	renderPath(){
 		const {path_chapter_list,current_chapter_index,current_node_index,stu_chapter_node,isFetching} = this.props;
-		var {current_ch_index,weak_visible,node_res} = this.state;
-		// console.log("current_chapter_index:",current_chapter_index);
+		var {current_ch_index,weak_visible,node_res,current_tasklog,task_visible,previewVisible,previewImage} = this.state;
+		console.log("stu_chapter_node:",JSON.stringify(stu_chapter_node));
+		// console.log("current_tasklog:",JSON.stringify(current_tasklog));
 		// console.log("current_ch_index:",current_ch_index);
+		if(current_tasklog.submit_url){
+            var url_list = current_tasklog.submit_url.split(',');
+            var fileList = [];
+            for(var i=0;i<url_list.length;i++){
+                var file = {
+                    uid : i,
+                    url : url_list[i]
+                };
+                fileList.push(file);
+            }
+        }
 		const chapter_step_option = path_chapter_list.map((item) =>  
 			<Step title={item.path_chapter_name} 
 				status={
@@ -124,12 +141,19 @@ class StuPath extends React.Component {
 							>
 								<List.Item>
 									<List.Item.Meta
-										title={'学前测评'}
+										title={'知识点测评'}
 										description={item.pre_test ? item.pre_test.test_desc + ' ' + '共'+item.pre_test.total_exercise+'题' : ''}
 									/>
-									<div onClick={() => this.setState({node_res:item.pre_test.result,weak_visible:true})}
+									<div onClick={() => item.pre_test.result? this.setState({node_res:item.pre_test.result,weak_visible:true}) : ''}
                 					>
-										<Tag style={{marginRight: '1rem'}} color="orange">薄弱项x{item.pre_test.result? item.pre_test.result.weak_kp_tags.length : ''}</Tag>
+										{item.pre_test.result ? 
+											<Tag style={{marginRight: '1rem'}} color="orange">薄弱项x{item.pre_test.result? item.pre_test.result.weak_kp_tags.length : '0'}</Tag>
+											:
+											item.pre_test.start_time ? 
+											<Tag style={{marginRight: '1rem'}} color="blue">待测评</Tag>
+											:
+											<Tag style={{marginRight: '1rem'}}>未解锁</Tag>
+										}
 									</div>
 								</List.Item>
 								{item.node_tasks.length?
@@ -137,15 +161,15 @@ class StuPath extends React.Component {
 										<List.Item>
 											<List.Item.Meta
 												title={litem.task_desc}
-												description={litem.task_count ? '共'+litem.task_count+'题' : ''}
+												description={litem.task_count ? '共'+litem.task_count+'题'+' '+(litem.start_time ? moment(litem.start_time).format("YYYY-MM-DD HH:mm"):'') : ''}
 											/>
-											<div>
+											<div onClick={() => this.setState({current_tasklog:litem,task_visible:true})}>
 												<Tag style={{marginRight: '1rem'}} color={
-													litem.verify_state >=0 ? 
+													litem.verify_state != null ? 
 													litem.verify_state == 0 ? 'red' : litem.verify_state == 1 ? 'blue' : 'green'
 													: null
 												}>
-													{litem.verify_state >=0 ? 
+													{litem.verify_state != null  ? 
 														litem.verify_state == 0 ? '未完成' : litem.verify_state == 1 ? '审核中' : '已完成'
 														: '未解锁'}
 												</Tag>
@@ -188,6 +212,38 @@ class StuPath extends React.Component {
 								</Card>
 							</Col>
 						</Row>
+					</div>
+				</Modal>
+				<Modal title={current_tasklog.task_desc} visible={task_visible} width={550} style={{height:400}} footer={null} onCancel={()=>this.setState({task_visible:false})}>
+					<div>
+						{current_tasklog.verify_state > 1 ?
+							<Descriptions title={null} column={1} bordered={true}>
+								<Descriptions.Item label="任务详情">{current_tasklog.content}</Descriptions.Item>
+								<Descriptions.Item label={<div>正确率：{current_tasklog.task_count-current_tasklog.wrong_ex}/{current_tasklog.task_count}</div>}>
+									<Progress type="circle" percent={current_tasklog.correct_rate? current_tasklog.correct_rate:0} 
+										width={70} format={(percent) => `${percent}%`} />
+								</Descriptions.Item>
+								{current_tasklog.submit_url ?
+									<Descriptions.Item label="提交详情">
+										<Upload
+											listType="picture-card"
+											fileList={fileList}
+											onPreview={(file) => this.setState({previewImage:file.url,previewVisible: true})}
+											>
+										</Upload>
+										<Modal visible={previewVisible} width={660} footer={null} onCancel={() => this.setState({ previewVisible: false })}>
+											<img alt="example" style={{ width: '100%' }} src={previewImage} />
+										</Modal>
+									</Descriptions.Item>
+									: ''
+								}
+								
+							</Descriptions>
+							:
+							<Descriptions title={null} column={1} bordered={true}>
+								<Descriptions.Item label="任务详情">{current_tasklog.content}</Descriptions.Item>
+							</Descriptions>
+						}
 					</div>
 				</Modal>
 				<Spin spinning={isFetching} > 
@@ -243,6 +299,6 @@ export default connect(state => {
 		realname:stu_path_chapter.realname,
 		path_name:stu_path_chapter.path_name,
 		group_name:stu_path_chapter.group_name,
-		stu_chapter_node:stu_chapter_node,
+		stu_chapter_node:stu_chapter_node.chapter_node_list,
 	}
 }, action)(StuPath)

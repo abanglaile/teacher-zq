@@ -109,10 +109,10 @@ class GroupPath extends React.Component {
             width: '15%',
 			key:'node_index',
         },{
-            title: '完成时间',
-            dataIndex: 'end_time',
+            title: '最近更新时间',
+            dataIndex: 'update_time',
             width: '15%',
-						key:'end_time',
+						key:'update_time',
 						render: (text, record) => {
 							if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); //2014-09-24 23:36:09 
 							else return '';

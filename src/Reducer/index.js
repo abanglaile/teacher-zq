@@ -21,7 +21,7 @@ const defaultTasksData = Immutable.fromJS({
     tasklog_data: [],
     task_info : {},
     task_res : [],
-    task_tab : '1',
+    task_tab : '2',
     isFetching: false,
 });
 	
@@ -121,7 +121,11 @@ const defaultPathData = Immutable.fromJS({//路径管理相关数据
         path_name : null,
         group_name: null,
     },
-    stu_chapter_node : [],
+    stu_chapter_node : {
+        chapter_node_list: [],
+        task_count: 0,
+        current_task_count: 0,
+    },
     isFetching: false,
 });
 
