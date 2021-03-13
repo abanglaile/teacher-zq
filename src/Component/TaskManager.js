@@ -593,12 +593,6 @@ class TaskManager extends React.Component{
                 {/* <Modal title="新建作业并发布" visible={visible} width={600} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
                     {this.renderNewHomework()}
                 </Modal> */}
-<<<<<<< HEAD
-                < Table 
-                columns = { this.columns } 
-                dataSource = { tasks }
-                /> 
-=======
                 <div>
                     <Tabs onChange={(key)=>this.onTabChange(key)} activeKey={activeKey}>
                         <TabPane tab="作业库" key="1">
@@ -629,7 +623,6 @@ class TaskManager extends React.Component{
                     </Tabs>
                 </div>
                
->>>>>>> origin/master
             </div>   
         );
     }
