@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon, Row, Col,Table,Button,Input,Dropdown,Progress,Modal,Radio,Form,message } from 'antd';
+import {Icon, Row, Col,Table,Button,Input,Dropdown,Upload,Progress,Modal,Radio,Form,message,Carousel } from 'antd';
 import Styles from '../styles/TestResult.css';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
@@ -19,10 +19,14 @@ class StuTaskRes extends React.Component {
             filterDropdownVisible: false, 
             searchText: '', 
             student_id:'',
+            submit_url:null,
+            assign_type:null,
             filtered: false, 
             checked : false,
             visible : false,
             value : 1,
+            previewVisible: false,
+            previewImage: '',
         };
     }
 
@@ -43,14 +47,14 @@ class StuTaskRes extends React.Component {
         this.setState({ searchText: '' });
     }
 
-    showModal(student_id){
-        this.setState({visible: true, student_id : student_id});
+    showModal(student_id,submit_url,assign_type){
+        this.setState({visible: true, student_id : student_id, submit_url : submit_url,assign_type : assign_type});
     }
 
     handleOk(e){
         // this.setState({visible: false});
         const {teacher_id, taskid} = this.props;
-        const {student_id} = this.state; 
+        const {student_id,assign_type} = this.state; 
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -61,7 +65,7 @@ class StuTaskRes extends React.Component {
                     message.warning("请选择审核结果！");
                 }else{
                     this.setState({visible: false},()=>{
-                        this.props.setVerifyRes(values.verifyState,values.comment,taskid,teacher_id,student_id);
+                        this.props.setVerifyRes(values.verifyState,values.comment,taskid,teacher_id,student_id,assign_type);
                     });
                 }
             }
@@ -120,80 +124,76 @@ class StuTaskRes extends React.Component {
                     </span>
                 ) : text;
             },
-	    }, {
-            title: '审核状态',
+	    },{
+            title: '提交时间',
             dataIndex: 'submit_time',
-            width: '10%',
-            key:'submit_time',
+            width: '12%',
+            sorter: (a, b) => (moment(a.submit_time)-moment(b.submit_time)),
             render: (text, record) => {
-              return(
-                record.verify_time ? 
-                <span>已审核</span>
-                :
-                (
-                    text ?
-                    <span onClick={() => this.showModal(record.student_id)}>
-                        <a><font color={"#69c0ff"}>待审核</font></a>
-                    </span>
-                    :
-                    ""
-                )
-              );
+                if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); 
+                else return '';
+                return (text);
             },
-            filters: [{
-                        text: '已审核',
-                        value: '已审核',
-                    },{
-                        text: '待审核',
-                        value: '待审核',
-                    },{
-                        text: '',
-                        value: '空',
-                    }],
-            onFilter: (value, record) => {
-                console.log("value:",value);
-                var res = record.submit_time? (record.verify_time ? '已审核' : '待审核') : '空';
-                return (res === value);
+        },{
+            title: '审核时间',
+            dataIndex: 'verify_time',
+            width: '12%',
+            sorter: (a, b) => (moment(a.verify_time)-moment(b.verify_time)),
+            render: (text, record) => {
+                if(text) return moment(text).format('YYYY-MM-DD HH:mm:ss'); 
+                else return '';
+                return (text);
             },
-        }, {
-            title: '审核结果',
+        },{
+            title: '任务状态',
             dataIndex: 'verify_state',
             width: '8%',
             key:'verify_state',
             render: (text, record) => {
-              return(
-                <span >
-                  <font color={text ? "#00a854" : "red"}>{text ? "通过" : (text == null ? "":"未通过")}</font>
-                </span>
-              );
-            },
-            render: (text, record) => {
                 return(
-                  text ? 
-                  <span><font color={"#00a854"}>通过</font></span>
+                  //2:审核通过 3:已领取(通过后积分) 
+                  text == 2 || text == 3 ? 
+                  <span><font color={"#389e0d"}>已通过</font></span>
                   :
                   (
+                      //0:未提交 1:已提交(待审核) 2:审核通过 3:已领取(通过后积分) 4：审核未通过
                       text == 0 ?
-                      <span onClick={() => this.showModal(record.student_id)}>
-                          <a><font color={"red"}>未通过</font></a>
-                      </span>
+                      <span><font color={"grey"}>未提交</font></span>
                       :
-                      ""
+                      (
+                        text == 1 ?
+                        <span onClick={() => this.showModal(record.student_id,record.submit_url,record.assign_type)}>
+                          <a><font color={"#69c0ff"}>待审核</font></a>
+                        </span>
+                        :
+                        <span onClick={() => this.showModal(record.student_id,record.submit_url,record.assign_type)}>
+                          <a><font color={"red"}>未通过</font></a>
+                        </span>
+                      )
+                      
                   )
                 );
             },
             filters: [{
-                        text: '通过',
-                        value: '通过',
+                        text: '已通过',
+                        value: '已通过',
                     },{
                         text: '未通过',
                         value: '未通过',
                     },{
-                        text: '',
-                        value: '空',
+                        text: '未提交',
+                        value: '未提交',
+                    },{
+                        text: '待审核',
+                        value: '待审核',
                     }],
             onFilter: (value, record) => {
-                var res = record.verify_state ? "通过" : (record.verify_state == null ? "空":"未通过");
+                const sta = record.verify_state;
+                var res = sta == 2 ||  sta == 3 ? "已通过" : (
+                    sta == 0 ? "未提交": (
+                        sta == 1 ? "待审核" : "未通过"
+                    )
+                );
                 return (res === value);
             },
         }, {
@@ -203,11 +203,23 @@ class StuTaskRes extends React.Component {
             key:'comment',
         },];
         const {task_res} = this.props;
+        const {submit_url,previewVisible,previewImage} = this.state;
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
             labelCol: { span: 4 },
             wrapperCol: { span: 14 },
         };
+        if(submit_url){
+            var url_list = submit_url.split(',');
+            var fileList = [];
+            for(var i=0;i<url_list.length;i++){
+                var file = {
+                    uid : i,
+                    url : url_list[i]
+                };
+                fileList.push(file);
+            }
+        }
 		if(task_res){
 			return(
 				<div>
@@ -217,10 +229,35 @@ class StuTaskRes extends React.Component {
                     <Modal
                         title="审核"
                         visible={this.state.visible}
+                        width={500}
                         onOk={(e) => this.handleOk(e)}
                         onCancel={() => this.handleCancel()}
                     >
                         <div>
+                            {submit_url ?
+                                // <div style={{marginBottom:'1rem'}}>
+                                //     <Carousel dotPosition={'top'}>
+                                //         {url_list.map((item) => 
+                                //             <div>
+                                //                 <img src={item} 
+                                //                     style={{width: "752px", height: "auto"}}
+                                //                 />
+                                //             </div>)}
+                                //     </Carousel>
+                                // </div>
+                                <div>
+                                    <Upload
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        onPreview={(file) => this.setState({previewImage:file.url,previewVisible: true})}
+                                        >
+                                    </Upload>
+                                    <Modal visible={previewVisible} width={660} footer={null} onCancel={() => this.setState({ previewVisible: false })}>
+                                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                                    </Modal>
+                                </div>
+                                :''
+                            }
                             <Form layout="horizontal">
                                 <Form.Item
                                     label="审核情况"
@@ -228,8 +265,8 @@ class StuTaskRes extends React.Component {
                                 >
                                     {getFieldDecorator ('verifyState', {})(
                                         <Radio.Group defaultValue="horizontal">
-                                            <Radio.Button value="1">通过</Radio.Button>
-                                            <Radio.Button value="0">不通过</Radio.Button>
+                                            <Radio.Button value="2">通过</Radio.Button>
+                                            <Radio.Button value="4">不通过</Radio.Button>
                                         </Radio.Group>
                                     )}
                                 </Form.Item>

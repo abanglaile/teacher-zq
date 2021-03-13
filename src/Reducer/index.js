@@ -21,6 +21,7 @@ const defaultTasksData = Immutable.fromJS({
     tasklog_data: [],
     task_info : {},
     task_res : [],
+    task_tab : '2',
     isFetching: false,
 });
 	
@@ -104,6 +105,30 @@ const detuEvaluationData = Immutable.fromJS({//学生测评信息
     isFetching: false,
 });
 
+const defaultPathData = Immutable.fromJS({//路径管理相关数据
+    path_table:[],
+    path_data: {
+        path_name : null,
+        group_name: null,
+        path_info : null,
+        stu_path : null,
+    },
+    stu_path_chapter:{
+        path_chapter_list : [],
+        current_chapter_index : 0,//当前章节进度
+        current_node_index : 0,//章节里节点进度
+        realname : null,
+        path_name : null,
+        group_name: null,
+    },
+    stu_chapter_node : {
+        chapter_node_list: [],
+        task_count: 0,
+        current_task_count: 0,
+    },
+    isFetching: false,
+});
+
 export const fetchTestsData = (state = defaultTestsData , action = {}) => {
     switch(action.type){
         case 'GET_TESTS_START':
@@ -146,6 +171,8 @@ export const TasksData = (state = defaultTasksData , action = {}) => {
     switch(action.type){
         case 'GET_TASKS_START':
             return state.set('isFetching', true);
+        case 'SET_TASK_TAB':
+            return state.set('task_tab',action.data);
         case 'GET_TASKS_SUCESS':
             return state.set('task_data', Immutable.fromJS(action.json)).set('isFetching', false);
         case 'GET_TASK_LOGS_SUCESS':
@@ -397,6 +424,23 @@ export const stuEvaluationData = (state = detuEvaluationData, action = {}) => {
             return state.set('eval_data', Immutable.fromJS(action.json)).set('isFetching', false);
         case 'GET_STU_TEST_SURVEY':
             return state.set('survey_data', Immutable.fromJS(action.json));
+        default:
+            return state;
+    }
+}
+
+export const pathData = (state = defaultPathData, action = {}) => {
+    switch(action.type){
+        case 'GET_PATHS_START':
+            return state.set('isFetching', true);
+        case 'GET_GROUP_PATH_DATA':
+            return state.set('path_data', Immutable.fromJS(action.json)).set('isFetching', false);
+        case 'GET_PATHS_TABLE_SUCESS':
+            return state.set('path_table', Immutable.fromJS(action.json)).set('isFetching', false);
+        case 'GET_STU_PATH_CHAPTER_SUCESS':
+            return state.set('stu_path_chapter', Immutable.fromJS(action.json));
+        case 'GET_STU_CHAPTER_NODE_SUCESS':
+            return state.set('stu_chapter_node', Immutable.fromJS(action.json)).set('isFetching', false);
         default:
             return state;
     }

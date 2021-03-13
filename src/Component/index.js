@@ -86,7 +86,13 @@ class App extends React.Component{
                         <Menu.Item key="sub6">
                           <div onClick={() => this.props.router.push("/teacher-zq/root/task-manager")}
                           >
-                            作业管理
+                            任务管理
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item key="sub7">
+                          <div onClick={() => this.props.router.push("/teacher-zq/root/path-manager")}
+                          >
+                            路径管理
                           </div>
                         </Menu.Item>
                       </Menu>

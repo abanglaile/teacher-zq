@@ -448,6 +448,13 @@ export const getTaskTable = (teacher_id) => {
     }
 }
 
+export const setTaskTab = (key) => {
+    return {
+        type: 'SET_TASK_TAB',
+        data: key,
+    }
+}
+
 export const getTaskLogTable = (teacher_id) => {
     let url = target + "/getTaskLogTable";
     return dispatch => {
@@ -524,11 +531,18 @@ export const getTaskResultInfo = (task_id) => {
     }
 }
 
-export const setVerifyRes = (verifyState,comment,taskid,teacher_id,student_id) => {
+export const setVerifyRes = (verifyState,comment,taskid,teacher_id,student_id,assign_type) => {
     let url = target + "/setVerifyRes";
+    // console.log("verifyState:",verifyState);
+    // console.log("comment:",comment);
+    // console.log("taskid:",taskid);
+    // console.log("teacher_id:",teacher_id);
+    // console.log("student_id:",student_id);
+    // console.log("assign_type:",assign_type);
     return dispatch => {
-        return axios.post(url,{verifyState,comment,taskid,teacher_id,student_id})
+        return axios.post(url,{verifyState,comment,taskid,teacher_id,student_id,assign_type})
         .then(function (response) {
+            dispatch(getTaskLogTable(teacher_id));
             dispatch(getTaskResultInfo(taskid));
         })
         .catch(function (error) {
@@ -543,6 +557,20 @@ export const distributeNewHW = (students, task) => {
         return axios.post(url, {students, task})
         .then(function (response) {
             dispatch(getTaskTable(task.create_user));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const distributeTaskLog = (students, tasklog) => {
+    let url = target + "/distributeTaskLog";
+    return dispatch => {
+        return axios.post(url, {students, tasklog})
+        .then(function (response) {
+            message.success('任务分发成功!');
+            dispatch(getTaskLogTable(tasklog.verify_user));
         })
         .catch(function (error) {
             console.log(error);
@@ -1065,6 +1093,105 @@ export const getClassHourTable = (teacher_id) => {
         });
     }
 }
+/*---------------------------------------路径管理----------------------------------*/
+
+export const getGroupPath = (path_id, group_id) => {
+    let url = target + "/getGroupPath";
+    return dispatch => {
+        dispatch(getPathsStart());
+        return axios.get(url, {
+            params:{
+                path_id,
+                group_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_GROUP_PATH_DATA',
+                json: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+const getPathsStart = () => {
+    return {
+      type: 'GET_PATHS_START',
+    }
+}
+
+export const getPathTable = (teacher_id) => {
+    let url = target + "/getPathTable";
+    return dispatch => {
+        dispatch(getPathsStart());
+        return axios.get(url,{
+            params:{
+                teacher_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_PATHS_TABLE_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getStudentPathChapter = (student_id,group_id,path_id) => {
+    let url = target + "/getStudentPathChapter";
+    return dispatch => {
+        return axios.get(url,{
+            params:{
+                student_id,
+                group_id,
+                path_id,
+            }
+        })
+        .then(function (response) {
+            dispatch(getStudentChapterNode(student_id,group_id,response.data.current_chapter_id));
+            dispatch({
+                type : 'GET_STU_PATH_CHAPTER_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getStudentChapterNode = (student_id,group_id,path_chapter_id) => {
+    let url = target + "/getStudentChapterNode";
+    return dispatch => {
+        dispatch(getPathsStart());
+        return axios.get(url,{
+            params:{
+                student_id,
+                group_id,
+                path_chapter_id,
+            }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'GET_STU_CHAPTER_NODE_SUCESS',
+                json : response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+
+
 
 /*---------------------------------------课程管理----------------------------------*/
 export const getTeacherLesson = (teacher_id, filter_option) => {
