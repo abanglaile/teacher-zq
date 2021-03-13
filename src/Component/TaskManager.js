@@ -479,22 +479,6 @@ class TaskManager extends React.Component{
         console.log('task_tab:',task_tab);
         return(
             <div>
-<<<<<<< HEAD
-                {/* <Spin spinning={isFetching} /> */}
-                {/* <div style={{marginBottom:"10px"}}>
-                <Button 
-                    type="primary"  
-                    onClick={() => this.setState({new_task_visible: true})}
-                >
-                    <Icon type="plus" />添加任务
-                </Button>
-                </div>
-                {this.renderNewTaskModal()}
-                {/* <Modal title="新建作业并发布" visible={visible} width={600} onOk={()=>this.handleOk()} onCancel={()=>this.handleCancel()}>
-                    {this.renderNewHomework()}
-                </Modal> */}
-=======
->>>>>>> origin/master
                 <div>
                     <Tabs onChange={(key)=>this.onTabChange(key)} activeKey={task_tab}>
                         <TabPane tab="任务库" key="1">
