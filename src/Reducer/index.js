@@ -65,6 +65,7 @@ const defaultLessonData = Immutable.fromJS({//课程管理
             homework: [],
             lesson_content: [{content: "abc"}]
         }],
+        lesson_not_comment: [],
         signing: false,
         reward: [],
         lesson: {},
@@ -389,6 +390,8 @@ export const lessonData = (state = defaultLessonData , action = {}) => {
             return state.setIn(['lesson_edit', 'pf_comment_edit', action.index], action.value);
         case 'KP_COMMENT_EDITABLE':
             return state.setIn(['lesson_edit', 'kp_comment_edit', action.index], action.value);
+        case 'SET_LESSON_NOT_COMMENT':
+            return state.set('lesson_not_comment', Immutable.fromJS(action.lesson_not_comment))
         default:
             return state;
     }
@@ -405,6 +408,8 @@ export const personalData = (state = defaultPersonalData, action ={}) => {
                 .set('room_link_option', Immutable.fromJS(action.room_link_option));
         case 'SEARCH_PF_LABEL':
             return state.set('search_pf_label', Immutable.fromJS(action.result));
+        case 'GET_PF_LABEL_OPTIONS':
+            return state.set('pf_label_options', Immutable.fromJS(action.result));
         case 'SEARCH_KP_LABEL':
             return state.set('search_kp_label', Immutable.fromJS(action.result))
         case 'SEARCH_TASK_SOURCE':

@@ -1211,6 +1211,24 @@ export const getTeacherLesson = (teacher_id, filter_option) => {
     }
 }
 
+export const getTeacherLessonNotComment = (teacher_id) => {
+    let url = target + "/getTeacherLessonNotComment";
+    return dispatch => {
+        return axios.get(url, {
+            params: { teacher_id }
+        })
+        .then(function (response) {
+            dispatch({
+                type : 'SET_LESSON_NOT_COMMENT',
+                lesson_not_comment: response.data,
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
 export const getStudentOneLesson = (lesson_id, student_id) => {
     let url = target + "/getStudentOneLesson";
     return dispatch => {
@@ -1825,6 +1843,22 @@ export const searchPfLabel = (input) => {
         .then(function (response) {
             dispatch({
                 type : 'SEARCH_PF_LABEL',
+                result: response.data, 
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+}
+
+export const getPfLabelOptions = () => {
+    let url = target + "/getPfLabelOptions";
+    return dispatch => {
+        return axios.get(url, {params: {}})
+        .then(function (response) {
+            dispatch({
+                type : 'GET_PF_LABEL_OPTIONS',
                 result: response.data, 
             });
         })
