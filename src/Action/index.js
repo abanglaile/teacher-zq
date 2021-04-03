@@ -1315,6 +1315,7 @@ export const deleteOneLesson = (lesson_id,teacher_id) => {
         return axios.post(url, {lesson_id})
         .then(function (response) {
             dispatch(getTeacherLesson(teacher_id,{}));
+            dispatch(getTeacherLessonNotComment(teacher_id));
             // dispatch({
             //     type : 'DELETE_ONE_LESSON',
             //     lesson: response.data,
