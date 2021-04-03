@@ -32,7 +32,7 @@ class StudentInfo extends React.Component{
     }
 
 	onTabChange(key){
-		this.setState({activeKey : key});
+        this.setState({activeKey : key});
     }
 
     getTagColor(course_label){
