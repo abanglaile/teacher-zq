@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table, Menu, Row, Col, Tabs, Form, Button,Breadcrumb,message,DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, List, Tag, Dropdown, Mention} from 'antd';
+import {Icon,Spin,Table, Menu, Row, Col, Tabs, Form, Button,Breadcrumb,message,DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect,Modal, Badge, List, Tag, Dropdown, Mention} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -39,7 +39,6 @@ class LessonManager extends React.Component{
           //query_select_teacher: props.teacher_id,
           start_time: start_time,
           range_time: [],
-
           // end_time: null,
           // group_id: undefined,
           room_id: undefined,
@@ -63,6 +62,7 @@ class LessonManager extends React.Component{
       this.props.getClassGroup(teacher_id);
       this.props.getTeacherLesson(teacher_id, {start_time: this.state.start_time});
       this.props.getOptionData(teacher_id);
+      this.props.getTeacherLessonNotComment(teacher_id);
     }
 
 
@@ -97,7 +97,6 @@ class LessonManager extends React.Component{
     }
 
     onGroupChange(value){
-
       var temp = value.split('-');
       this.setState({group_id: temp[0], course_label : temp[1],room_id: undefined});
       this.props.getLinkageOptionData(temp[0]);
@@ -189,6 +188,56 @@ class LessonManager extends React.Component{
             />
           </div>
         </Modal>
+      )
+    }
+
+    renderLessonNotCommentModal() {
+      const { lesson_not_comment, teacher_id } = this.props;
+      return (
+      <Modal 
+        footer = {null}
+        title = { 
+          <div>课堂待办
+            <Icon onClick={e => this.props.getTeacherLessonNotComment(teacher_id)}
+            style={{marginLeft: 8, fontSize: 14}} type="reload" />
+          </div>
+        }
+        visible = {this.state.lesson_not_comment_visible}
+        onCancel = {e => this.setState({lesson_not_comment_visible: false})} >
+          <List
+              size="large"
+              pagination={{
+                showTotal: total => `共 ${total} 节`,
+                pageSize: 5,
+                size: "small"
+              }}
+              dataSource={lesson_not_comment}
+              renderItem={(item, index) => (
+                <List.Item
+                  key={item.title}
+                  actions={item.is_sign?
+                    [<span style={{color: '#52c41a'}}>已签到</span>]
+                    :
+                    [<span style={{color: '#69c0ff'}}>未签到</span>]
+                  }
+                >
+                <List.Item.Meta
+                  avatar={this.renderCourseAvatar(item.course_label)}
+                  title={<a onClick={e => {
+                    this.props.getOneLesson(item.lesson_id, index);
+                    this.props.getLinkageOptionData(item.stu_group_id);
+                    this.props.setLessonIndexVisible(index);
+                    this.setState({view_modal: true});
+                  }}>{item.group_name}</a>}
+                  description={moment(item.start_time).format("YYYY-MM-DD HH:mm") + "  -  " + moment(item.end_time).format("HH:mm")}
+                />
+                  <div style={{marginLeft:'48px'}}>
+                    <Tag style={{marginRight: 10}} color={(item.label_id == 'class')? '#36cfc9':'#597ef7'}>{item.label_name}</Tag>  
+                  </div>
+                </List.Item>
+              )}
+            />
+      </Modal>
       )
     }
     
@@ -407,18 +456,22 @@ class LessonManager extends React.Component{
     
     render(){
       const {visible, treeData,tree_value} = this.state;
-      const {tests,teacher_lesson,isFetching,teacher_id} = this.props;
+      const {teacher_lesson, lesson_not_comment, isFetching, teacher_id} = this.props;
 
       return(
         <div>
             <Spin spinning={isFetching} />
-            <div style={{marginBottom:"10px"}}>
+            <div style={{marginBottom: 10, marginTop: 10}}>
               <Button 
                 type="primary"  
                 onClick={() => this.setState({visible: true})}
               >
                 <Icon type="plus" />新建课堂
               </Button>
+              <Badge count={lesson_not_comment.length}>
+                <Button onClick={ e => this.setState({lesson_not_comment_visible: true})}
+                  style={{marginLeft: 10}} >待办</Button>
+              </Badge>
             </div>
             {this.renderQueryOption()}
             {teacher_lesson[0] ?
@@ -427,6 +480,7 @@ class LessonManager extends React.Component{
               null
             }
             {this.renderNewModal()}
+            {this.renderLessonNotCommentModal()}
             <List
               // itemLayout="vertical"
               size="large"
@@ -480,7 +534,7 @@ export default connect(state => {
   const lesson_data = state.lessonData.toJS();
   const group_data = state.classGroupData.toJS();
   const personal_data = state.personalData.toJS();
-  const {lesson, lesson_edit, teacher_lesson} = lesson_data;
+  const {lesson, lesson_edit, teacher_lesson, lesson_not_comment} = lesson_data;
   const {classgroup_data} = group_data;
   const {teacher_option, course_option, label_option, room_option, search_result, teacher_link_option, room_link_option} = personal_data;
 
@@ -491,6 +545,7 @@ export default connect(state => {
     lesson: lesson,
     lesson_edit: lesson_edit,
     teacher_lesson : teacher_lesson,
+    lesson_not_comment: lesson_not_comment,
     teacher_group: classgroup_data,
     teacher_option: teacher_option,
     course_option: course_option,

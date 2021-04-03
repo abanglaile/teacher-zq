@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {Icon,Spin,Table,Badge, Menu, Row, Col, Tabs, Rate, Popover, Progress, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
+import {Icon,Spin,Table,Cascader,Badge, Menu, Row, Col, Tabs, Rate, Popover, Progress, Radio, Button, Alert, DatePicker, Popconfirm, Select ,Avatar, Input, Checkbox,TreeSelect, Modal, List, Tag, Dropdown, InputNumber} from 'antd';
 import *as action from '../Action/';
 import {connect} from 'react-redux';
 // import {Link} from 'react-router';
@@ -54,6 +54,10 @@ class LessonViewModal extends React.Component{
       if (nextProps.visible !== this.state.visible) {
         this.setState({ visible: nextProps.visible });
       }
+    }
+
+    componentDidMount(){
+      this.props.getPfLabelOptions()
     }
 
     // renderContentItem(item, index){
@@ -1031,9 +1035,9 @@ class LessonViewModal extends React.Component{
       )
     }
 
-    handlePfComment(lesson_id){
+    handlePfComment(lesson_id, course_label){
       const {teacher_lesson, lesson_index, select_student } = this.props;
-      const {label_id, label_name, pf_comment_content} = this.state;
+      const {label_id, label_name, pf_comment_content, side} = this.state;
       const {lesson_student} = teacher_lesson[lesson_index];
 
       this.props.addLessonPfComment(lesson_id, select_student, {
@@ -1041,6 +1045,8 @@ class LessonViewModal extends React.Component{
           label_id: (label_id | 0) == label_id ? label_id : undefined, 
           pf_comment_content: pf_comment_content,
           comment_source: lesson_id,
+          course_label: course_label,
+          side: side,
           teacher_id: this.props.teacher_id,
         }, () => {
           if(lesson_student.length > 1)
@@ -1054,29 +1060,29 @@ class LessonViewModal extends React.Component{
     }
 
     renderPfComment(){
-      const {teacher_lesson, lesson_index, search_pf_label, lesson_edit, select_student } = this.props;
-      let {pf_comment, lesson_student, lesson_id} = teacher_lesson[lesson_index];
+      const {teacher_lesson, lesson_index, search_pf_label, lesson_edit, select_student, pf_label_options} = this.props;
+      let {pf_comment, lesson_student, lesson_id, course_label} = teacher_lesson[lesson_index];
       let {pf_comment_edit} = lesson_edit;
-      let { label_id, label_name, pf_comment_content} = this.state;
+      let { label_id, label_name, pf_comment_content, side } = this.state;
       // console.log("search_pf_label:",JSON.stringify(search_pf_label));
-      const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.pf_label_id}>{d.label_name}</Option>) : null;
-      pf_comment = pf_comment ? pf_comment : [];
+      // const pf_options = search_pf_label ? search_pf_label.map(d => <Option key={d.pf_label_id}>{d.label_name}</Option>) : null;
+      // pf_comment = pf_comment ? pf_comment : [];
 
       // if((lesson_student || []).length == 1){
       //   select_student = {select_id: [lesson_student[0].student_id], select_name: [lesson_student[0].realname]};
       //   this.state.select_student = select_student;
       // }
 
-      const pf_comment_dom = (pf_comment || []).map((item, index) => (
-          pf_comment_edit[index] ?
+      const [p_comment, n_comment] = (pf_comment || []).reduce(
+        ([p_comment, n_comment], item, index) => {
+          const itemDom = pf_comment_edit[index] ?
             <Item>
               <Item.Meta
                 title={
                   <div>
                     <a onClick={e => this.props.updatePfComment({
                         pf_comment_content: this.state.edit_comment_content,
-                    }, item.comment_id,
-                    () => {
+                    }, item.comment_id, () => {
                         this.props.getLessonPfComment(lesson_id);
                         this.props.editPfComment(index, false);
                     })} style={{marginRight: '0.5rem'}}>保存</a>
@@ -1106,16 +1112,69 @@ class LessonViewModal extends React.Component{
                 description={item.pf_comment_content}
               /> 
             </List.Item>
-          ))
+
+            return item.side ? [[...p_comment, itemDom], n_comment] : [p_comment, [...n_comment, itemDom]]
+        }, [[], []])
+
+      // const pf_comment_dom = (pf_comment || []).map((item, index) => (
+      //     pf_comment_edit[index] ?
+      //       <Item>
+      //         <Item.Meta
+      //           title={
+      //             <div>
+      //               <a onClick={e => this.props.updatePfComment({
+      //                   pf_comment_content: this.state.edit_comment_content,
+      //               }, item.comment_id,
+      //               () => {
+      //                   this.props.getLessonPfComment(lesson_id);
+      //                   this.props.editPfComment(index, false);
+      //               })} style={{marginRight: '0.5rem'}}>保存</a>
+      //               <a onClick={e => this.props.editPfComment(index, false)}>取消</a>
+      //             </div>
+      //           }
+      //           description={
+      //             <TextArea autosize={{ minRows: 2 }}
+      //               onChange={(e) => this.setState({edit_comment_content: e.target.value})} 
+      //               value={this.state.edit_comment_content}
+      //           />
+      //         }
+      //         />
+      //       </Item>
+      //       :
+      //       <List.Item actions={[<Icon type="edit" onClick={e => {
+      //         this.props.editPfComment(index, true);
+      //         this.setState({edit_comment_content: item.pf_comment_content});
+      //       }} />,<Icon type="delete" onClick={e => this.props.deleteLessonPfComment(item.comment_id, lesson_id)}/>]}>
+      //         <Item.Meta
+      //           title={
+      //             <div>
+      //               <span style={{marginRight: "0.7rem", fontWeight: "bold"}}>#{item.label_name}#</span>
+      //               <a>{item.student_list}</a>
+      //             </div>
+      //           }
+      //           description={item.pf_comment_content}
+      //         /> 
+      //       </List.Item>
+      //     ))
       return(
         <div>
           <div>
-            <Select
+            <Cascader
+              style={{ width: 300 }}
+              value={this.state.label_id}
+              onChange={(value, option) => this.setState({label_id: value, label_name: option[2].label})}
+              options={pf_label_options}
+              placeholder="选择效能标签"
+              showSearch={ (inputValue, path) =>
+                path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+              }
+            />
+            {/* <Select
               mode="tags"
               style={{ width: 300 }}
               value={this.state.label_id}
               showSearch
-              placeholder={"选择课堂表现标签"}
+              placeholder={"选择学习效能标签"}
               defaultActiveFirstOption={false}
               showArrow={false}
               filterOption={false}
@@ -1125,7 +1184,11 @@ class LessonViewModal extends React.Component{
               notFoundContent={null}
             >
               {pf_options}  
-            </Select>
+            </Select> */}
+            <RadioGroup style={{marginLeft: "1rem"}} onChange={e => this.setState({side: e.target.value})} value={side}>
+              <Radio value={1}><Icon style={{color: "#73d13d"}} type="like" /></Radio>
+              <Radio value={0}><Icon style={{color: "#ffc53d"}} type="exclamation-circle" /></Radio>
+            </RadioGroup>
           </div>
           <TextArea style={{marginTop: '0.5rem'}} placeholder="填写点评情况" autosize={{ minRows: 2 }}
             onChange={(e) => this.setState({pf_comment_content: e.target.value})} value={this.state.pf_comment_content}/>
@@ -1148,14 +1211,29 @@ class LessonViewModal extends React.Component{
             <Button 
               disabled={!(select_student && select_student.select_id && select_student.select_id.length)}
               type="primary"  
-              onClick={() => this.handlePfComment(lesson_id)}>点评</Button>    
+              onClick={() => this.handlePfComment(lesson_id, course_label)}>点评</Button>    
           </div>
-          <div style={{display: (pf_comment || []).length ? 'block' :'none', 
+          {/* <div style={{display: (pf_comment || []).length ? 'block' :'none', 
               marginTop: "1rem", padding: "0 1rem 0 1rem", border: "1px solid #D3D3D3", borderRadius: "5px"}}>
             <List itemLayout="horizontal">
               {pf_comment_dom}  
             </List>             
-          </div>
+          </div> */}
+          <Alert message="表扬进步" type="success" style={{background: "#FFF", marginTop: "1rem", marginBottom: "1rem"}} icon={<Icon type="like" />} 
+            showIcon description={
+            <List itemLayout="horizontal">
+              {p_comment}
+            </List>            
+          } />
+
+          <Alert message="存在问题" style={{background: "#FFF"}} type="warning" showIcon 
+            description={
+            <List
+              itemLayout="horizontal"
+            >
+              {n_comment}
+            </List>
+          } />
         </div>
       )
     }
@@ -1218,8 +1296,8 @@ class LessonViewModal extends React.Component{
           <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">{this.renderLessonBasic()}</TabPane>
             <TabPane tab="课程内容" key="2">{this.renderLessonContent()}</TabPane>
-            <TabPane tab="知识点点评" disabled={!is_sign} key="3">{this.renderKpComment()}</TabPane>
-            <TabPane tab="课堂表现" disabled={!is_sign} key="4">{this.renderPfComment()}</TabPane>
+            <TabPane tab="知识点评" disabled={!is_sign} key="3">{this.renderKpComment()}</TabPane>
+            <TabPane tab="效能点评" disabled={!is_sign} key="4">{this.renderPfComment()}</TabPane>
           </Tabs> 
       </Modal>
       )
@@ -1234,7 +1312,7 @@ export default connect(state => {
   const personal_data = state.personalData.toJS();
   const {lesson_index, lesson_edit, teacher_lesson, select_student, reward, signing} = lesson_data;
   const {classgroup_data} = group_data;
-  const {teacher_option, label_option, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
+  const {teacher_option, label_option, pf_label_options, search_teacher_task, teacher_link_option, search_kp_label, search_pf_label, search_task_source } = personal_data;
   const default_teacher_lesson = [{
     lesson_teacher: [],
     lesson_student: [],
@@ -1258,5 +1336,6 @@ export default connect(state => {
     search_kp_label: search_kp_label,
     search_pf_label: search_pf_label,
     search_task_source: search_task_source,
+    pf_label_options: pf_label_options,
   }
 }, action)(LessonViewModal);
