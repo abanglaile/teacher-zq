@@ -1042,7 +1042,7 @@ class LessonViewModal extends React.Component{
 
       this.props.addLessonPfComment(lesson_id, select_student, {
           label_name: label_name,
-          label_id: (label_id | 0) == label_id ? label_id : undefined, 
+          label_id: label_id ? label_id[2] : undefined,
           pf_comment_content: pf_comment_content,
           comment_source: lesson_id,
           course_label: course_label,
